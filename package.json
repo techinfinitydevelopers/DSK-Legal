@@ -5,7 +5,15 @@
     "install:all": "npm install && npm --prefix client install && npm --prefix server install",
     "dev": "concurrently -n server,client \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "build": "npm --prefix client run build",
-    "start": "npm --prefix server start"
+    "start": "npm --prefix server start",
+    "vercel-build": "npm --prefix client install && npm --prefix client run build"
   },
-  "devDependencies": { "concurrently": "^9.0.1" }
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.0"
+  }
 }

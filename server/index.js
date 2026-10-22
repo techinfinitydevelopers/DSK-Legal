@@ -33,4 +33,9 @@ if (fs.existsSync(dist)) {
   app.get('*', (_req, res) => res.sendFile(path.join(dist, 'index.html')));
 }
 
-app.listen(PORT, () => console.log(`DSK Legal server on http://localhost:${PORT}`));
+// On Vercel the app is exported and run as a serverless function (see /api/index.js).
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`DSK Legal server on http://localhost:${PORT}`));
+}
+
+export default app;
