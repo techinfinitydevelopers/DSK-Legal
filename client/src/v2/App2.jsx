@@ -3,7 +3,6 @@ import Header2 from './Header2.jsx';
 import Footer from '../components/Footer.jsx';
 import { Recognition } from '../components/About.jsx';
 import { Hero2, Values2, Profile2, Practice2, Testimonials2, Awards2, Offices2, Knowledge2, CtaBand } from './Sections2.jsx';
-import './v2.css';
 
 export default function App2() {
   const [data, setData] = useState(null);
