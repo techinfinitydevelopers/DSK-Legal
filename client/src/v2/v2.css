@@ -522,3 +522,17 @@
 @media (prefers-reduced-motion: reduce) { .tw-c { opacity: 1; } .tw-c.cur::after { display: none; } }
 /* accent word in typed headings: solid red italic (a background-clip gradient would ignore the per-character reveal) */
 .x-accent { color: var(--red); font-style: italic; }
+
+/* ===== awards logos: no boxes, same size, grey until hovered ===== */
+.x-logos-track { gap: 28px; }
+.x-logo, .x-ap-grid .x-logo { width: 170px; height: 170px; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+.x-logo:hover, .x-ap-grid .x-logo:hover { transform: none; box-shadow: none; border-color: transparent; }
+.x-logo img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; filter: grayscale(1); opacity: .7; transition: filter .45s var(--e), opacity .45s, transform .45s var(--e); }
+.x-logo:hover img { filter: grayscale(0); opacity: 1; transform: scale(1.08); }
+.x-ap-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 22px; justify-items: center; }
+.x-ap-grid .x-logo { aspect-ratio: auto; }
+@media (max-width: 700px) { .x-logo, .x-ap-grid .x-logo { width: 130px; height: 130px; } .x-logos-track { gap: 16px; } .x-ap-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (hover: none) { .x-logo img { filter: none; opacity: 1; } }
+/* the logo PNGs have a pure-white backing, so the section is white and the logos simply sit on it */
+.x-awards { background: #fff; }
+.x-logo img { mix-blend-mode: normal; }
