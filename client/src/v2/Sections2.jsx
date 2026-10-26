@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { CountUp, Reveal } from '../hooks.jsx';
-import { Spotlight, Magnetic, Tilt, SplitWords } from './fx.jsx';
+import { Spotlight, Magnetic, SplitWords } from './fx.jsx';
 import { CATS, PRACTICE } from './practiceMeta.js';
+import { Mark, ScrollMark } from './Mark.jsx';
 
 export const SLIDES = [
   '/img/banner1.jpg', '/img/banner2.jpg', '/img/banner3.webp', '/img/banner4.webp', '/img/banner5.jpg',
@@ -93,6 +94,7 @@ export function Hero2({ data }) {
 export function Values2({ items }) {
   return (
     <section className="x-sec x-values" id="about">
+      <ScrollMark className="x-values-mk" />
       <div className="container">
         <Reveal className="x-head">
           <p className="x-kicker">Foundational Tenets</p>
@@ -224,6 +226,7 @@ export function Testimonials2({ items }) {
 }
 
 export function Awards2({ data }) {
+  const logos = [...data.logos, ...data.logos];
   return (
     <section className="x-sec x-awards" id="awards">
       <div className="container">
@@ -231,17 +234,22 @@ export function Awards2({ data }) {
           <p className="x-kicker">{data.eyebrow}</p>
           <h2>{data.title}</h2>
         </Reveal>
-        <div className="x-badges">
-          {data.logos.map((l, n) => (
-            <Reveal key={l} delay={n * 80}>
-              <Tilt><img src={`/img/${l}`} alt={`Award ${n + 1}`} loading="lazy" /></Tilt>
-            </Reveal>
+      </div>
+      <div className="x-logos" aria-label="Awards and rankings">
+        <div className="x-logos-track">
+          {logos.map((l, n) => (
+            <div className="x-logo" key={n} aria-hidden={n >= data.logos.length}>
+              <img src={`/img/${l}`} alt={n < data.logos.length ? `Award ${n + 1}` : ''} loading="lazy" />
+            </div>
           ))}
         </div>
       </div>
+      <Reveal className="x-rk-min">
+        <Magnetic><a className="x-btn x-btn-dark" href="/v2/awards">{data.cta} <b>→</b></a></Magnetic>
+      </Reveal>
       <div className="x-ranks">
         <div className="x-rtrack">
-          {[...data.ranks, ...data.ranks, ...data.ranks].map((r, i) => <span key={i}>{r}</span>)}
+          {[...data.ranks, ...data.ranks, ...data.ranks].map((r, i) => <span key={i}><Mark instant loop className="mk-sm" />{r}</span>)}
         </div>
       </div>
     </section>
@@ -319,6 +327,7 @@ export function Knowledge2({ data }) {
 export function CtaBand() {
   return (
     <section className="x-band">
+      <Mark className="x-band-mk" />
       <div className="container x-band-in">
         <h2>Have a complex mandate? <em>Let’s talk.</em></h2>
         <Magnetic><a className="x-btn x-btn-red" href="mailto:Contactus@dsklegal.com">Contact Us <b>→</b></a></Magnetic>

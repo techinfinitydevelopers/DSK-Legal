@@ -13,6 +13,8 @@ const Chev = () => <i className="xh-chev" aria-hidden="true" />;
 
 export default function Header2({ data }) {
   const { menu } = data;
+  // On sub-pages (e.g. /v2/awards) section anchors must point back to the /v2 home page.
+  const base = window.location.pathname.replace(/\/$/, '') === '/v2' ? '' : '/v2';
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false); // mobile overlay
@@ -97,7 +99,7 @@ export default function Header2({ data }) {
             {data.email}
           </a>
           <div className="xh-top-r">
-            <a className="xh-read" href="#knowledge"><b>{data.ticker.label}</b> {data.ticker.text}</a>
+            <a className="xh-read" href={base + "#knowledge"}><b>{data.ticker.label}</b> {data.ticker.text}</a>
             <div className="xh-country">
               <button aria-haspopup="listbox" aria-expanded={drop === 'country'} onClick={() => setDrop(drop === 'country' ? null : 'country')} onMouseEnter={() => setDrop('country')}>
                 {country === 'India' ? 'Country Selector' : country} <Chev />
@@ -123,7 +125,7 @@ export default function Header2({ data }) {
             {NAV.map((n) => (
               <a
                 key={n.label}
-                href={n.href}
+                href={base + n.href}
                 data-spy={n.spy ? n.href : undefined}
                 className={`${active === n.href && n.spy ? 'on' : ''}${n.menu && drop === n.menu ? ' dd' : ''}`}
                 aria-haspopup={n.menu ? 'true' : undefined}
@@ -146,11 +148,11 @@ export default function Header2({ data }) {
               <div className="xh-cols">
                 {menu.practice.map((g) => (
                   <div key={g.title} className="xh-grp">
-                    <a className="xh-gt" href="#practice" onClick={close}>{g.title}</a>
+                    <a className="xh-gt" href={base + "#practice"} onClick={close}>{g.title}</a>
                     <ul>
-                      {g.items.slice(0, 4).map((i) => <li key={i}><a href="#practice" onClick={close}>{i}</a></li>)}
+                      {g.items.slice(0, 4).map((i) => <li key={i}><a href={base + "#practice"} onClick={close}>{i}</a></li>)}
                     </ul>
-                    {g.items.length > 4 && <a className="xh-more" href="#practice" onClick={close}>+{g.items.length - 4} more</a>}
+                    {g.items.length > 4 && <a className="xh-more" href={base + "#practice"} onClick={close}>+{g.items.length - 4} more</a>}
                   </div>
                 ))}
               </div>
@@ -160,7 +162,7 @@ export default function Header2({ data }) {
           <div className={`xh-mega${drop === 'sectors' ? ' open' : ''}`}>
             <div className="xh-mega-in">
               <ul className="xh-sectors">
-                {menu.sectors.map((s) => <li key={s}><a href="#practice" onClick={close}>{s}</a></li>)}
+                {menu.sectors.map((s) => <li key={s}><a href={base + "#practice"} onClick={close}>{s}</a></li>)}
               </ul>
             </div>
           </div>
@@ -172,7 +174,7 @@ export default function Header2({ data }) {
         <ul>
           {[...NAV, { label: 'Contact Us', href: '#footer' }].map((n, i) => (
             <li key={n.label} style={{ '--i': i }}>
-              <a href={n.href} onClick={() => setOpen(false)}><em>{String(i + 1).padStart(2, '0')}</em>{n.label}</a>
+              <a href={base + n.href} onClick={() => setOpen(false)}><em>{String(i + 1).padStart(2, '0')}</em>{n.label}</a>
             </li>
           ))}
         </ul>

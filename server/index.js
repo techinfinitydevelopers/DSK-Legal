@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { home } from './data/home.js';
 import { menu } from './data/menu.js';
 import { testimonialsAll } from './data/testimonials.js';
+import { awardsByPractice } from './data/awards.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -15,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
-app.get('/api/home', (_req, res) => res.json({ ...home, menu, testimonialsAll }));
+app.get('/api/home', (_req, res) => res.json({ ...home, menu, testimonialsAll, awardsByPractice }));
 
 const subscribers = [];
 app.post('/api/subscribe', (req, res) => {

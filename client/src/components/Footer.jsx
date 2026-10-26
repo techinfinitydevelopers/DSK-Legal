@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function Footer({ data }) {
+export default function Footer({ data, awardsHref = '#awards' }) {
   const [email, setEmail] = useState('');
   const [msg, setMsg] = useState('');
 
@@ -36,7 +36,7 @@ export default function Footer({ data }) {
           <h4>The Firm</h4>
           <ul className="plain">
             {data.firm.map((f) => (
-              <li key={f}><a href="#">{f}</a></li>
+              <li key={f}><a href={f === 'Awards & Recognition' ? awardsHref : '#'}>{f}</a></li>
             ))}
           </ul>
         </div>

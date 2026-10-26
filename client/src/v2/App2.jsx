@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Header2 from './Header2.jsx';
+import { Loader } from './Mark.jsx';
 import Footer from '../components/Footer.jsx';
 import { Recognition } from '../components/About.jsx';
 import { Hero2, Values2, Profile2, Practice2, Testimonials2, Awards2, Offices2, Knowledge2, CtaBand } from './Sections2.jsx';
@@ -11,7 +12,7 @@ export default function App2() {
     fetch('/api/home').then((r) => (r.ok ? r.json() : Promise.reject())).then(setData).catch(() => setError(true));
   }, []);
   if (error) return <p className="state">Unable to load content. Please try again later.</p>;
-  if (!data) return <p className="state">Loading…</p>;
+  if (!data) return <Loader />;
   return (
     <div className="v2">
       <Header2 data={data} />
@@ -27,7 +28,7 @@ export default function App2() {
         <Knowledge2 data={data.knowledge} />
         <CtaBand />
       </main>
-      <Footer data={data.footer} />
+      <Footer data={data.footer} awardsHref="/v2/awards" />
     </div>
   );
 }
