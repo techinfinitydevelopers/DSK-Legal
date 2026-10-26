@@ -5,6 +5,7 @@ import { Loader } from './Mark.jsx';
 import { Timeline } from './Rankings.jsx';
 import { CtaBand } from './Sections2.jsx';
 import { Reveal } from '../hooks.jsx';
+import { Typewriter } from './Typewriter.jsx';
 
 /** /v2/awards — full recognition page: logos + year-by-year timeline of all rankings. */
 export default function AwardsPage() {
@@ -30,7 +31,7 @@ export default function AwardsPage() {
             <nav className="x-crumbs" aria-label="Breadcrumb">
               <a href="/v2">Home</a><span>/</span><b>Awards</b>
             </nav>
-            <h1>Awards &amp; <em>Recognition</em></h1>
+            <Typewriter as="h1" delay={0.3} threshold={0.2} parts={[{ text: 'Awards &' }, { text: 'Recognition', as: 'em' }]} />
             <p>{total} rankings and awards across {groups.length} practice areas, from the leading independent legal guides.</p>
           </div>
         </section>
@@ -39,7 +40,7 @@ export default function AwardsPage() {
           <div className="container">
             <Reveal className="x-head x-center">
               <p className="x-kicker">Independent industry endorsement</p>
-              <h2>Recognised by</h2>
+              <Typewriter text="Recognised by" />
             </Reveal>
             <div className="x-ap-grid">
               {data.awards.logos.map((l, n) => (
@@ -55,7 +56,7 @@ export default function AwardsPage() {
           <div className="container">
             <Reveal className="x-head">
               <p className="x-kicker">Recognition by year</p>
-              <h2>A timeline of <em>recognition</em></h2>
+              <Typewriter parts={[{ text: 'A timeline of' }, { text: 'recognition', as: 'em' }]} />
             </Reveal>
             <Timeline groups={groups} />
           </div>

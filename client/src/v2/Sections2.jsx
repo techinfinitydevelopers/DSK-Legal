@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CountUp, Reveal } from '../hooks.jsx';
-import { Spotlight, Magnetic, SplitWords } from './fx.jsx';
+import { Spotlight, Magnetic } from './fx.jsx';
+import { Typewriter } from './Typewriter.jsx';
 import { CATS, PRACTICE } from './practiceMeta.js';
 import { Mark, ScrollMark } from './Mark.jsx';
 
@@ -45,9 +46,7 @@ export function Hero2({ data }) {
       <div className="container x-hero-in">
         <div className="x-hero-copy">
           <p className="x-eyebrow x-fade"><i /> {data.eyebrow}</p>
-          <h1>
-            <SplitWords delay={150} parts={[{ text: data.title }, { text: data.accent, accent: true }, { text: data.titleTail }]} />
-          </h1>
+          <Typewriter as="h1" delay={0.5} threshold={0.2} parts={[{ text: data.title }, { text: data.accent, className: 'x-accent' }, { text: data.titleTail }]} />
           <p className="x-lead x-fade" style={{ animationDelay: '900ms' }}>{data.body}</p>
           <div className="x-cta x-fade" style={{ animationDelay: '1050ms' }}>
             <Magnetic><a className="x-btn x-btn-red" href="#practice">Explore Practice Areas <b>→</b></a></Magnetic>
@@ -98,7 +97,7 @@ export function Values2({ items }) {
       <div className="container">
         <Reveal className="x-head">
           <p className="x-kicker">Foundational Tenets</p>
-          <h2>Our Values</h2>
+          <Typewriter text="Our Values" />
         </Reveal>
         <div className="x-grid3">
           {items.map((v, i) => (
@@ -126,7 +125,7 @@ export function Profile2({ data }) {
         </Reveal>
         <Reveal delay={150}>
           <p className="x-kicker">{data.eyebrow}</p>
-          <h2>{data.title} <em>{data.accent}</em> {data.titleTail}</h2>
+          <Typewriter parts={[{ text: data.title }, { text: data.accent, as: 'em' }, { text: data.titleTail }]} />
           {data.paras.map((p) => <p key={p.slice(0, 18)} className="x-p">{p}</p>)}
           <a className="x-link" href="#offices">{data.link} <b>→</b></a>
         </Reveal>
@@ -147,7 +146,7 @@ export function Practice2({ data }) {
       <div className="container">
         <Reveal className="x-head x-center">
           <p className="x-kicker">{data.eyebrow}</p>
-          <h2>{data.title}</h2>
+          <Typewriter text={data.title} />
           <p className="x-sub">{data.sub}</p>
         </Reveal>
 
@@ -207,7 +206,7 @@ export function Testimonials2({ items }) {
     <section className="x-testi">
       <div className="container x-head x-center">
         <p className="x-kicker light">Client Testimonials</p>
-        <h2>What clients and guides say</h2>
+        <Typewriter text="What clients and guides say" />
       </div>
       {rows.map((list, r) => (
         <div key={r} className={`x-mrow${r ? ' rev' : ''}`}>
@@ -232,7 +231,7 @@ export function Awards2({ data }) {
       <div className="container">
         <Reveal className="x-head x-center">
           <p className="x-kicker">{data.eyebrow}</p>
-          <h2>{data.title}</h2>
+          <Typewriter text={data.title} />
         </Reveal>
       </div>
       <div className="x-logos" aria-label="Awards and rankings">
@@ -263,7 +262,7 @@ export function Offices2({ data }) {
       <div className="container">
         <Reveal className="x-head x-center">
           <p className="x-kicker">{data.eyebrow}</p>
-          <h2>{data.title}</h2>
+          <Typewriter text={data.title} />
           <p className="x-sub">{data.sub}</p>
         </Reveal>
         <Reveal className="x-acc">
@@ -294,7 +293,7 @@ export function Knowledge2({ data }) {
       <div className="container x-know-in">
         <Reveal className="x-know-intro">
           <p className="x-kicker">{data.eyebrow}</p>
-          <h2>{data.title}</h2>
+          <Typewriter text={data.title} />
           <p className="x-sub left">{data.sub}</p>
           <ul className="x-pills">
             {KNOW_PILLS.map((p) => <li key={p}>{p}</li>)}
@@ -329,7 +328,7 @@ export function CtaBand() {
     <section className="x-band">
       <Mark className="x-band-mk" />
       <div className="container x-band-in">
-        <h2>Have a complex mandate? <em>Let’s talk.</em></h2>
+        <Typewriter parts={[{ text: 'Have a complex mandate?' }, { text: 'Let’s talk.', as: 'em' }]} />
         <Magnetic><a className="x-btn x-btn-red" href="mailto:Contactus@dsklegal.com">Contact Us <b>→</b></a></Magnetic>
       </div>
     </section>

@@ -511,3 +511,14 @@
 .x-tile.win:hover::before { transform: translateX(300%) skewX(-14deg); transition: transform 1s var(--e); }
 @media (hover: none) { .x-tile:hover { transform: none; } .x-tile .x-tile-mk line { stroke-dashoffset: 0; } .x-tile-mk { opacity: .5; } }
 @media (prefers-reduced-motion: reduce) { .x-tile, .x-tile:hover { transform: none; animation: none; } .x-tile.win:hover::before { transition: none; } .x-tile-mk line { transition: none; } }
+
+/* ===== GSAP typewriter headings ===== */
+.tw-w { display: inline-block; white-space: nowrap; }
+.tw-c { position: relative; opacity: 0; }
+.tw-c.on { opacity: 1; }
+.tw-c.cur::after { content: ''; position: absolute; right: -.07em; top: .12em; bottom: .04em; width: 2px; background: var(--red); animation: twBlink .55s steps(1) infinite; }
+.x-hero .tw-c.cur::after, .x-ap-hero .tw-c.cur::after, .x-band .tw-c.cur::after, .x-testi .tw-c.cur::after { background: #fff; }
+@keyframes twBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .tw-c { opacity: 1; } .tw-c.cur::after { display: none; } }
+/* accent word in typed headings: solid red italic (a background-clip gradient would ignore the per-character reveal) */
+.x-accent { color: var(--red); font-style: italic; }
