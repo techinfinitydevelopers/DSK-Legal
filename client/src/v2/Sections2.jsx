@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CountUp, Reveal } from '../hooks.jsx';
 import { Spotlight, Magnetic } from './fx.jsx';
 import { Typewriter } from './Typewriter.jsx';
@@ -136,6 +136,22 @@ export function Profile2({ data }) {
 
 export function Practice2({ data }) {
   const [cat, setCat] = useState('All');
+  // sliding pill behind the active filter: measured from the active chip, re-measured on resize/font load
+  const chipsRef = useRef(null);
+  const [ind, setInd] = useState(null);
+  useLayoutEffect(() => {
+    const wrap = chipsRef.current;
+    if (!wrap) return;
+    const place = () => {
+      const b = wrap.querySelector('button.on');
+      if (b) setInd({ x: b.offsetLeft, y: b.offsetTop, w: b.offsetWidth, h: b.offsetHeight });
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(wrap);
+    document.fonts?.ready.then(place);
+    return () => ro.disconnect();
+  }, [cat]);
   const all = data.items.map((name, i) => ({ name, i, ...(PRACTICE[name] || { cat: 'Advisory', desc: '' }) }));
   const list = all.filter((x) => cat === 'All' || x.cat === cat);
   const [active, setActive] = useState(all[0].name);
@@ -151,11 +167,18 @@ export function Practice2({ data }) {
         </Reveal>
 
         <Reveal className="x-chips" role="tablist" aria-label="Filter practice areas">
-          {CATS.map((c) => (
-            <button key={c} role="tab" aria-selected={c === cat} className={c === cat ? 'on' : ''} onClick={() => setCat(c)}>
-              {c}
-            </button>
-          ))}
+          <div className="x-chips-in" ref={chipsRef}>
+            <span
+              className="x-chip-ind"
+              aria-hidden="true"
+              style={ind ? { transform: `translate(${ind.x}px, ${ind.y}px)`, width: ind.w, height: ind.h } : { opacity: 0 }}
+            />
+            {CATS.map((c) => (
+              <button key={c} role="tab" aria-selected={c === cat} className={c === cat ? 'on' : ''} onClick={() => setCat(c)}>
+                {c}
+              </button>
+            ))}
+          </div>
         </Reveal>
 
         <div className="x-pa">
@@ -238,7 +261,7 @@ export function Awards2({ data }) {
         <div className="x-logos-track">
           {logos.map((l, n) => (
             <div className="x-logo" key={n} aria-hidden={n >= data.logos.length}>
-              <img src={`/img/${l}`} alt={n < data.logos.length ? `Award ${n + 1}` : ''} loading="lazy" />
+              <img src={`/img/${l}`} alt={n < data.logos.length ? `Award ${n + 1}` : ''} decoding="async" />
             </div>
           ))}
         </div>

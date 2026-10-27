@@ -45,7 +45,7 @@ export default function AwardsPage() {
             <div className="x-ap-grid">
               {data.awards.logos.map((l, n) => (
                 <Reveal key={l} delay={(n % 6) * 60} className="x-logo">
-                  <img src={`/img/${l}`} alt={`Award ${n + 1}`} loading="lazy" />
+                  <img src={`/img/${l}`} alt={`Award ${n + 1}`} decoding="async" />
                 </Reveal>
               ))}
             </div>

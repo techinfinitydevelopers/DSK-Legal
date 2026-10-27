@@ -70,7 +70,7 @@ export const home = {
   awards: {
     eyebrow: 'Independent Industry Endorsement',
     title: 'Awards and Recognition',
-    logos: Array.from({ length: 13 }, (_, i) => `award${i + 1}.png`),
+    logos: Array.from({ length: 13 }, (_, i) => `logos/award${i + 1}.png`), // transparent, trimmed, 500x200 (shown at 250x100)
     ranks: ['Top Tier Firm — IFLR1000 2024','Top Ranked — Chambers 2025 Asia-Pacific','Outstanding Firm — Asialaw Profiles 2024','Top Tier — Legal500 Asia-Pacific 2025','Top 15 ESG Law Firm in Asia — ALB 2024'],
     cta: 'View all awards & rankings',
   },

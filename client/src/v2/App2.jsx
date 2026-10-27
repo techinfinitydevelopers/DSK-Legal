@@ -3,6 +3,7 @@ import Header2 from './Header2.jsx';
 import { Loader } from './Mark.jsx';
 import Footer from '../components/Footer.jsx';
 import { Recognition } from '../components/About.jsx';
+import { Magnetic } from './fx.jsx';
 import { Hero2, Values2, Profile2, Practice2, Testimonials2, Awards2, Offices2, Knowledge2, CtaBand } from './Sections2.jsx';
 
 export default function App2() {
@@ -20,7 +21,11 @@ export default function App2() {
         <Hero2 data={data.hero} />
         <Values2 items={data.values} />
         <Profile2 data={data.profile} />
-        <Recognition recognition={data.recognition} strengths={data.strengths} />
+        <Recognition
+          recognition={data.recognition}
+          strengths={data.strengths}
+          renderCta={(label) => <Magnetic><a className="x-btn x-btn-red" href="#awards">{label} <b>→</b></a></Magnetic>}
+        />
         <Testimonials2 items={data.testimonialsAll || data.testimonials} />
         <Practice2 data={data.practice} />
         <Awards2 data={data.awards} />

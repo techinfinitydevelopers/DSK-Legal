@@ -12,29 +12,38 @@ gsap.registerPlugin(useGSAP);
  *
  * parts: [{ text, className?, as? }]  — lets a heading mix plain text with an accent (<em>, gradient…).
  */
-export function Typewriter({ as: Tag = 'h2', parts, text, className = '', delay = 0, threshold = 0.6 }) {
+export function Typewriter({ as: Tag = 'h2', parts, text, className = '', delay = 0, threshold = 0.6, active, preset = 0 }) {
   const segs = parts || [{ text }];
   const full = segs.map((p) => p.text).join(' ');
-  const [ref, seen] = useInView(threshold);
+  const [ref, inView] = useInView(threshold);
+  // `active` (optional) lets a parent drive the start/reset, e.g. from scroll progress; otherwise start when in view.
+  const seen = active === undefined ? inView : active;
 
   useGSAP(
     () => {
-      if (!seen) return;
       const el = ref.current;
       const chars = el.querySelectorAll('.tw-c');
+      if (!seen) {
+        chars.forEach((c) => c.classList.remove('on', 'cur'));
+        return;
+      }
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         chars.forEach((c) => c.classList.add('on'));
         return;
       }
-      const per = Math.min(0.045, 2.2 / chars.length); // long headings type faster, capped at ~2.2s
+      // `preset` leading chars appear at once (e.g. text that just morphed into place); the rest is typed
+      const typed = Math.max(1, chars.length - preset);
+      const per = Math.min(0.045, 2.2 / typed); // long headings type faster, capped at ~2.2s
       const tl = gsap.timeline({ delay });
       chars.forEach((c, i) => {
+        if (i < preset) { c.classList.add('on'); return; }
         tl.call(() => {
           el.querySelector('.tw-c.cur')?.classList.remove('cur');
           c.classList.add('on', 'cur');
-        }, null, i * per);
+        }, null, (i - preset) * per);
       });
-      tl.call(() => chars[chars.length - 1]?.classList.remove('cur'), null, chars.length * per + 1.4);
+      tl.call(() => chars[chars.length - 1]?.classList.remove('cur'), null, typed * per + 1.4);
+      return () => tl.kill();
     },
     { scope: ref, dependencies: [seen] }
   );
@@ -47,7 +56,7 @@ export function Typewriter({ as: Tag = 'h2', parts, text, className = '', delay 
         return (
           <Fragment key={si}>
             {si > 0 && ' '}
-            <Inner className={p.className}>
+            <Inner className={`tw-part tw-part${si}${p.className ? ' ' + p.className : ''}`}>
               {words.map((w, wi) => (
                 <Fragment key={wi}>
                   <span className="tw-w" aria-hidden="true">

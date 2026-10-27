@@ -1,0 +1,22 @@
+/* v3 = v2 + a full-screen ribbon preloader. Everything else is shared with v2.css. */
+.x-pre { position: fixed; inset: 0; z-index: 300; overflow: hidden; touch-action: none; background: radial-gradient(ellipse at 50% 50%, #12090a 0%, #050505 65%); transition: transform 1s cubic-bezier(.76, 0, .24, 1); will-change: transform; }
+.x-pre.out { transform: translateY(-100%); }
+.x-pre-canvas { position: absolute; inset: 0; }
+.x-pre-canvas canvas { display: block; width: 100%; height: 100%; }
+.x-pre-copy { position: absolute; left: 0; right: 0; top: 50%; text-align: center; pointer-events: none; padding: 0 24px; }
+.x-pre-h { position: absolute; left: 0; right: 0; bottom: 54px; color: #fff; font-size: clamp(38px, 7.2vw, 104px); line-height: 1; text-shadow: 0 0 36px rgba(255,255,255,.32), 0 0 90px rgba(255,60,50,.25); }
+.x-pre-h .tw-c.cur::after { background: #fff; }
+.x-pre-sub { position: absolute; left: 0; right: 0; top: 66px; font-size: clamp(11px, 1.2vw, 14px); letter-spacing: .5em; text-transform: uppercase; color: #aab; opacity: 0; transform: translateY(8px); transition: opacity 1.2s var(--e) .6s, transform 1.2s var(--e) .6s; }
+.x-pre-sub.on { opacity: 1; transform: none; }
+.x-pre-cue { position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; color: #8a8a8a; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; transition: opacity .5s; pointer-events: none; }
+.x-pre-cue.off { opacity: 0; }
+.x-pre-cue i { width: 1px; height: 38px; background: linear-gradient(#e11e25, transparent); animation: cueLine 1.8s ease-in-out infinite; transform-origin: top; }
+@keyframes cueLine { 0% { transform: scaleY(0); } 60% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+.x-pre-skip { position: absolute; top: 24px; right: 28px; display: inline-flex; gap: 8px; align-items: center; padding: 10px 16px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: rgba(255,255,255,.04); color: #ddd; font: 600 11px var(--sans); letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: .25s; }
+.x-pre-skip b { font-weight: 400; transition: transform .3s var(--e); }
+.x-pre-skip:hover { background: var(--red); border-color: var(--red); color: #fff; }
+.x-pre-skip:hover b { transform: translateX(4px); }
+@media (max-width: 700px) { .x-pre-h { bottom: 40px; } .x-pre-sub { top: 56px; letter-spacing: .32em; } .x-pre-skip { top: 16px; right: 16px; } }
+
+/* heading travelling from the preloader into the hero (sits above everything while it flies) */
+.x-morph { position: fixed; z-index: 500; margin: 0; color: #fff; white-space: nowrap; pointer-events: none; will-change: left, top, font-size; }

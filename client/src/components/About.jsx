@@ -52,7 +52,7 @@ export function Profile({ data }) {
   );
 }
 
-export function Recognition({ recognition: r, strengths: s }) {
+export function Recognition({ recognition: r, strengths: s, renderCta }) {
   return (
     <section className="recog">
       <div className="container grid-2">
@@ -62,7 +62,7 @@ export function Recognition({ recognition: r, strengths: s }) {
             “Ranked as an <u>Outstanding Firm</u> by Asialaw Profiles rankings.”
           </blockquote>
           <cite>{r.source}</cite>
-          <a className="btn btn-red btn-sm" href="#awards">{r.cta}</a>
+          {renderCta ? renderCta(r.cta) : <a className="btn btn-red btn-sm" href="#awards">{r.cta}</a>}
         </article>
         <article className="card">
           <p className="eyebrow">▣ {s.eyebrow}</p>
