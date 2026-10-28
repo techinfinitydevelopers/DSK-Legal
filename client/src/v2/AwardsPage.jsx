@@ -28,7 +28,7 @@ export default function AwardsPage() {
   const total = groups.reduce((n, g) => n + g.items.length, 0);
 
   return (
-    <div className="v2">
+    <div className={home === '/v4' ? 'v2 v4' : 'v2'}>
       <Header data={data} />
       <main>
         <section className="x-ap-hero">

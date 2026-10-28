@@ -16,7 +16,7 @@ export default function App4() {
   if (error) return <p className="state">Unable to load content. Please try again later.</p>;
   if (!data) return <Loader />;
   return (
-    <div className="v2">
+    <div className="v2 v4">
       <Header4 data={data} />
       <main>
         <Hero2 data={data.hero} />

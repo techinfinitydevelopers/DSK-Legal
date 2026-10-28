@@ -96,3 +96,10 @@
 .dl-locale li a:hover .flag { transform: scale(1.1); }
 .dl-locale > button .flag { display: block; }
 .dl-m-foot a { display: inline-flex; align-items: center; gap: 8px; }
+
+/* v4 header is a 48px bar (v2's is ~110px with strip + pill), so the hero doesn't need v2's 190px top padding;
+   and no 100vh min-height, which left an empty band above the headline on tall screens. */
+.v4 .x-hero { min-height: 0; }
+.v4 .x-hero-in { padding-top: 112px; }
+.v4 .x-ap-hero { padding-top: 120px; }
+@media (max-width: 700px) { .v4 .x-hero-in { padding-top: 88px; } .v4 .x-ap-hero { padding-top: 96px; } }
