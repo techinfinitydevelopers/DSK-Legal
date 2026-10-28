@@ -247,8 +247,22 @@ export function Testimonials2({ items }) {
   );
 }
 
+/** Infinite logo strip: the set is rendered twice so the -50% loop is seamless. */
+export function LogoMarquee({ logos }) {
+  return (
+    <div className="x-logos" aria-label="Awards and rankings">
+      <div className="x-logos-track">
+        {[...logos, ...logos].map((l, n) => (
+          <div className="x-logo" key={n} aria-hidden={n >= logos.length}>
+            <img src={`/img/${l}`} alt={n < logos.length ? `Award ${n + 1}` : ''} decoding="async" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Awards2({ data }) {
-  const logos = [...data.logos, ...data.logos];
   return (
     <section className="x-sec x-awards" id="awards">
       <div className="container">
@@ -257,15 +271,7 @@ export function Awards2({ data }) {
           <Typewriter text={data.title} />
         </Reveal>
       </div>
-      <div className="x-logos" aria-label="Awards and rankings">
-        <div className="x-logos-track">
-          {logos.map((l, n) => (
-            <div className="x-logo" key={n} aria-hidden={n >= data.logos.length}>
-              <img src={`/img/${l}`} alt={n < data.logos.length ? `Award ${n + 1}` : ''} decoding="async" />
-            </div>
-          ))}
-        </div>
-      </div>
+      <LogoMarquee logos={data.logos} />
       <Reveal className="x-rk-min">
         <Magnetic><a className="x-btn x-btn-dark" href="/v2/awards">{data.cta} <b>→</b></a></Magnetic>
       </Reveal>

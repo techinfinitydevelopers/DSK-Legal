@@ -3,7 +3,7 @@ import Header2 from './Header2.jsx';
 import Footer from '../components/Footer.jsx';
 import { Loader } from './Mark.jsx';
 import { Timeline } from './Rankings.jsx';
-import { CtaBand } from './Sections2.jsx';
+import { CtaBand, LogoMarquee } from './Sections2.jsx';
 import { Reveal } from '../hooks.jsx';
 import { Typewriter } from './Typewriter.jsx';
 
@@ -42,14 +42,8 @@ export default function AwardsPage() {
               <p className="x-kicker">Independent industry endorsement</p>
               <Typewriter text="Recognised by" />
             </Reveal>
-            <div className="x-ap-grid">
-              {data.awards.logos.map((l, n) => (
-                <Reveal key={l} delay={(n % 6) * 60} className="x-logo">
-                  <img src={`/img/${l}`} alt={`Award ${n + 1}`} decoding="async" />
-                </Reveal>
-              ))}
-            </div>
           </div>
+          <LogoMarquee logos={data.awards.logos} />
         </section>
 
         <section className="x-sec x-ap-tl">
