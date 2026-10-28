@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import Header2 from './Header2.jsx';
+import Header3 from '../v3/Header3.jsx';
+import Header4 from '../v4/Header4.jsx';
 import Footer from '../components/Footer.jsx';
 import { Loader } from './Mark.jsx';
 import { Timeline } from './Rankings.jsx';
@@ -7,12 +9,15 @@ import { CtaBand, LogoMarquee } from './Sections2.jsx';
 import { Reveal } from '../hooks.jsx';
 import { Typewriter } from './Typewriter.jsx';
 
-/** /v2/awards — full recognition page: logos + year-by-year timeline of all rankings. */
+/** /v2/awards, /v3/awards and /v4/awards — full recognition page: logos + year-by-year timeline of all rankings. Links stay in the version it was opened from. */
+const home = window.location.pathname.match(/^\/v[34]/)?.[0] || '/v2';
+const Header = { '/v3': Header3, '/v4': Header4 }[home] || Header2;
+const NAME = { '/v3': 'Ribbon Intro', '/v4': 'Deloitte Nav design' }[home] || 'DSK Liked Version';
 export default function AwardsPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   useEffect(() => {
-    document.title = 'Awards & Recognition — DSK Legal';
+    document.title = `Awards & Recognition — ${NAME}`;
     window.scrollTo(0, 0);
     fetch('/api/home').then((r) => (r.ok ? r.json() : Promise.reject())).then(setData).catch(() => setError(true));
   }, []);
@@ -24,12 +29,12 @@ export default function AwardsPage() {
 
   return (
     <div className="v2">
-      <Header2 data={data} />
+      <Header data={data} />
       <main>
         <section className="x-ap-hero">
           <div className="container">
             <nav className="x-crumbs" aria-label="Breadcrumb">
-              <a href="/v2">Home</a><span>/</span><b>Awards</b>
+              <a href={home}>Home</a><span>/</span><b>Awards</b>
             </nav>
             <Typewriter as="h1" delay={0.3} threshold={0.2} parts={[{ text: 'Awards &' }, { text: 'Recognition', as: 'em' }]} />
             <p>{total} rankings and awards across {groups.length} practice areas, from the leading independent legal guides.</p>
@@ -57,7 +62,7 @@ export default function AwardsPage() {
         </section>
         <CtaBand />
       </main>
-      <Footer data={data.footer} awardsHref="/v2/awards" />
+      <Footer data={data.footer} awardsHref={`${home}/awards`} />
     </div>
   );
 }

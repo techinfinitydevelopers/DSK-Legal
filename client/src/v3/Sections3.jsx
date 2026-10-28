@@ -282,7 +282,7 @@ export function Awards2({ data }) {
         </div>
       </div>
       <Reveal className="x-rk-min">
-        <Magnetic><a className="x-btn x-btn-dark" href="/v2/awards">{data.cta} <b>→</b></a></Magnetic>
+        <Magnetic><a className="x-btn x-btn-dark" href="/v3/awards">{data.cta} <b>→</b></a></Magnetic>
       </Reveal>
       <div className="x-ranks">
         <div className="x-rtrack">

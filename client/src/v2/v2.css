@@ -563,3 +563,36 @@
 .x-chips-in button.on { background: transparent; border-color: transparent; color: #fff; transition-delay: .22s; } /* turn white as the pill arrives, not before */
 .x-chips-in button:not(.on):hover { background: rgba(41,41,41,.04); }
 @media (prefers-reduced-motion: reduce) { .x-chip-ind { transition: none; } }
+
+/* Recognition / Strengths cards (v2, v3, v4 — all share the .v2 root; v1 untouched). The base --paper fill
+   (#f7f4ef) read as yellow, so the card gets a neutral grey and a soft raised look: top-edge highlight,
+   faint inner shade at the bottom, layered outer shadow; hover lifts it a little further. */
+.v2 .recog .card {
+  background: linear-gradient(180deg, #f7f7f8 0%, #f1f1f3 100%);
+  border: 1px solid #e6e6e9;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 -8px 16px -12px rgba(41,41,41,.10),
+    0 1px 2px rgba(41,41,41,.05),
+    0 10px 20px -8px rgba(41,41,41,.10),
+    0 30px 50px -24px rgba(41,41,41,.18);
+  transition: transform .45s var(--e), box-shadow .45s var(--e);
+}
+.v2 .recog .card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 -8px 16px -12px rgba(41,41,41,.10),
+    0 2px 4px rgba(41,41,41,.06),
+    0 16px 28px -10px rgba(41,41,41,.13),
+    0 42px 66px -26px rgba(41,41,41,.22);
+}
+@media (prefers-reduced-motion: reduce) { .v2 .recog .card { transition: none; } .v2 .recog .card:hover { transform: none; } }
+
+/* Country selector: each option is a round flag (Flags.jsx) followed by the country name. */
+.xh-country li a { display: flex; align-items: center; gap: 10px; }
+.xh-country li a .flag { flex: none; display: block; transition: transform .25s var(--e); }
+.xh-country li a:hover .flag { transform: scale(1.1); }
+
+/* v2 header: the red utility strip folds away once the page scrolls; the bar itself stays full width */
+.xh.nostrip .xh-top { height: 0; opacity: 0; pointer-events: none; }

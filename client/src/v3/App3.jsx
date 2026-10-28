@@ -52,7 +52,7 @@ export default function App3() {
         <Knowledge2 data={data.knowledge} />
         <CtaBand />
       </main>
-      <Footer data={data.footer} awardsHref="/v2/awards" />
+      <Footer data={data.footer} awardsHref="/v3/awards" />
     </>
   ) : null;
 

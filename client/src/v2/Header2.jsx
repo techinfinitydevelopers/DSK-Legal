@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Flag } from './Flags.jsx';
 
 const NAV = [
   { label: 'About Us', href: '#about', spy: true },
@@ -92,7 +93,8 @@ export default function Header2({ data }) {
 
   return (
     <>
-      <header className={`xh${scrolled ? ' sc' : ''}${hidden && !drop ? ' hide' : ''}`} onMouseLeave={close}>
+      {/* v2 keeps the full-width bar on scroll (no ' sc' pill morph, v3 still has it); only the red strip folds away ('nostrip') */}
+      <header className={`xh${scrolled ? ' nostrip' : ''}${hidden && !drop ? ' hide' : ''}`} onMouseLeave={close}>
         <div className="xh-top">
           <a className="xh-mail" href={`mailto:${data.email}`}>
             <svg width="14" height="11" viewBox="0 0 14 11" fill="none" stroke="currentColor" strokeWidth="1.2"><rect x=".6" y=".6" width="12.8" height="9.8" rx="1" /><path d="M1 1.5 7 6l6-4.5" /></svg>
@@ -107,7 +109,7 @@ export default function Header2({ data }) {
               <ul className={drop === 'country' ? 'open' : ''} role="listbox">
                 {menu.countries.map((c) => (
                   <li key={c.label}>
-                    <a href={c.href} className={c.label === country ? 'sel' : ''} onClick={() => setCountry(c.label)}>{c.label}</a>
+                    <a href={c.href} className={c.label === country ? 'sel' : ''} onClick={() => setCountry(c.label)}><Flag country={c.label} size={22} />{c.label}</a>
                   </li>
                 ))}
               </ul>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Flag } from '../v2/Flags.jsx';
 
 const NAV = [
   { label: 'About Us', href: '#about', spy: true },
@@ -107,7 +108,7 @@ export default function Header3({ data }) {
               <ul className={drop === 'country' ? 'open' : ''} role="listbox">
                 {menu.countries.map((c) => (
                   <li key={c.label}>
-                    <a href={c.href} className={c.label === country ? 'sel' : ''} onClick={() => setCountry(c.label)}>{c.label}</a>
+                    <a href={c.href} className={c.label === country ? 'sel' : ''} onClick={() => setCountry(c.label)}><Flag country={c.label} size={22} />{c.label}</a>
                   </li>
                 ))}
               </ul>
