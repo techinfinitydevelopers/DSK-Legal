@@ -5,6 +5,9 @@ import { useInView } from '../hooks.jsx';
 
 gsap.registerPlugin(useGSAP);
 
+// v2 pages (/v2, /v2/awards) show headings as plain text: no typing. v3/v4 keep the animation.
+const STATIC = /^\/v2(\/|$)/.test(window.location.pathname);
+
 /**
  * Heading with a GSAP-driven typewriter animation.
  * Every character is rendered up-front (hidden), so the layout never shifts or re-wraps while typing;
@@ -22,6 +25,7 @@ export function Typewriter({ as: Tag = 'h2', parts, text, className = '', delay 
   useGSAP(
     () => {
       const el = ref.current;
+      if (STATIC) return;
       const chars = el.querySelectorAll('.tw-c');
       if (!seen) {
         chars.forEach((c) => c.classList.remove('on', 'cur'));
@@ -60,7 +64,7 @@ export function Typewriter({ as: Tag = 'h2', parts, text, className = '', delay 
               {words.map((w, wi) => (
                 <Fragment key={wi}>
                   <span className="tw-w" aria-hidden="true">
-                    {[...w].map((ch, ci) => <span className="tw-c" key={ci}>{ch}</span>)}
+                    {[...w].map((ch, ci) => <span className={STATIC ? 'tw-c on' : 'tw-c'} key={ci}>{ch}</span>)}
                   </span>
                   {wi < words.length - 1 && ' '}
                 </Fragment>
