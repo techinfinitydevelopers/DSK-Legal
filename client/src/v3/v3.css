@@ -20,3 +20,6 @@
 
 /* heading travelling from the preloader into the hero (sits above everything while it flies) */
 .x-morph { position: fixed; z-index: 500; margin: 0; color: #fff; white-space: nowrap; pointer-events: none; will-change: left, top, font-size; }
+
+/* hero copy swaps per slide: after the first change it fades in faster */
+.v2 .x-hero-copy .x-quick { animation-duration: .6s; }
