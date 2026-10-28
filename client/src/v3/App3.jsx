@@ -6,6 +6,13 @@ import { Recognition } from '../components/About.jsx';
 import { Magnetic } from '../v2/fx.jsx';
 import { Hero2, Values2, Profile2, Practice2, Testimonials2, Awards2, Offices2, Knowledge2, CtaBand } from './Sections3.jsx';
 
+// Ribbon intro plays once per browser; /v3?intro replays it. Storage may throw (private mode) → just play it.
+const SEEN = 'dsk:ribbon-seen';
+const seenRibbon = () => {
+  if (new URLSearchParams(window.location.search).has('intro')) return false;
+  try { return localStorage.getItem(SEEN) === '1'; } catch { return false; }
+};
+
 /**
  * /v3 = the v2 page behind a full-screen ribbon preloader.
  * phase: 'pre' (only the preloader: no header/footer) → 'leaving' (site mounts under the lifting overlay) → 'site'.
@@ -13,8 +20,11 @@ import { Hero2, Values2, Profile2, Practice2, Testimonials2, Awards2, Offices2, 
 export default function App3() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
-  const [phase, setPhase] = useState(() => (canRibbon() ? 'pre' : 'site'));
-  const onLeave = useCallback(() => setPhase('leaving'), []);
+  const [phase, setPhase] = useState(() => (canRibbon() && !seenRibbon() ? 'pre' : 'site'));
+  const onLeave = useCallback(() => {
+    try { localStorage.setItem(SEEN, '1'); } catch { /* ignore */ }
+    setPhase('leaving');
+  }, []);
   const onDone = useCallback(() => setPhase('site'), []);
 
   useEffect(() => {
