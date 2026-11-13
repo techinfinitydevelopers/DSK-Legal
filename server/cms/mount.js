@@ -10,6 +10,7 @@ import { getSettings } from './settings.js';
 import { REGISTRY, seoFor, savedPages } from './pages.js';
 import { renderIndex } from './head.js';
 import { savedMenu, footerMenus } from './menu.js';
+import { clientTexts, SECTOR_SLUGS } from './texts.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const t = (v, n) => String(v ?? '').slice(0, n).trim();
@@ -33,7 +34,7 @@ export async function mountCms(app, dist) {
       articles: live.map((p) => ({ slug: p.slug, title: p.title, pdf: p.pdf, blocks: p.blocks })),
       custom: custom.filter((c) => c.published !== false).map((c) => ({ slug: c.slug, title: c.title, lede: c.lede, blocks: c.blocks })),
       jobs: jobs.filter((j) => j.published !== false && !(j.closingDate && j.closingDate < new Date().toISOString().slice(0, 10))).map(({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate }) => ({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate })),
-      menu: savedMenu(), footerMenus: footerMenus(),
+      menu: savedMenu(), footerMenus: footerMenus(), texts: clientTexts(),
       site: { contactEmail: st.contactEmail, phone: st.phone, siteName: st.siteName }, seo: page,
     });
   });
@@ -81,14 +82,14 @@ export async function mountCms(app, dist) {
     const st = getSettings(); if (st.noindexSite) return res.status(404).type('text/plain').send('Not available');
     const saved = savedPages(); const paths = REGISTRY.filter((p) => !saved[p.id]?.noindex).map((p) => p.path);
     const [people, practice, posts, custom] = await Promise.all([collection('people'), collection('practice'), collection('posts'), collection('custom')]);
-    paths.push(...custom.filter((c) => c.published !== false && !c.noindex).map((c) => `/${c.slug}`), ...posts.filter((p) => p.published !== false).map((p) => `/knowledge/${p.slug}`), ...people.map((p) => `/people/${p.slug}`), ...practice.map((p) => `/practice/${p.slug}`));
+    paths.push(...custom.filter((c) => c.published !== false && !c.noindex).map((c) => `/${c.slug}`), ...posts.filter((p) => p.published !== false).map((p) => `/knowledge/${p.slug}`), ...people.map((p) => `/people/${p.slug}`), ...practice.map((p) => `/practice/${p.slug}`), ...SECTOR_SLUGS.map((x) => `/sectors/${x}`));
     const esc = (x) => x.replace(/&/g, '&amp;').replace(/</g, '&lt;');
     res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${paths.map((p) => `  <url><loc>${esc(origin(req, st) + (p === '/' ? '/' : p))}</loc></url>`).join('\n')}\n</urlset>`);
   });
 
   if (fs.existsSync(dist)) {
     app.use(express.static(dist, { index: false }));
-    const STATIC = new Set(['/', '/about', '/awards', '/people', '/practice', '/sectors', '/knowledge', '/careers', '/careers/internship', '/careers/apply', '/contact', '/admin']);
+    const STATIC = new Set(['/', '/about', '/awards', '/people', '/practice', '/sectors', '/knowledge', '/careers', '/careers/internship', '/careers/apply', '/contact', '/admin', '/privacy-policy', '/terms-and-conditions', '/disclaimer', '/email-disclaimer']);
     /** Does this URL exist? Unknown ones still get the app shell (it draws the 404 page) but with a real 404 status. */
     const exists = async (p) => {
       p = p.replace(/\/+$/, '') || '/';
@@ -96,6 +97,7 @@ export async function mountCms(app, dist) {
       if (STATIC.has(p)) return true;
       let m;
       if ((m = p.match(/^\/people\/([^/]+)$/))) return (await collection('people')).some((x) => x.slug === m[1]);
+      if ((m = p.match(/^\/sectors\/([^/]+)$/))) return SECTOR_SLUGS.includes(m[1]);
       if ((m = p.match(/^\/practice\/([^/]+)$/))) return (await collection('practice')).some((x) => x.slug === m[1]);
       if ((m = p.match(/^\/knowledge\/([^/]+)$/))) return (await collection('posts')).some((x) => x.slug === m[1] && x.published !== false);
       if ((m = p.match(/^\/([a-z0-9-]+)$/))) return (await collection('custom')).some((x) => x.slug === m[1] && x.published !== false);

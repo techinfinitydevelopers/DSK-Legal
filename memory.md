@@ -21,6 +21,13 @@
 - Nav links are anchors only; no inner pages yet. Subscribe not persisted.
 - Copy transcribed from a low-res screenshot; verify text.
 
+
+## 2026-11-13 — Legal pages, cookie banner, sector pages, editable Home/About/Awards text
+- **Legal:** live dsklegal.com has only `/disclaimer` (copied verbatim from `/termspopup/disclaimer/`) and `/email-disclaimer` (copied). **No Privacy/Terms exist there** → `/privacy-policy` and `/terms-and-conditions` are my DRAFTS (client/src/v2/legalData.js) — firm's counsel must review before launch. A custom page with the same slug overrides them. Footer shows the 3 links + "Cookie settings". All 4 are in REGISTRY (SEO editable) and the sitemap.
+- **Cookie banner:** components/CookieBanner.jsx; Essential only / Accept all → localStorage `dsk_cookie`, `window.__COOKIE`. Site sets no analytics/ad cookies today.
+- **Sector pages:** `/sectors/:slug` (slug = slugify(name), 37 sectors from server/data/menu.js; server `exists()` + sitemap + SEO). dsklegal.com has NO per-sector content (only the shared intro) → description per sector is editable in admin (Page Text → Sector pages); empty = shared intro. Lists the 14 practice areas + other sectors.
+- **Page Text (admin, cap `pages`):** server/cms/texts.js registry + `texts.json` (in backup). Home overrides patched into `/api/home` by path (applyHomeTexts); About/Awards/sector text via `window.__TEXT` + `tx(key, fallback)` (seo.js). Empty/unchanged = built-in. Not editable still: headings with typewriter parts on About/Awards, Home hero slide copy per image, belief list, offices.
+- Verified on temp instance: all routes 200/404, texts API (unknown keys ignored, default-equal dropped), UI save, mobile 375 (banner, legal, sector, footer, admin tabs) no overflow. Real server restarted on 5001.
 ## Build log
 - 2026-10-21 — Home page replicated (header, hero, values, profile, recognition, testimonials carousel, practice areas, awards, knowledge centre, offices, footer). Client build passes; served on :5001 and visually checked (hero/header).
 - 2026-10-21 (v2) — Redesign against original dsklegal.com: real copy/images, full-bleed hero crossfade slider + glass stats with count-up, scroll reveals, sticky header w/ progress bar, hover lifts/zoom, award marquee. Build OK, no broken images.
@@ -302,3 +309,4 @@ admin.css: `.ad-nav nav` thin scrollbar, transparent track, translucent white ro
 admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`, grid `.ad { grid-template-columns: auto minmax(0,1fr) }` (a fixed 230px column would have ignored max-content); ≤960px: `width:auto; min-width:0; max-width:none`. Result on desktop: 245px wide (widest item/heading), all group headings single-line (admin). min/max guard keeps width stable across roles and caps long labels. Verified on temp instance (no page overflow). Client bundle only. Uncommitted.
 ## Build log
 - 2026-11-13 sidebar max-content: build OK, uncommitted.
+- 2026-11-13 legal pages + cookie banner + sector pages + Page Text admin: build OK, tested desktop+mobile, uncommitted.

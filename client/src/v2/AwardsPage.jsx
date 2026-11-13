@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { seoTitle } from '../seo.js';
+import { seoTitle, tx } from '../seo.js';
 import Header4 from '../v4/Header4.jsx';
 import Footer from '../components/Footer.jsx';
 import { Loader } from './Mark.jsx';
@@ -33,15 +33,15 @@ export default function AwardsPage() {
               <a href="/">Home</a><span>/</span><b>Awards</b>
             </nav>
             <Typewriter as="h1" delay={0.3} threshold={0.2} parts={[{ text: 'Awards &' }, { text: 'Recognition', as: 'em' }]} />
-            <p>{total} rankings and awards across {groups.length} practice areas, from the leading independent legal guides.</p>
+            <p>{tx('awards.hero.lede', '{total} rankings and awards across {groups} practice areas, from the leading independent legal guides.').replace('{total}', total).replace('{groups}', groups.length)}</p>
           </div>
         </section>
 
         <section className="x-sec x-ap-logos">
           <div className="container">
             <Reveal className="x-head x-center">
-              <p className="x-kicker">Independent industry endorsement</p>
-              <Typewriter text="Recognised by" />
+              <p className="x-kicker">{tx('awards.logos.kicker', 'Independent industry endorsement')}</p>
+              <Typewriter text={tx('awards.logos.title', 'Recognised by')} />
             </Reveal>
           </div>
           <LogoMarquee logos={data.awards.logos} />
@@ -50,7 +50,7 @@ export default function AwardsPage() {
         <section className="x-sec x-ap-tl">
           <div className="container">
             <Reveal className="x-head">
-              <p className="x-kicker">Recognition by year</p>
+              <p className="x-kicker">{tx('awards.timeline.kicker', 'Recognition by year')}</p>
               <Typewriter parts={[{ text: 'A timeline of' }, { text: 'recognition', as: 'em' }]} />
             </Reveal>
             <Timeline groups={groups} />

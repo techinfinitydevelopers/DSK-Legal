@@ -1,5 +1,7 @@
 import { readJson, writeJson, collection } from './store.js';
 import { getSettings } from './settings.js';
+import { menu } from '../data/menu.js';
+import { slugify } from './texts.js';
 
 /** Every fixed page of the site. `heading`/`lede` exist only where the page's hero can be overridden. */
 export const REGISTRY = [
@@ -14,6 +16,10 @@ export const REGISTRY = [
   { id: 'internship', path: '/careers/internship', name: 'Internship application', metaTitle: 'Internship application — DSK Legal', metaDescription: 'Apply for a one-month internship at DSK Legal.', heading: 'Internship *application*', lede: 'Apply for a one-month internship at DSK Legal. Fields marked * are required.' },
   { id: 'apply', path: '/careers/apply', name: 'Job application', metaTitle: 'Job application — DSK Legal', metaDescription: 'Apply for a position at DSK Legal.', heading: 'Apply for a *position*', lede: 'Tell us about your education and experience. Fields marked * are required.' },
   { id: 'contact', path: '/contact', name: 'Contact us', metaTitle: 'Contact Us — DSK Legal', metaDescription: 'Send us your question and we will get back to you as soon as possible.', heading: 'Contact *Us*', lede: 'Send us your question, and we will get back to you as soon as possible.' },
+  { id: 'privacy', path: '/privacy-policy', name: 'Privacy Policy', metaTitle: 'Privacy Policy — DSK Legal', metaDescription: 'How DSK Legal collects, uses and protects personal information shared through this website.' },
+  { id: 'terms', path: '/terms-and-conditions', name: 'Terms & Conditions', metaTitle: 'Terms & Conditions — DSK Legal', metaDescription: 'Terms governing the use of the DSK Legal website.' },
+  { id: 'disclaimer', path: '/disclaimer', name: 'Disclaimer', metaTitle: 'Disclaimer — DSK Legal', metaDescription: 'Bar Council of India disclaimer for users of the DSK Legal website.' },
+  { id: 'emaildisclaimer', path: '/email-disclaimer', name: 'Email Disclaimer', metaTitle: 'Email Disclaimer — DSK Legal', metaDescription: 'Confidentiality notice for communications from DSK Legal.' },
 ];
 
 const str = (v, n) => String(v ?? '').trim().slice(0, n);
@@ -55,6 +61,9 @@ export async function seoFor(pathname) {
   } else if ((m = p.match(/^\/people\/([^/]+)$/))) {
     const x = (await collection('people')).find((y) => y.slug === m[1]);
     if (x) return { ...base, title: `${x.name} — Our People — ${st.siteName}`, description: plain(x.bio?.[0], 200) || `${x.name}, ${x.level}, ${x.office}.`, ogImage: x.photo || base.ogImage };
+  } else if ((m = p.match(/^\/sectors\/([^/]+)$/))) {
+    const n = menu.sectors.find((x) => slugify(x) === m[1]);
+    if (n) return { ...base, title: `${n} — Sectors & Industries — ${st.siteName}`, description: `Legal advice for the ${n} sector from DSK Legal.` };
   } else if ((m = p.match(/^\/practice\/([^/]+)$/))) {
     const x = (await collection('practice')).find((y) => y.slug === m[1]);
     if (x) return { ...base, title: `${x.name} — ${st.siteName}`, description: plain(x.intro?.[0], 200) || st.defaultDescription };

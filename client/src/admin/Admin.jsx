@@ -2,12 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import './admin.css';
 import { api, Icon, Field, Input, Select, Toasts, when } from './ui.jsx';
 import { PersonEditor, PostEditor, PracticeEditor, CustomEditor, JobEditor } from './Editors.jsx';
-import { PagesList, PagesAdmin, SettingsAdmin, AuditLog, BackupAdmin, MediaAdmin, MenuAdmin, MenusList, MenuForm, FooterAdmin } from './Sections.jsx';
+import { PagesList, PagesAdmin, SettingsAdmin, AuditLog, BackupAdmin, MediaAdmin, MenuAdmin, MenusList, MenuForm, FooterAdmin, TextAdmin } from './Sections.jsx';
 
 // Sidebar, grouped by purpose. `g` = group heading (none = top item). Items hide per role (`cap`), empty groups hide with them.
 const NAV = [
   { k: 'dashboard', l: 'Dashboard', ic: 'dash', href: '#/dashboard' },
   { g: 'Content Management', k: 'pages', l: 'Pages', ic: 'page', cap: 'seo', sub: [['All Pages', '#/pages'], ['Add Page', '#/pages/new', 'content']] },
+  { g: 'Content Management', k: 'texts', l: 'Page Text', ic: 'page', cap: 'pages', href: '#/texts' },
   { g: 'Content Management', k: 'posts', l: 'Knowledge', ic: 'post', cap: 'content', href: '#/posts' },
   { g: 'Content Management', k: 'media', l: 'Media Library', ic: 'media', cap: 'media', sub: [['All Media', '#/media'], ['Upload Media Files', '#/media/upload']] },
   { g: 'People & Recruitment', k: 'jobs', l: 'Careers', ic: 'team', cap: 'jobs', sub: [['All Jobs', '#/jobs'], ['Add Job', '#/jobs/new'], ['Applications', '#/jobs/applications', 'inbox']] },
@@ -52,7 +53,7 @@ export default function Admin() {
   const A = (m, u, b) => api(m, u, b, lost);
   const has = (c) => !!user.caps?.includes(c);
   const ctx = { toast, nav: go, user, api: A, has };
-  const NEED = { posts: 'content', people: 'content', practice: 'content', jobs: 'jobs', menu: 'menu', footer: 'menu', media: 'media', inbox: 'inbox', pages: 'seo', settings: 'seo', audit: 'admin', backup: 'admin', users: 'admin' };
+  const NEED = { posts: 'content', people: 'content', practice: 'content', jobs: 'jobs', menu: 'menu', footer: 'menu', texts: 'pages', media: 'media', inbox: 'inbox', pages: 'seo', settings: 'seo', audit: 'admin', backup: 'admin', users: 'admin' };
   const logout = async () => { await api('POST', '/logout').catch(() => {}); setUser(null); };
   const body = (() => {
     if (NEED[section] && !has(NEED[section])) return <p className="ad-err">Your role ({user.role}) cannot open this section.</p>;
@@ -65,6 +66,7 @@ export default function Admin() {
       case 'pages': return !slug ? <PagesList {...ctx} /> : slug === 'new' ? <CustomEditor key="new" slug="new" {...ctx} /> : slug === 'custom' ? <CustomEditor key={slug2} slug={slug2} {...ctx} /> : <PagesAdmin id={slug} {...ctx} />;
       case 'menu': return !slug ? <MenusList {...ctx} /> : slug === 'header' ? <MenuAdmin {...ctx} /> : <MenuForm key={slug} id={slug} {...ctx} />;
       case 'footer': return <FooterAdmin {...ctx} />;
+      case 'texts': return <TextAdmin {...ctx} />;
       case 'media': return <MediaAdmin mode={slug === 'upload' ? 'upload' : 'library'} {...ctx} />;
       case 'settings': return user.role === 'admin' ? <SettingsAdmin tab={slug} {...ctx} /> : <p className="ad-err">Admins only.</p>;
       case 'audit': return user.role === 'admin' ? <AuditLog {...ctx} /> : <p className="ad-err">Admins only.</p>;

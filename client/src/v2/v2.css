@@ -1055,3 +1055,8 @@
 .x-nf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-bottom: 30px; }
 @media (max-width: 1000px) { .x-nf-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 600px) { .x-nf-grid { grid-template-columns: 1fr; } }
+
+/* ---- sector detail + legal pages ---- */
+.x-sr .x-sc-intro { margin-bottom: 40px; }
+.x-sr .x-sr-more { margin-top: 56px; }
+.x-legal .x-legal-date { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #888; }

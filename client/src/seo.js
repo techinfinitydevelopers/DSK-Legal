@@ -26,3 +26,6 @@ export function headingParts(h) {
   const w = String(h).trim().split(/\s+/);
   return w.length > 1 ? [{ text: w.slice(0, -1).join(' ') }, { text: w[w.length - 1], as: 'em' }] : [{ text: w[0] }];
 }
+
+/** Editable page text: a value saved in the admin (Page Text) wins, otherwise the built-in copy. */
+export const tx = (key, fallback) => (typeof window !== 'undefined' && window.__TEXT?.[key]) || fallback;

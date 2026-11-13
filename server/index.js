@@ -24,7 +24,7 @@ app.use((req, res, next) => (/^\/api\/(admin|forms)\b/.test(req.path) ? next() :
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.get('/api/home', async (_req, res) => {
   const out = { ...home, menu, testimonialsAll, awardsByPractice };
-  if (CMS) { const { getSettings } = await import('./cms/settings.js'); const st = getSettings(); if (st.contactEmail) out.email = st.contactEmail; const { footerForSite } = await import('./cms/footer.js'); const ft = footerForSite(); if (ft) out.footer = { ...out.footer, ...ft }; }
+  if (CMS) { const { getSettings } = await import('./cms/settings.js'); const st = getSettings(); if (st.contactEmail) out.email = st.contactEmail; const { footerForSite } = await import('./cms/footer.js'); const ft = footerForSite(); if (ft) out.footer = { ...out.footer, ...ft }; const { applyHomeTexts } = await import('./cms/texts.js'); Object.assign(out, applyHomeTexts(out)); }
   res.json(out);
 });
 

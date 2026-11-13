@@ -4,6 +4,7 @@ import path from 'node:path';
 import { collection, saveCollection, restoreCollection, COLLECTIONS, KEYS, UPLOAD_DIR, PRIVATE_DIR, logActivity, readAudit, submissions, saveSubmissions, readJson, uid } from './store.js';
 import { getSettings, saveSettings } from './settings.js';
 import { listPages, savePage, savedPages } from './pages.js';
+import { listTexts, saveTexts } from './texts.js';
 import { getFooter, saveFooter, DEFAULT_FOOTER } from './footer.js';
 import { getMenu, saveMenu, DEFAULT_MENU, listMenus, createMenu, updateMenu, deleteMenu, LOCATIONS } from './menu.js';
 import { publicMail, saveMail, sendTest } from './mail.js';
@@ -262,6 +263,8 @@ export default function cmsRouter(peopleLookup) {
   r.put('/menu', requireAuth('menu'), (req, res) => {
     try { const m = saveMenu(req.body); logActivity(req, 'updated menu', `${m.items.filter((i) => !i.hidden).length} items`); res.json(m); } catch (e) { res.status(400).json({ error: e.message }); }
   });
+  r.get('/texts', requireAuth('pages'), (_req, res) => res.json(listTexts()));
+  r.put('/texts', requireAuth('pages'), (req, res) => { const n = saveTexts(req.body?.values || {}); logActivity(req, 'updated page text', `${Object.keys(req.body?.values || {}).length} fields`); res.json(listTexts()); });
   r.get('/footer', auth, (_req, res) => res.json(getFooter()));
   r.get('/footer/default', auth, (_req, res) => res.json(DEFAULT_FOOTER));
   r.put('/footer', requireAuth('menu'), (req, res) => {

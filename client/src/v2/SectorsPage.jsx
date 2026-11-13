@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import PageShell, { PageHero } from './PageShell.jsx';
 import { CtaBand } from './Sections2.jsx';
 import { Reveal } from '../hooks.jsx';
+import { slugify } from './sectorSlug.js';
 
 /** /sectors — intro copy from dsklegal.com/sectors-and-industries; the sector list comes from the menu data (/api/home). */
 export default function SectorsPage() {
@@ -35,7 +36,7 @@ function Sectors({ list }) {
           {shown.length ? (
             <ul className="x-sc-grid">
               {shown.map((s) => (
-                <li key={s}><a href={`/contact?topic=${encodeURIComponent(s)}`}><span>{String(list.indexOf(s) + 1).padStart(2, '0')}</span>{s}<b>→</b></a></li>
+                <li key={s}><a href={`/sectors/${slugify(s)}`}><span>{String(list.indexOf(s) + 1).padStart(2, '0')}</span>{s}<b>→</b></a></li>
               ))}
             </ul>
           ) : <p className="x-p">No sector matches “{q}”.</p>}

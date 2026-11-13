@@ -610,3 +610,38 @@ export function FooterAdmin({ api, toast, has }) {
     </form>
   );
 }
+
+/** Page Text: edit the built-in copy of Home, About, Awards and each sector page. Empty / unchanged = built-in text. */
+export function TextAdmin({ api, toast }) {
+  const [pages, setPages] = useState(null); const [tab, setTab] = useState('home'); const [vals, setVals] = useState({}); const [busy, setBusy] = useState(false); const [dirty, setDirty] = useState(false);
+  const load = (d) => { setPages(d); setVals(Object.fromEntries(d.flatMap((p) => p.fields.map((f) => [f.key, f.value || f.def])))); setDirty(false); };
+  useEffect(() => { api('GET', '/texts').then(load).catch((e) => toast(e.message, 'err')); }, []); // eslint-disable-line
+  if (!pages) return <p>Loading…</p>;
+  const page = pages.find((p) => p.id === tab);
+  const group = (f) => f.label.split(' — ')[0];
+  const save = async (e) => { e.preventDefault(); setBusy(true); try { load(await api('PUT', '/texts', { values: Object.fromEntries(page.fields.map((f) => [f.key, vals[f.key]])) })); toast('Text saved — live on the site'); } catch (x) { toast(x.message, 'err'); } finally { setBusy(false); } };
+  const reset = () => { if (!window.confirm(`Reset all ${page.name} text to the built-in copy? Save afterwards to apply.`)) return; setVals((v) => ({ ...v, ...Object.fromEntries(page.fields.map((f) => [f.key, f.def])) })); setDirty(true); };
+  const view = { home: '/', about: '/about', awards: '/awards', sectors: '/sectors' }[tab];
+  let last = '';
+  return (
+    <form onSubmit={save}>
+      <div className="ad-head"><h1>Page Text</h1><a className="ad-btn ghost" href={view} target="_blank" rel="noreferrer">View page <Icon n="ext" /></a></div>
+      <p className="ad-muted">Edit the wording of the fixed pages. Leave a field as it is to keep the built-in text. Headings, images, rankings and the team are managed in their own sections.</p>
+      <div className="ad-tabs">{pages.map((p) => <button type="button" key={p.id} className={p.id === tab ? 'on' : ''} onClick={() => setTab(p.id)}>{p.name}</button>)}</div>
+      <section className="ad-box">
+        {page.fields.map((f) => {
+          const g = group(f); const head = page.id !== 'sectors' && g !== last ? g : null; last = g;
+          return (
+            <div key={f.key}>
+              {head && <h2 className="ad-tx-h">{head}</h2>}
+              <Field label={page.id === 'sectors' ? f.label : f.label.split(' — ').slice(1).join(' — ') || f.label} hint={page.id === 'sectors' ? 'Leave empty to show the standard sector introduction.' : undefined}>
+                {f.multi ? <Text v={vals[f.key]} set={(v) => { setVals((s) => ({ ...s, [f.key]: v })); setDirty(true); }} rows={f.def.length > 260 ? 6 : 3} /> : <Input v={vals[f.key]} set={(v) => { setVals((s) => ({ ...s, [f.key]: v })); setDirty(true); }} />}
+              </Field>
+            </div>
+          );
+        })}
+      </section>
+      <div className="ad-box" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}><button className="ad-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : 'Save text'}</button><button type="button" className="ad-btn ghost" onClick={reset}>Reset {page.name} to default</button></div>
+    </form>
+  );
+}

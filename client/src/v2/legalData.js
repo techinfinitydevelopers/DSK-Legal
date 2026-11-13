@@ -1,0 +1,85 @@
+// Legal pages. Disclaimer + Email Disclaimer are copied from dsklegal.com (/termspopup/disclaimer/, /email-disclaimer/).
+// Privacy Policy and Terms & Conditions do NOT exist on dsklegal.com: they are drafts written from the data practices the site's own disclaimer describes — the firm's counsel must review them before launch.
+// A page created in the admin with the same slug (e.g. "privacy-policy") overrides these.
+export const LEGAL = {
+  '/disclaimer': {
+    title: 'Disclaimer', kicker: 'Bar Council of India', updated: 'December 13, 2024',
+    lede: 'The Bar Council of India rules prohibit Advocates from advertising or soliciting work in any form or manner.',
+    blocks: [
+      { t: 'p', h: 'The Bar Council of India rules prohibit Advocates from advertising or soliciting work in any form or manner. By accessing the DSK Legal website (www.dsklegal.com), the user acknowledges and agrees to the following:' },
+      { t: 'ol', items: [
+        'This website and its contents are for informational purposes only and are not in the nature of solicitation, advertisement, or inducement by DSK Legal or its members. Any information provided here does not constitute legal advice and should not be relied upon as such. Accessing this website does not create an attorney-client relationship between the user and DSK Legal.',
+        'The user confirms that they have voluntarily sought information about DSK Legal for their own use and acknowledges that there has been no solicitation, advertisement, or inducement from DSK Legal, its partners, or its members.',
+        'This website may collect personal information (e.g., names, contact details, academic qualifications, and professional details) for purposes such as assessing internship and job opportunities, addressing inquiries, providing information about the firm’s services, and enhancing client service and engagement. By sharing information, the user consents to the collection, storage, and processing of their data for these purposes in compliance with applicable data protection laws.',
+        'Users submitting information confirm that it is accurate, complete, and provided voluntarily, and that they have attained the age of majority as per the laws of their jurisdiction.',
+        'DSK Legal does not request payments from candidates for recruitment opportunities. Any solicitation of this nature is fraudulent and should be ignored.',
+        'All information and content on this website are the exclusive intellectual property of DSK Legal. Unauthorized use, reproduction, or distribution is strictly prohibited.',
+        'DSK Legal takes no responsibility or liability for consequences arising from actions taken based on the information or content available on this website.',
+      ] },
+      { t: 'p', h: 'By accessing this website, the user agrees to these terms and conditions.' },
+    ],
+  },
+  '/email-disclaimer': {
+    title: 'Email Disclaimer', kicker: 'Confidentiality notice',
+    lede: 'Confidentiality notice for communications from DSK Legal.',
+    blocks: [
+      { t: 'p', h: 'This communication, including any attachments (collectively, “Communication”), is confidential and may be protected by attorney-client privilege or other applicable legal privileges. It is intended solely for the use of the designated recipient(s) and is the property of DSK Legal. Any unauthorized review, use, disclosure, copying, distribution, or reliance on this Communication or any part thereof is strictly prohibited and may constitute a violation of applicable law.' },
+      { t: 'p', h: 'If you are not the intended recipient, please notify DSK Legal immediately by replying to this email and permanently delete this Communication and any copies from your systems.' },
+      { t: 'p', h: 'DSK Legal accepts no liability for the improper or incomplete transmission of this Communication, or for any damage arising from its receipt, reliance, or use.' },
+    ],
+  },
+  '/privacy-policy': {
+    title: 'Privacy Policy', kicker: 'Your information', draft: true,
+    lede: 'How DSK Legal collects, uses and protects the personal information you share through this website.',
+    blocks: [
+      { t: 'p', h: 'This policy explains what information the DSK Legal website (www.dsklegal.com) collects, why, and the choices you have. It should be read with our <a href="/disclaimer">Disclaimer</a>.' },
+      { t: 'h3', h: 'Information we collect' },
+      { t: 'ul', items: [
+        '<b>Enquiries</b> — name, email address and the message you send through the Contact form.',
+        '<b>Applications</b> — details you provide in internship and job applications, such as contact details, academic and professional qualifications, and your CV.',
+        '<b>Mailing list</b> — your email address if you subscribe to updates.',
+        '<b>Technical data</b> — a small cookie that remembers your cookie choice, and standard server logs (IP address, browser, pages requested) kept for security.',
+      ] },
+      { t: 'h3', h: 'How we use it' },
+      { t: 'ul', items: [
+        'To respond to your enquiries and provide information about the firm’s services.',
+        'To assess internship and job applications.',
+        'To send updates you asked for. You can unsubscribe at any time.',
+        'To keep the website secure and working properly.',
+      ] },
+      { t: 'h3', h: 'Sharing' },
+      { t: 'p', h: 'We do not sell personal information. We share it only with service providers that help us run the website and email (under confidentiality obligations), or where the law requires it.' },
+      { t: 'h3', h: 'Retention and security' },
+      { t: 'p', h: 'We keep information only as long as needed for the purposes above or as the law requires. Applications and CVs are stored on access-controlled systems and are visible only to authorised personnel. No method of transmission over the internet is completely secure.' },
+      { t: 'h3', h: 'Cookies' },
+      { t: 'p', h: 'This website sets only a cookie that records your cookie choice. It does not use advertising or tracking cookies.' },
+      { t: 'h3', h: 'Your rights' },
+      { t: 'p', h: 'Subject to applicable data protection law, you may ask to access, correct or delete the personal information we hold about you, or withdraw consent. Write to <a href="mailto:contactus@dsklegal.com">contactus@dsklegal.com</a>.' },
+      { t: 'h3', h: 'Changes' },
+      { t: 'p', h: 'We may update this policy from time to time; the latest version is always on this page.' },
+    ],
+  },
+  '/terms-and-conditions': {
+    title: 'Terms & Conditions', kicker: 'Using this website', draft: true,
+    lede: 'The terms that apply when you use the DSK Legal website.',
+    blocks: [
+      { t: 'p', h: 'By using the DSK Legal website (www.dsklegal.com) you agree to these terms. If you do not agree, please do not use the website.' },
+      { t: 'h3', h: 'No legal advice, no solicitation' },
+      { t: 'p', h: 'The content is for general information only. It is not legal advice, and using the website or contacting us through it does not create an attorney-client relationship. In line with Bar Council of India rules, nothing here is advertising or solicitation. See our <a href="/disclaimer">Disclaimer</a>.' },
+      { t: 'h3', h: 'Intellectual property' },
+      { t: 'p', h: 'All content on this website is the property of DSK Legal. You may view and print it for personal, non-commercial use; any other use, reproduction or distribution needs our written permission.' },
+      { t: 'h3', h: 'Your submissions' },
+      { t: 'p', h: 'Information you submit through forms must be accurate and lawful. Do not send confidential or privileged information through the website forms before we have agreed to act for you. We handle personal data as described in our <a href="/privacy-policy">Privacy Policy</a>.' },
+      { t: 'h3', h: 'Recruitment' },
+      { t: 'p', h: 'DSK Legal does not ask candidates for payment at any stage of recruitment. Any such request is fraudulent and should be ignored.' },
+      { t: 'h3', h: 'Third-party links' },
+      { t: 'p', h: 'The website may link to third-party sites. We do not control them and are not responsible for their content or practices.' },
+      { t: 'h3', h: 'Limitation of liability' },
+      { t: 'p', h: 'The website is provided “as is”. To the extent permitted by law, DSK Legal is not liable for any loss arising from use of, or reliance on, the website or its content.' },
+      { t: 'h3', h: 'Governing law' },
+      { t: 'p', h: 'These terms are governed by the laws of India.' },
+      { t: 'h3', h: 'Contact' },
+      { t: 'p', h: 'Questions about these terms: <a href="mailto:contactus@dsklegal.com">contactus@dsklegal.com</a>.' },
+    ],
+  },
+};

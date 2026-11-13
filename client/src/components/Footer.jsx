@@ -77,6 +77,9 @@ export default function Footer({ data, awardsHref = '/awards', teamHref = '/peop
       <div className="container legal">
         <span>{data.copyright}</span>
         <span>{data.disclaimer}</span>
+        <nav className="legal-links" aria-label="Legal">
+          <a href="/privacy-policy">Privacy Policy</a><a href="/terms-and-conditions">Terms &amp; Conditions</a><a href="/disclaimer">Disclaimer</a><button type="button" onClick={() => window.dispatchEvent(new Event('dsk-cookie-settings'))}>Cookie settings</button>
+        </nav>
       </div>
     </footer>
   );
