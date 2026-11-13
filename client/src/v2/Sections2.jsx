@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { siteEmail } from '../seo.js';
 import { CountUp, Reveal } from '../hooks.jsx';
 import { Spotlight, Magnetic } from './fx.jsx';
 import { Typewriter } from './Typewriter.jsx';
@@ -358,7 +359,7 @@ export function CtaBand() {
       <Mark className="x-band-mk" />
       <div className="container x-band-in">
         <Typewriter parts={[{ text: 'Have a complex mandate?' }, { text: 'Let’s talk.', as: 'em' }]} />
-        <Magnetic><a className="x-btn x-btn-red" href="mailto:Contactus@dsklegal.com">Contact Us <b>→</b></a></Magnetic>
+        <Magnetic><a className="x-btn x-btn-red" href={`mailto:${siteEmail()}`}>Contact Us <b>→</b></a></Magnetic>
       </div>
     </section>
   );

@@ -13,7 +13,9 @@
   },
   "type": "module",
   "dependencies": {
+    "adm-zip": "^0.6.1",
     "cors": "^2.8.5",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "nodemailer": "^10.5.0"
   }
 }

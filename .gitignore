@@ -5,3 +5,6 @@ dist/
 .env
 .env.*
 .claude/
+
+# CMS runtime data (credentials, submissions, edits, uploads) - back up separately
+server/content/

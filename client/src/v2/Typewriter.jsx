@@ -5,8 +5,8 @@ import { useInView } from '../hooks.jsx';
 
 gsap.registerPlugin(useGSAP);
 
-// v2 pages (/v2, /v2/awards) show headings as plain text: no typing. v3/v4 keep the animation.
-const STATIC = /^\/v2(\/|$)/.test(window.location.pathname);
+// Only the home page types its headings; every other page (/about, /awards, /people…) shows them as plain text.
+const isStatic = () => window.location.pathname.replace(/\/$/, '') !== '';
 
 /**
  * Heading with a GSAP-driven typewriter animation.
@@ -16,6 +16,7 @@ const STATIC = /^\/v2(\/|$)/.test(window.location.pathname);
  * parts: [{ text, className?, as? }]  — lets a heading mix plain text with an accent (<em>, gradient…).
  */
 export function Typewriter({ as: Tag = 'h2', parts, text, className = '', delay = 0, threshold = 0.6, active, preset = 0 }) {
+  const STATIC = isStatic();
   const segs = parts || [{ text }];
   const full = segs.map((p) => p.text).join(' ');
   const [ref, inView] = useInView(threshold);

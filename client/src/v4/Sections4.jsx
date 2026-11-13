@@ -1,9 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { siteEmail } from '../seo.js';
 import { CountUp, Reveal } from '../hooks.jsx';
 import { Spotlight, Magnetic } from '../v2/fx.jsx';
 import { Typewriter } from '../v2/Typewriter.jsx';
 import { CATS, PRACTICE } from '../v2/practiceMeta.js';
 import { Mark, ScrollMark } from '../v2/Mark.jsx';
+import { PRACTICE_PAGES } from '../v2/practiceData.js';
 
 export const SLIDES = [
   '/img/banner1.jpg', '/img/banner2.jpg', '/img/banner3.webp', '/img/banner4.webp', '/img/banner5.jpg',
@@ -198,7 +200,7 @@ export function Practice2({ data }) {
                 {x.name === cur.name && (
                   <div className="x-pa-inline">
                     <p>{x.desc}</p>
-                    <a className="x-link" href="#practice">Explore Practice <b>→</b></a>
+                    <a className="x-link" href={`/practice/${PRACTICE_PAGES[cur.i]?.slug || ''}`}>Explore Practice <b>→</b></a>
                   </div>
                 )}
               </li>
@@ -213,7 +215,7 @@ export function Practice2({ data }) {
               <span className="x-patag">{cur.cat}</span>
               <h3>{cur.name}</h3>
               <p>{cur.desc}</p>
-              <Magnetic><a className="x-btn x-btn-red" href="#practice">Explore Practice <b>→</b></a></Magnetic>
+              <Magnetic><a className="x-btn x-btn-red" href={`/practice/${PRACTICE_PAGES[cur.i]?.slug || ''}`}>Explore Practice <b>→</b></a></Magnetic>
             </div>
           </Spotlight>
         </div>
@@ -273,7 +275,7 @@ export function Awards2({ data }) {
       </div>
       <LogoMarquee logos={data.logos} />
       <Reveal className="x-rk-min">
-        <Magnetic><a className="x-btn x-btn-dark" href="/v4/awards">{data.cta} <b>→</b></a></Magnetic>
+        <Magnetic><a className="x-btn x-btn-dark" href="/awards">{data.cta} <b>→</b></a></Magnetic>
       </Reveal>
       <div className="x-ranks">
         <div className="x-rtrack">
@@ -358,7 +360,7 @@ export function CtaBand() {
       <Mark className="x-band-mk" />
       <div className="container x-band-in">
         <Typewriter parts={[{ text: 'Have a complex mandate?' }, { text: 'Let’s talk.', as: 'em' }]} />
-        <Magnetic><a className="x-btn x-btn-red" href="mailto:Contactus@dsklegal.com">Contact Us <b>→</b></a></Magnetic>
+        <Magnetic><a className="x-btn x-btn-red" href={`mailto:${siteEmail()}`}>Contact Us <b>→</b></a></Magnetic>
       </div>
     </section>
   );

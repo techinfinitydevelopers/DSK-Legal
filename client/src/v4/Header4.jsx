@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Flag } from '../v2/Flags.jsx';
+import { practiceHref, serviceHref } from '../v2/practiceLinks.js';
 
 /*
  * v4 header modelled on deloitte.com (in DSK brand colours): a fixed 48px bar (logo, four top-level items with chevrons,
@@ -18,18 +19,21 @@ const IconUser = () => (
 
 export default function Header4({ data }) {
   const { menu } = data;
-  // On sub-pages (e.g. /v4/awards) section anchors must point back to the /v4 home page.
-  const base = window.location.pathname.replace(/\/$/, '') === '/v4' ? '' : '/v4';
-  const awards = '/v4/awards';
+  // On sub-pages (/awards, /people) section anchors must point back to the home page.
+  const base = window.location.pathname.replace(/\/$/, '') === '' ? '' : '/';
+  const awards = '/awards';
+  const people = '/people';
+  const about = '/about';
 
   // Top-level items → tabs → links. Every link points at a real section or page.
-  const NAV = useMemo(() => [
+  const BASE = useMemo(() => [
     {
       id: 'who', label: 'Who we are',
       tabs: [
         { label: 'About DSK Legal', cols: [[
-          ['Our Values', base + '#about'], ['Firm Profile', base + '#about'], ['Our Team', base + '#about'], ['Awards & Recognition', awards],
+          ['About DSK Legal', about], ['Our Values', base + '#about'], ['Firm Profile', about], ['Our Team', people], ['Awards & Recognition', awards],
         ]] },
+        { label: 'Our People', cols: [[['Meet our team', people], ['Partners & leadership', people + '?level=Partner']]] },
         { label: 'Our Offices', cols: [data.offices.cities.map((c) => [c.city, base + '#offices'])] },
       ],
       feature: { img: '/img/mumbai.png', kicker: 'Strategic locations', title: 'Offices across India and the UAE', href: base + '#offices' },
@@ -37,8 +41,8 @@ export default function Header4({ data }) {
     {
       id: 'what', label: 'What we do',
       tabs: [
-        { label: 'Practice Areas', cols: split(menu.practice.map((g) => [g.title, base + '#practice']), 3) },
-        { label: 'Sectors & Industries', cols: split(menu.sectors.map((s) => [s, base + '#practice']), 3) },
+        { label: 'Practice Areas', cols: split([['All practice areas', '/practice']].concat(menu.practice.map((g) => [g.title, practiceHref(g.title)])), 3) },
+        { label: 'Sectors & Industries', cols: split([['All sectors & industries', '/sectors']].concat(menu.sectors.map((s) => [s, '/sectors'])), 3) },
         { label: 'Awards & Rankings', cols: [[['All awards & rankings', awards], ['Client testimonials', base + '#testimonials']]] },
       ],
       feature: { img: '/img/banner1.jpg', kicker: 'Recognition', title: 'Awards and rankings from the leading legal guides', href: awards },
@@ -46,12 +50,30 @@ export default function Header4({ data }) {
     {
       id: 'thinking', label: 'Our Thinking',
       tabs: [
-        { label: 'Knowledge Centre', cols: [data.knowledge.cards.map((c) => [c.title, base + '#knowledge']).concat([[data.ticker.text, base + '#knowledge']])] },
+        { label: 'Knowledge Centre', cols: [data.knowledge.cards.map((c) => [c.title, '/knowledge']).concat([[data.ticker.text, '/knowledge']])] },
       ],
-      feature: { img: '/img/banner2.jpg', kicker: data.ticker.label.replace(':', ''), title: data.ticker.text, href: base + '#knowledge' },
+      feature: { img: '/img/banner2.jpg', kicker: data.ticker.label.replace(':', ''), title: data.ticker.text, href: '/knowledge' },
     },
-    { id: 'careers', label: 'Careers', href: '#footer' },
+    { id: 'careers', label: 'Careers', href: '/careers' },
   ], [base, data, menu]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Order, labels, visibility and extra links set in the dashboard (Menu tab); without a saved menu the built-in one is used.
+  const cfg = window.__MENU;
+  const NAV = useMemo(() => {
+    if (!cfg?.items) return BASE;
+    return cfg.items.filter((i) => !i.hidden).map((i) => {
+      const b = BASE.find((n) => n.id === i.id);
+      if (b) {
+        // saved dropdown tabs: manual tabs list their own links; auto tabs are generated from site data
+        const AUTO = { practice: b.tabs?.find((t) => t.label === 'Practice Areas')?.cols, sectors: b.tabs?.find((t) => t.label === 'Sectors & Industries')?.cols, knowledge: b.tabs?.[0]?.cols };
+        const tabs = b.tabs && i.tabs?.length ? i.tabs.map((t) => (t.auto ? { label: t.label, cols: AUTO[t.auto] || [[]] } : { label: t.label, cols: [t.links.map((l) => [l.label, l.href])] })) : b.tabs;
+        const feature = i.feature ? (i.feature.hidden ? null : i.feature) : b.feature;
+        return { ...b, label: i.label || b.label, ...(tabs ? { tabs } : {}), feature, ...(b.href !== undefined ? { href: i.href || b.href } : {}) };
+      }
+      return i.children?.length ? { id: i.id, label: i.label, single: true, tabs: [{ label: i.label, cols: [i.children.map((c) => [c.label, c.href])] }] } : { id: i.id, label: i.label, href: i.href };
+    });
+  }, [BASE, cfg]);
+  const countries = cfg?.countries?.length ? cfg.countries : menu.countries;
 
   const [drop, setDrop] = useState(null); // top-level id | 'search' | 'locale' | null
   const [tab, setTab] = useState(0);
@@ -83,8 +105,8 @@ export default function Header4({ data }) {
     const t = q.trim().toLowerCase();
     if (t.length < 2) return [];
     const pool = [
-      ...menu.practice.flatMap((g) => [[g.title, 'Practice area'], ...g.items.map((i) => [i, g.title])]),
-      ...menu.sectors.map((s) => [s, 'Sector']),
+      ...menu.practice.flatMap((g) => [[g.title, 'Practice area', practiceHref(g.title)], ...g.items.map((i) => [i, g.title, serviceHref(g.title, i)])]),
+      ...menu.sectors.map((s) => [s, 'Sector', '/sectors']),
     ];
     return pool.filter(([n]) => n.toLowerCase().includes(t)).slice(0, 8);
   }, [q, menu]);
@@ -94,7 +116,7 @@ export default function Header4({ data }) {
   return (
     <header className={`dl${drop || mobile ? ' is-open' : ''}`} ref={ref}>
       <div className="dl-bar">
-        <a href="/v4" className="dl-brand" aria-label="DSK Legal home">
+        <a href="/" className="dl-brand" aria-label="DSK Legal home">
           <img src="/logo.png" alt="DSK Legal — True Value, True Values" />
         </a>
 
@@ -104,7 +126,7 @@ export default function Header4({ data }) {
               {n.label} <Chev />
             </button>
           ) : (
-            <a key={n.id} href={base + n.href} onClick={closeAll}>{n.label}</a>
+            <a key={n.id} href={n.href.startsWith('/') ? n.href : base + n.href} onClick={closeAll}>{n.label}</a>
           ))}
         </nav>
 
@@ -117,12 +139,12 @@ export default function Header4({ data }) {
               <Flag country={country} size={18} /><span>{country === 'India' ? 'IN' : 'AE'} - EN</span><Chev />
             </button>
             <ul className={drop === 'locale' ? 'open' : ''} role="listbox">
-              {menu.countries.map((c) => (
+              {countries.map((c) => (
                 <li key={c.label}><a href={c.href} className={c.label === country ? 'sel' : ''} onClick={() => setCountry(c.label)}><Flag country={c.label} size={22} />{c.label}</a></li>
               ))}
             </ul>
           </div>
-          <a className="dl-icon" href={base + '#footer'} aria-label="Contact us" onClick={closeAll}><IconUser /></a>
+          <a className="dl-icon" href="/contact" aria-label="Contact us" onClick={closeAll}><IconUser /></a>
           <button className={`dl-burger${mobile ? ' on' : ''}`} aria-label={mobile ? 'Close menu' : 'Open menu'} aria-expanded={mobile} onClick={() => (mobile ? closeAll() : (setDrop(null), setMobile(true)))}>
             <i /><i /><i />
           </button>
@@ -147,25 +169,27 @@ export default function Header4({ data }) {
                 </ul>
               ))}
             </div>
-            <a className="dl-feature" href={cur.feature.href} onClick={closeAll}>
-              <img src={cur.feature.img} alt="" loading="lazy" />
-              <p>{cur.feature.kicker}</p>
-              <span>{cur.feature.title}</span>
-            </a>
+            {cur.feature && (
+              <a className="dl-feature" href={cur.feature.href} onClick={closeAll}>
+                <img src={cur.feature.img} alt="" loading="lazy" />
+                <p>{cur.feature.kicker}</p>
+                <span>{cur.feature.title}</span>
+              </a>
+            )}
           </div>
         )}
       </div>
 
       {/* search slide-down */}
       <div className={`dl-panel dl-search${drop === 'search' ? ' open' : ''}`} aria-hidden={drop !== 'search'}>
-        <form className="dl-search-in" role="search" onSubmit={(e) => { e.preventDefault(); window.location.href = base + '#practice'; closeAll(); }}>
+        <form className="dl-search-in" role="search" onSubmit={(e) => { e.preventDefault(); window.location.href = hits[0] ? hits[0][2] : '/practice'; closeAll(); }}>
           <IconSearch />
           <input ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search practice areas and sectors" aria-label="Search" />
           {q && <button type="button" className="dl-clear" onClick={() => setQ('')}>Clear</button>}
         </form>
         {hits.length > 0 && (
           <ul className="dl-hits">
-            {hits.map(([n, where]) => <li key={n + where}><a href={base + '#practice'} onClick={closeAll}>{n}<small>{where}</small></a></li>)}
+            {hits.map(([n, where, href]) => <li key={n + where}><a href={href} onClick={closeAll}>{n}<small>{where}</small></a></li>)}
           </ul>
         )}
       </div>
@@ -178,17 +202,17 @@ export default function Header4({ data }) {
               <li key={n.id}>
                 {n.tabs
                   ? <button onClick={() => setMStack([n.id])}>{n.label}<Chev /></button>
-                  : <a href={base + n.href} onClick={closeAll}>{n.label}</a>}
+                  : <a href={n.href.startsWith('/') ? n.href : base + n.href} onClick={closeAll}>{n.label}</a>}
               </li>
             ))}
-            <li><a href={base + '#footer'} onClick={closeAll}>Contact us</a></li>
+            <li><a href="/contact" onClick={closeAll}>Contact us</a></li>
           </ul>
         ) : (() => {
           const n = NAV.find((x) => x.id === mStack[0]);
-          const t = mStack.length > 1 ? n.tabs[mStack[1]] : null;
+          const t = mStack.length > 1 ? n.tabs[mStack[1]] : n.single ? n.tabs[0] : null; // dashboard-made dropdowns have one tab: show its links directly
           return (
             <>
-              <button className="dl-m-back" onClick={() => setMStack(mStack.slice(0, -1))}><Chev />{t ? n.label : 'Main menu'}</button>
+              <button className="dl-m-back" onClick={() => setMStack(mStack.slice(0, -1))}><Chev />{mStack.length > 1 ? n.label : 'Main menu'}</button>
               <p className="dl-m-title">{t ? t.label : n.label}</p>
               <ul className="dl-m-list">
                 {t
@@ -199,7 +223,7 @@ export default function Header4({ data }) {
           );
         })()}
         <div className="dl-m-foot">
-          {menu.countries.map((c) => <a key={c.label} href={c.href}><Flag country={c.label} size={18} />{c.label}</a>)}
+          {countries.map((c) => <a key={c.label} href={c.href}><Flag country={c.label} size={18} />{c.label}</a>)}
           <a href={`mailto:${data.email}`}>{data.email}</a>
         </div>
       </div>

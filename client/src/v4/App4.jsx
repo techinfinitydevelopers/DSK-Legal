@@ -34,7 +34,7 @@ export default function App4() {
         <Knowledge2 data={data.knowledge} />
         <CtaBand />
       </main>
-      <Footer data={data.footer} awardsHref="/v4/awards" />
+      <Footer data={data.footer} awardsHref="/awards" teamHref="/people" aboutHref="/about" />
     </div>
   );
 }

@@ -97,3 +97,208 @@
 - 2026-10-28 — v2 only: typewriter heading animation removed. Typewriter.jsx checks path /^\/v2(\/|$)/ (STATIC) → chars rendered already '.on', GSAP timeline skipped, no caret. Covers /v2 and /v2/awards; v3, v4 and /v3|/v4/awards still type. Verified: /v2 240/240 chars visible at load, /v2/awards 82/82; v3/v4 start hidden (animated). Pushed (see git log).
 - 2026-10-28 — v4 hero empty band removed: App4 root (and AwardsPage when /v4) gets class 'v4'; v4.css sets .v4 .x-hero min-height 0 (was 100vh → content sat at bottom with a big gap on tall screens) and .x-hero-in padding-top 112px (88 mobile), .x-ap-hero 120px (96 mobile) since the v4 bar is only 48px. Verified gap bar→eyebrow = 64px at 2000x1220 and 1280x800 (40px mobile); v2 unchanged. Pushed (see git log).
 - 2026-10-28 — v3 hero: each of the 10 slides has its own copy (eyebrow, typed h1 with accent, body, red CTA link) via SLIDE_COPY in v3/Sections3.jsx; slide 1 = data.hero (keeps preloader morph). Copy uses only DSK site facts (values, profile, 300+/74, knowledge, rankings, 14 practices, testimonials, offices, contact). Hero copy remounts per slide (key) and re-types; after the first change fades are quicker (.x-quick in v3.css). v3 testimonials section got id='testimonials'. Verified all 10 slides switch text + CTA href. v2/v4 untouched. Pushed (see git log).
+- 2026-11-02 — Analysed bakermckenzie.com/en/people for a v2 'People' directory: keyword search, A–Z letter filter (URL ?letter=A&sort=2), results count 'Showing 24 of N', grid/list toggle, sort (Level/Office/Surname), 'Load More Contacts' (24 per batch), card = photo, name, title, office, phone, email; profile page = title, office, phone, email, vCard, biography, practice focus, representative matters, memberships. Feasible in v2 UI (/v2/people + /v2/people/:slug, client-side filtering). Blocker: repo has NO team data (names/photos/titles); dsklegal.com was unreachable from this machine (browser pane denied, curl returned 000). Nothing built yet.
+- 2026-11-02 — /v2/people built (Baker McKenzie-style) with PLACEHOLDER data: v2/peopleData.js (60 invented people, deterministic, unique slugs; real office phones + Contactus@dsklegal.com), v2/PeoplePage.jsx (directory: keyword search, A–Z surname filter with empty letters disabled, Practice/Office/Level selects, Clear all, sort Level/Office/Surname, grid↔list, 'Showing x of y', Load more 12; filters synced to URL query; profile /v2/people/:slug: initials avatar, phone/email/vCard download, bio, matters, education, sticky side card, related people; 'not found' state). 'Sample profiles: placeholder data' note shown on both pages. main.jsx route /^\/v2\/people(\/[^/]+)?$/; Header2 'Our Team' → /v2/people (new link() helper keeps absolute hrefs); Footer teamHref prop (v2 home + people page). CSS appended to v2.css (.x-pp-*, .x-pf-*). Verified desktop 1440 + mobile 375 (no h-overflow): filters, URL sync, load more, sort, list view, profile page. v3/v4 untouched. Replace peopleData.js with real team data before launch. Uncommitted.
+- 2026-11-03 — /v2/people now uses REAL data from dsklegal.com/team-member: 90 members (name, designation, office, phone, email, LinkedIn, practices, sectors, education, memberships, languages, experience bio, key assignments, activities, awards) scraped via the Browser pane (curl gets 406 from Mod_Security) into v2/peopleData.js (generated, ~290 KB; script scratchpad/dsk/build.mjs). Photos: 90 local copies public/img/team/<slug>.jpg (300x300, ~1 MB). Filters use the site's own 14 practice values (p.tags = canonical match of free-form profile practice names; 8 profiles have none), 6 offices (Bengaluru, Chennai, Delhi, Dubai, Mumbai, Pune), 8 designations (Managing Partner … Firm Management). PeoplePage: Avatar with initials fallback, real tel/mailto/LinkedIn/vCard, profile sections only render when data exists, placeholder notes removed. Verified: filters, search, 12/12 photos load, profile desktop+mobile (no overflow). Not scraped: Dubai has 0 members listed on the site. Content is DSK's own public site text; re-scrape if the team changes. Uncommitted.
+
+## 2026-11-03 — /v2/people card hover animation
+- v2.css (appended): hover = light red panel wipes up from bottom (no black, per user). Replaced earlier shine/zoom/underline version at user's request. Also fixed fadeUp `both` fill-mode blocking hover lift. Hover-only, reduced-motion safe. Uncommitted.
+
+## 2026-11-05 — v4 chosen: drafts folder + v4 people/awards links
+- Client picked v4. Draft sources moved to `client/src/draft/` (git mv): `v1/` (App, Header, Hero, Content), `v2/App2.jsx`, `v3/` (all). Shared stuff stays: `components/{About,Footer}.jsx`, `hooks.jsx`, `v2/*` (Header2, Sections2, fx, Mark, Flags, Typewriter, practiceMeta, Rankings, AwardsPage, PeoplePage, peopleData) because v4 + pages import them. URLs unchanged (/, /v2, /v3, /v4).
+- /v4/people(/:slug) now exists: PeoplePage is version-aware (`home` = /v2 or /v4: header, wrapper class, links, footer, tab title). main.jsx route `/^\/v[24]\/people…/`.
+- Header4: 'Our Team' link + new 'Our People' tab (Meet our team, Partners & leadership → ?level=Partner) in 'Who we are'; Awards link already there. App4 footer teamHref=/v4/people.
+- Verified: build OK; /, /v2, /v4, /v2|v4/awards, /v2|v4/people, /v4/people/anand-desai render, links stay in /v4. /v3 loads with no console errors (preloader canvas; animation throttled in pane). Uncommitted.
+
+## 2026-11-05 — v4 is now the main site; drafts unrouted
+- Routes: `/` = v4 home, `/awards`, `/people`, `/people/:slug` (main.jsx). Old `/v1..v4` prefixed URLs and any unknown path redirect (history.replaceState) to the matching live page or `/`. Draft apps (v1 classic, v2 home, v3 ribbon) are NOT routed or imported → not bundled (dist has only App4, AwardsPage, PeoplePage chunks). Sources kept in `client/src/draft/` (v1/, v2/{App2,Header2}, v3/).
+- Header4/App4/Sections4 links now `/awards`, `/people`; Header4 section anchors use `/#…` on sub-pages. AwardsPage + PeoplePage are v4-only (Header4, `v2 v4` wrapper); person slug = pathname segment [2]. Tab title 'DSK Legal'.
+- Limitation: redirect is client-side (SPA); no server-side 301. Shared modules still live in src/v2 (Mark, fx, Flags, Typewriter, practiceMeta, Rankings, Sections2, pages) and src/components (About, Footer).
+- To revive a draft: re-add its lazy import + route in main.jsx (v3 also needs `draft/v3/v3.css` imported).
+- Verified: build OK; /, /awards, /people, /people/anand-desai render with v4 header; /v2, /v3, /v4, /v4/awards, /v2/people, /random redirect. Uncommitted.
+
+## 2026-11-05 — /about page (v4 design)
+- New `client/src/v2/AboutPage.jsx` (route `/about` in main.jsx; sources: dsklegal.com/about-us — page is only a title, 6 paragraphs and one "We believe in" graphic; scraped via Browser pane, curl gets 406). Sections: dark hero (x-ap-hero) → stats card (2001 / 300+ / 74 / 6 offices; CountUp) → story (paras 1–2 + office chips → /#offices) → 3 pillar Spotlight cards (paras 2–4 split) → dark "We believe in" list (graphic re-set as text, 6 items, highlighted words red) → summary (paras 5–6) + Meet our team CTA → CtaBand → Footer.
+- CSS appended to v2.css (`.x-ab-*`). Header4: 'About DSK Legal' + 'Firm Profile' → /about. Footer got `aboutHref` prop → inserts 'About Us' after 'Home' (all v4 pages pass it).
+- Headings/pillar titles are my wording, body copy is verbatim from the site; stats '6 offices' = 5 India + UAE per source. Verified at 1440 + mobile (no h-scroll). Uncommitted.
+
+## 2026-11-05 — Typewriter only on home
+- `v2/Typewriter.jsx`: `isStatic()` = pathname !== '/' → on /about, /awards, /people(/:slug) (incl. CtaBand heading) every char renders with class `on` and no GSAP timeline; home (`/`) keeps the typing animation. Replaces the old '/v2'-only STATIC check. Verified via iframes: home 0/240 chars pre-on, other pages 100% on. Uncommitted.
+
+## 2026-11-05 — Inner pages from dsklegal.com: /practice, /practice/:slug, /sectors, /knowledge, /careers, /contact
+- Scraped via Browser pane (curl 406): 14 practice pages (intro, services w/ bullets, key contacts), knowledge-centre (first 8 per tab ×3), careers copy, sectors intro. Receiver: scratchpad/recv.mjs → dsk2.json → scratchpad/build2.mjs generates `v2/practiceData.js` (PRACTICE_PAGES; contacts matched to /people slugs, all 14 pages 0 unmatched) + `v2/knowledgeData.js`. Re-scrape rather than hand-edit.
+- New files (v2/): PageShell (loads /api/home, Header4 + Footer; PageHero), PracticePage (index + detail: accordion services w/ #anchor deep links, sticky TOC, key-contacts → /people/:slug, prev/next), SectorsPage (intro verbatim + searchable list from menu.sectors; tiles → /contact?topic=), KnowledgePage (3 tabs + search; cards open the article on dsklegal.com), CareersPage (6 culture values, Internship/Apply → dsklegal.com/Internship/ & /job/, team photo public/img/careers.jpg), ContactPage (form → mailto:Contactus@dsklegal.com, no backend; offices+phones from data.offices), practiceLinks.js (practiceHref/serviceHref/svcId).
+- Wiring: main.jsx route regex + PAGES map; Header4 (practice/sector/knowledge/careers/contact links, search hits deep-link to practice pages); Footer defaults (/awards,/people,/about; Home,Careers,Contact map); home practice 'Explore Practice' → /practice/:slug. CSS appended to v2.css (`.x-pg-*`, `.x-sc-*`, `.x-kc-*`, `.x-cr-*`, `.x-ct-*`).
+- Not done / limits: sector pages have no per-sector content on the source (list only); knowledge shows 8 latest per tab (+ link to full archive), articles not replicated; careers 'Open Positions' list is loaded dynamically on source → we link to dsklegal.com/job/; Dubai/Abu Dhabi street addresses not on source. Verified: build OK, all routes render, no h-scroll at 375px, nav/footer links. Uncommitted.
+
+## 2026-11-06 — Knowledge article pages + career application forms
+- /knowledge/:slug (v2/ArticlePage.jsx): all 24 listed posts scraped (fetch + whitelist sanitizer: strong/em/u/br/a) → `v2/articleData.js` (ARTICLES: slug,title,pdf,blocks[p|h3|h2|ul|ol|quote|hr|byline]). Newsletter "Click here to download" para removed → PDF button (links to the PDF on dsklegal.com). Bold-only paragraphs → h3. Author names linked to /people/:slug when matched (3 unmatched keep LinkedIn: Yashaswini Basu, Shubhra Shastri, Ishan Handa). Prev/next + 3 related. KnowledgePage cards now open /knowledge/:slug (no longer external). Only the 24 posts in knowledgeData (8 per tab) have pages; older archive still on dsklegal.com.
+- Forms: /careers/internship (INTERN_FORM, 7 sections) and /careers/apply (JOB_FORM, 10 sections) — v2/ApplyPage.jsx generic renderer + v2/applyData.js (generated by scratchpad build3.mjs from the live dsklegal.com/Internship and /job forms: labels, options, required flags). Conditional fields: course → year of study (5yr/3yr/none for LLM); Applying For → Support Function shows Function; Legal shows practice area; 'Other' qualification shows free text; experience shows once Applying For chosen. Validation: required, email, 10-digit mobile (no +91), CGPA 60–100, CV pdf/doc/docx/rtf ≤5MB, declaration checkbox. Careers cards now link to these internal forms.
+- DEVIATIONS from source: free-text answers = textareas; dates = date input; hidden duplicate 'University/Board' boxes dropped; practice-area fields Legal-only; 'Other practice areas' optional.
+- SUBMIT IS NOT A REAL SUBMISSION: no mail/storage backend → valid form opens mailto:Contactus@dsklegal.com prefilled with answers; CV file can't be attached via mailto (user told to attach). mailto length limits may truncate long job forms. Needs backend (email service / API + file storage) to go live.
+- CSS appended to v2.css (.x-af-*, .x-ar-*). Verified: routes, conditional logic, validation, no h-scroll at 375px. Uncommitted.
+
+## 2026-11-06 — UI polish: Knowledge Centre + Internship/Job forms
+- Knowledge (`v2/KnowledgePage.jsx`, `.x-kc-*`): tabs show counts, search with icon + result count, first post of a tab is a full-width featured card, cards equal height with hover top bar (no more curved border-top artefact), lining numerals in titles, separate "By <authors>" line + clean summary, PDF chip, footer row with arrow; mobile tabs scroll horizontally. Card authors/summary/pdf are derived into `knowledgeData.js` by scratchpad `build4.mjs` (run build2 then build4 if re-scraping).
+- Forms (`v2/ApplyPage.jsx`, `.x-af-*`): two-column layout — sticky left rail with section steps (active-on-scroll via IntersectionObserver, ✓ when a section's required fields are filled), progress bar + "x of y required fields done"; sections are cards with a header bar (red top rule, number, title, Optional pill); custom select arrow, styled file input, wide fields for long labels/placeholders; error summary under the actions; on <1000px the rail becomes a sticky horizontal pill bar. Fixed mobile overflow (grid minmax(0,1fr)).
+- Verified at 1440 and 375: no h-scroll on /knowledge, /careers/internship, /careers/apply, /knowledge/:slug. Uncommitted.
+
+## 2026-11-06 — UI polish: knowledge article pages (/knowledge/:slug)
+- `v2/ArticlePage.jsx` + `.x-ar-*`: hero with type pill, date, min-read (210 wpm) and Download-PDF button for newsletters; thin red reading-progress bar under the header; authors box ("Authors" label) at top of body; larger lead paragraph; footnote paras ([n]) in small grey; h3 sections separated by rules; sticky side column: "In this article" TOC (≥3 headings, active-on-scroll), PDF card, Share (LinkedIn/Email/Copy link), back link; related cards show authors; prev/next. Fixed: `.lead` class clashed with a global style (renamed `x-ar-lead`), lining numerals, mobile spacing. Verified at 1440 and 375 (no h-scroll on 5 pages). Uncommitted.
+
+## 2026-11-12 — Admin dashboard (WordPress-style CMS) at /admin
+- **What:** Express-backed content dashboard. Edits go live on the site immediately. Sections: Dashboard (at-a-glance, quick draft, recent enquiries, activity), Knowledge (24 posts: block editor, PDF, publish/draft), Team (90 people), Practice Areas (services editor + key contacts), Media (upload JPG/PNG/WebP/GIF/PDF ≤6MB), Inbox (contact, internship/job applications with private CV download, newsletter subscribers + CSV), Users (admin/editor roles), Profile (password).
+- **Server** (`server/cms/`): `store.js` (JSON files in `server/content/`, seeded on first run from `client/src/v2/{people,practice,knowledge,article}Data.js`), `auth.js` (scrypt hashes, HMAC cookie `dsk_admin` HttpOnly+SameSite=Strict, 12h, 6 failed logins → 15 min lock, password change invalidates sessions), `routes.js` (`/api/admin/*`; every field rebuilt by a validator; article HTML sanitised to a/b/strong/i/em/u/sup/sub/br; writes need header `X-Requested-With: dsk-admin` = CSRF guard; SVG uploads refused). `server/index.js`: `/api/content` (published overlay), `/api/subscribe` now stored, `/api/forms/{contact,internship,job}` (rate-limited, honeypot `website`, CV ≤5MB stored in `server/content/private/`, never served statically), `/uploads` static.
+- **Client** (`client/src/admin/`: Admin.jsx, Editors.jsx, ui.jsx, admin.css; route `/admin`, noindex). Site wiring in `main.jsx`: `applyCms()` fetches `/api/content` (2.5s timeout) and splices into the exported PEOPLE / PRACTICE_PAGES / KNOWLEDGE / ARTICLES arrays in place before any page module loads, so no page code changed; no API → hardcoded data. ContactPage + ApplyPage POST to `/api/forms/*` first, mailto fallback if the API is missing/refuses.
+- **First login:** admin account auto-created on first server start. Username `admin`; random password printed in the server console and saved to `server/content/first-run-password.txt` (gitignored). Change it under Profile, then delete the file. `ADMIN_PASSWORD` env var sets it instead.
+- **Limits / decisions:** `server/content/` is gitignored (holds credentials, PII, CVs, edits): back it up separately; it is NOT in git so a fresh clone starts from the hardcoded data. CMS is disabled on Vercel (read-only FS, no persistent disk) and will not run on BigRock shared cPanel without Node: needs a Node host with a persistent disk (VPS/Railway/Render), or a PHP port of this API. Home page, awards, menu, sectors text are not editable yet (still `server/data/*.js`). Newsletter/applications are stored only: no email notification yet (ZeptoMail planned). Slug is fixed after creation (renaming a title keeps the URL). Photo upload for people goes to `/uploads/…`.
+- **Verified (Browser pane, localhost:5001):** login (bad pw → 401, throttling in code), dashboard, list + editors for people/posts, edit phone in UI → `/api/content` and `/people/anand-desai` show it, reverted; public contact form → inbox → delete; mobile 375px no h-scroll on all 8 admin routes; API tests: CSRF 403, sanitiser strips script/onerror/javascript: links. NOT tested: file upload UI, user add/remove UI, CV upload + download, practice editor save, Vercel behaviour. Uncommitted.
+
+### Build log — 2026-11-12
+| Item | Status |
+|---|---|
+| Admin API (auth, CRUD, media, inbox, users) | done, curl-tested |
+| Admin UI (8 screens) | done, browser-checked desktop + 375px |
+| Site reads CMS content | done (in-place overlay), verified on /people |
+| Forms → inbox (contact, internship, job, subscribe) | done; contact verified, apply forms not exercised in browser |
+| Commit/push | not done (needs user's go-ahead) |
+
+## 2026-11-12 — Admin v2: Pages+SEO, Site settings, Microsoft 365 email, Audit log, Backup, Media
+- **Pages (`#/pages/<id>`)**: dropdown of 11 fixed pages (home, about, awards, people, practice, sectors, knowledge, careers, internship, apply, contact). Per page: meta title/description (char counters, Google-style preview), social image, noindex, Reset. Pages whose hero is overridable (practice, sectors, knowledge, careers, internship, apply, contact) also get Heading (`*asterisks*` = highlighted words) + intro line. NOT editable: home/about/awards/people body text (SEO only). Detail pages (knowledge/team/practice) get SEO automatically from their content.
+- **SEO delivery**: server serves `index.html` with title, description, og:*, canonical, robots filled per URL (`server/cms/head.js`, `express.static` has `index:false` so `/` is not bypassed); `/admin` always noindex; `robots.txt` + `sitemap.xml` generated (need Website address in settings; sitemap 404s without it or when site-wide noindex is on). Client mirrors via `client/src/seo.js` (`seoTitle`, `applyMeta`, `headingParts`, `siteEmail`); `/api/content?path=` returns `seo` + `site`.
+- **Site settings** (`settings.json`): site name, website address, default description, default share image, public contact email (overrides header email via `/api/home`, Contact/Apply mailto fallback, Careers/CTA links), phone, site-wide noindex toggle.
+- **Email (Microsoft 365)** (`mail.json`, `server/cms/mail.js`, nodemailer): smtp.office365.com:587 STARTTLS; mailbox + password (AES-256-GCM with key derived from `_secret.json`, never returned to the browser), From, notification recipients, optional auto-reply with `{name}`, "Save and send test". On every contact/internship/job submission: email to recipients (CV attached) + optional auto-reply, result saved on the entry (`mail` field, shown in Inbox). Needs Authenticated SMTP enabled on the mailbox in M365 admin; tenants with MFA/security defaults need an app password or SMTP AUTH allowed; basic SMTP auth may be retired by Microsoft → OAuth later. **NOT tested against real Microsoft** (sandbox has no outbound; test returned "Connection timeout" as expected).
+- **Audit log** (`audit.jsonl`, rotates at 8 MB): logins (success, failed, blocked), every content/page/settings/media/user/backup/restore action with user + IP; searchable, paged, CSV export, admin-only. Replaces `activity.json` (old file is unused).
+- **Backup** (`server/cms/backup.js`, adm-zip): download ZIP (always: pages, posts, team, practice, settings, media; opt-in: submissions, CVs, users) or save on server (`server/content/backups/`, newest 20 kept); restore needs typing RESTORE, only whitelisted names are read (no path extraction), auto-saves a `-pre-restore` full backup first (undo). Mail password + `_secret` never included.
+- **Media** (own section, upgraded): drag-and-drop, All/Images/PDFs filter + search, multi-select bulk delete, "used ×N" detection (deleting a used file warns).
+- **Infra fix**: all CMS code moved behind `server/cms/mount.js`, dynamically imported only when not on Vercel (previously `store.js` mkdir would have crashed the serverless function). Verified `VERCEL=1` loads. Root + server `package.json` now include nodemailer and adm-zip.
+- **Verified**: API (pages, head tags, settings validation, sitemap/robots, mail save + no plaintext password in file, backup → delete post → restore → post back, audit rows); Browser: page SEO + heading + lede edit → /contact shows new title, og:title, h1, intro (then reset); media upload/svg refused/used-count/delete; backup save-on-server; email tab renders; mobile 375px no overflow except Backup (fixed by wrapping table, rebuilt, not re-measured). NOT tested: restore via UI, real SMTP, auto-reply, CV email attachment, user add/remove, Settings→General save in UI.
+
+### Build log — 2026-11-12 (v2)
+| Item | Status |
+|---|---|
+| Pages dropdown + SEO fields | done, verified end-to-end |
+| M365 email setup + notifications | built, UI verified; real send untested |
+| Audit log | done, verified |
+| Media section upgrade | done, verified |
+| Site settings section | done; API verified, UI save not clicked |
+| Backup export/restore section | done; API round-trip verified |
+| Commit/push | not done |
+
+## 2026-11-12 — Admin v3: sidebar dropdown groups + Add Page (custom pages)
+- **Sidebar groups** (WordPress-style, `Admin.jsx` `NAV` + `activeSub`): Pages → All Pages / Add Page; Media → All Media / Upload Media Files; Site settings → General / Email (Microsoft 365); Users → All Users / Add User; Profile → Your Profile / Change Password. Active group is always open; other groups toggle with the chevron; on mobile (<960px) submenus show inline for open groups. Routes: `#/pages`, `#/pages/new`, `#/pages/<id>` (fixed-page SEO editor with dropdown), `#/pages/custom/<slug>`, `#/media`, `#/media/upload`, `#/settings/general|email`, `#/users`, `#/users/new`, `#/profile`, `#/profile/password`.
+- **Add Page = custom pages**: new collection `custom` (`custom.json`): title, web address (slug, fixed after publish; reserved words rejected), intro, content blocks (paragraph/heading/lists/divider, HTML whitelisted), SEO (title, description, share image, noindex), Published/Draft. Served at `/<slug>` by `v2/CustomPage.jsx` (main.jsx treats any unknown single-segment path as custom; unknown slug shows a "Page not found" view, HTTP still 200). SEO tags injected server-side for them; included in sitemap.xml (unless noindex) and in backups (`data/custom.json`). `/api/content` carries `custom` → `window.__CUSTOM`.
+- Not done: custom pages are single-level (no `/legal/privacy`), not in the header/footer menu (add links manually or ask dev), no revisions.
+- **Verified**: created a test page in the UI → live at /qa-privacy-policy with `<script>` stripped → deleted; all 10 new routes render correct h1/active sub; mobile 375px no overflow on 7 routes. Not clicked: Add User submit, Change Password submit (logic split from old form, untested), upload-mode drag-drop.
+### Build log — 2026-11-12 (v3): sidebar groups done, Add Page done, uncommitted.
+
+## 2026-11-12 — Media details panel (WordPress attachment details)
+- Click a media thumbnail (or "Details") → modal: preview, Uploaded on, Uploaded by, **Used in** (links to the Team/Knowledge/Practice/Page/SEO/Settings entries that reference the file), File name/type/size, Dimensions (read from PNG/JPEG/GIF/WebP header), editable Alternative Text, Title, Image Caption, Description, File URL + Copy, Save details, Open file, Delete permanently (warns if used). Skipped the screenshot's Elementor "Status/Connect" rows (WordPress-plugin specific).
+- Server: `server/cms/media.js`, `media.json` (alt/title/caption/description/uploadedBy/dim per filename; recorded on upload, dropped on delete, included in backups as `data/media.json`); `GET/PUT /api/admin/media/:file`. Files uploaded before this change show uploader "—" and upload date = file date.
+- Limit: alt/caption/description are stored but the public site does not render them yet (photos use the person's name as alt); wiring them in is a follow-up. Verified in browser: details show, used-in detected via settings, alt saved via UI; test file removed, settings restored.
+- (2026-11-12) Media UI restructure: tiles min 200px with wrapping action row (Details / Copy URL / Delete no longer spill out); details modal now 2-column — left: preview on checkerboard + key/value card (uploaded on/by, file name/type/size, dimensions); right: cards "Used in" (chips), "Details" (alt, title, caption, description, labels above inputs), "File URL" (+Copy); sticky footer with Save details (disabled until changed), Open file, Delete permanently. Verified at desktop in browser; mobile layout (single column) not re-measured. Uncommitted.
+
+## 2026-11-12 — Careers (jobs) section in admin
+**Ask:** "career wala bhi page add karo dashboard me job k lie".
+**Done:**
+- New `jobs` collection (server/cms): validator `clean.jobs` (title, jobId, department Legal|Support Function, office, type, experience, summary, responsibilities[], requirements[], closingDate, published); in `KEYS`, mount warm-up, backup `DATA`, stats count `jobs`.
+- `/api/content` returns `jobs` (published and not past closingDate) → `window.__JOBS` (main.jsx).
+- Admin: sidebar "Careers" (All Jobs / Add Job / Applications→Inbox), `JobEditor` in Editors.jsx, Listing for jobs, dashboard "Open job positions" tile.
+- Public: `/careers` "Open positions" accordion (hidden when no jobs); "Apply for this role" → `/careers/apply?job=<jobId|title>` prefills the "Job ID" field in ApplyPage.
+- CSS `.x-job*` appended to v2.css.
+**Verified (local, browser):** created job via admin UI → shown on /careers → apply link prefills Job ID → test job deleted. Server restarted to load new routes.
+**Not done:** mobile re-check of openings accordion; not committed.
+## Build log
+- 2026-11-12 jobs collection + Careers admin + public openings: build OK, uncommitted.
+
+## 2026-11-12 — Job dropdown on apply form
+`ApplyPage.jsx` `withJobs()`: when CMS jobs exist, the "Job ID" text field becomes an "Open position" select (N/A + each job, "Title (JobID)"); `?job=` preselects by jobId/title. No jobs → original text field. Verified locally with a temp job (deleted). Build OK, uncommitted.
+
+## 2026-11-13 — Full system check
+Throwaway instance (CMS_DIR=scratchpad, port 5099) used so real content was untouched. Passed: build + syntax, 11 public routes + detail pages, CSRF (403), auth (401 unauth, bad login 401, throttle 429 after 5 fails), editor role blocked from settings/audit/backup/users/mail (403), jobs CRUD (validation, expiry + unpublished hidden), reserved slug, HTML sanitising, forms (honeypot, bad CV rejected), SVG upload refused, password length rule, backup create, logout, no path traversal, VERCEL=1 import, 375px overflow none.
+Open: sitemap 404 until Site URL set; unknown URLs return 200 (soft 404); admin UI screens not re-checked today (session expired); real M365 SMTP untested; 50 files uncommitted.
+## Build log
+- 2026-11-13 full check done, no code changes.
+
+## 2026-11-13 — 404 page, sitemap, Menu tab, roles
+**Ask:** 404 page; /sitemap.xml; "Menu" tab in dashboard; roles (SEO, Admin, …); list pending items.
+**Done:**
+- **404:** `v2/NotFoundPage.jsx` (+ `.x-nf-*` css); main.jsx routes unknown paths to it (URL kept, noindex); CustomPage missing slug → same page. Server `exists()` in mount.js answers unknown paths (incl. missing people/practice/knowledge slugs, missing assets) with real **404** status; `/vN/...` draft URLs still 200 (client redirects).
+- **Sitemap:** works with no config — absolute URLs use Site URL setting, else request origin (`req.protocol` + host, `trust proxy` on). robots.txt always lists it. Set Site URL = https://dsklegal.com at go-live.
+- **Menu tab** (`#/menu`, cap `menu`): `server/cms/menu.js` (menu.json, validated; builtin ids who/what/thinking/careers keep mega-menu content, label/order/hide editable; custom links + dropdowns; country selector). `/api/content.menu` → `window.__MENU`; Header4 overlays it (feature card optional). Backup includes menu.json.
+- **Roles** (`auth.js` ROLES/caps): admin (all), editor (content, pages, seo, jobs, media, menu, inbox), seo (seo, media), hr (jobs, inbox, media), support (inbox). `requireAuth(cap)`; collection writes, media, inbox, pages, settings, menu enforced per cap. SEO role: page meta only (heading/lede preserved), custom page meta only, settings SEO fields only (contactEmail/phone protected), no mail. `/api/admin/roles`, `PUT /users/:id/role` (admin; not self; invalidates that user's sessions). Admin UI: nav/sections/dashboard gated by `user.caps`; Users page has role legend + inline role select.
+**Verified:** throwaway instance (CMS_DIR scratch, port 5099): role×action matrix, SEO limits, role change, menu validation (javascript: href dropped), sitemap/robots fallback, 404 statuses; browser: 404 page, header overlay, Menu editor, Users page. Real server on :5001 restarted with new code.
+**Not verified:** mobile layout of Menu editor/404; real M365 SMTP.
+## Build log
+- 2026-11-13 404 + sitemap + Menu + roles: build OK, tested on temp instance, uncommitted.
+
+## 2026-11-13 — Mobile check (375px)
+Temp instance (port 5099) with a job, custom page, custom menu. **Overflow:** none on `/`, `/careers` (opening expanded), `/careers/apply`, `/contact`, `/knowledge`, `/nope` (404), `/people/zzz`, `/policy`, and all 22 admin routes (dashboard, pages, posts, jobs, people, practice, menu, media, inbox, settings, audit, backup, users, profile…).
+**Bugs fixed:** (1) mobile drill-down menu showed a redundant extra level for dashboard-made dropdowns → `single` flag in Header4 shows the links directly, back label "Main menu"; (2) job requirement/responsibility lists had no bullets → `list-style: disc`.
+**Note:** on phones the admin sidebar collapses to a wrapped top nav without sub-menus (existing design); Add Job etc. reachable from list pages.
+## Build log
+- 2026-11-13 mobile check + 2 fixes: build OK, uncommitted.
+
+## 2026-11-13 — Editable mega-menu dropdowns
+**Ask:** show/edit inner dropdown items of built-in menu items.
+**Done:** `menu.js` `DEFAULT_TABS` (who: About/People/Offices; what: Practice(auto)/Sectors(auto)/Awards; thinking: Knowledge(auto)); built-in items now carry `tabs` (older saved menus get defaults filled in). Manual tabs = label + links; `auto` tabs (practice/sectors/knowledge) keep generated lists, only title/order editable. `cleanTabs` validates (≤8 tabs, ≤30 links, safe hrefs, unknown `auto` dropped, empty tabs dropped). `GET /api/admin/menu/default` powers "Reset to default". Header4 overlays saved tabs (auto lists reused from site data). Admin: "Dropdown content" accordion per mega-menu (rename/reorder/remove tabs, add/edit/remove links).
+**Verified (temp instance :5099):** API defaults + validation, header dropdown shows renamed/edited tabs with practice auto-list intact, editor UI. Real server restarted.
+**Not covered:** mega-menu feature card (image/title) still built-in; mobile view of the new editor accordion not measured.
+## Build log
+- 2026-11-13 editable mega-menu dropdowns: build OK, uncommitted.
+
+## 2026-11-13 — Editable mega-menu featured card
+Each built-in mega-menu now has `feature` {img, kicker, title, href, hidden?} in menu.json (defaults in `DEFAULT_FEATURES`, thinking uses home ticker). `cleanFeature` validates (safe URLs, falls back to defaults). Header4 uses saved card, hides it when `hidden` (layout fine without card). Admin: "Featured card" block inside each "Dropdown content" (show toggle, small heading, title, link, image via media picker).
+Verified on temp instance: API defaults/validation (javascript:/data: dropped), header card render (custom + hidden), editor UI. Real server restarted. Mobile layout of this block not measured (mobile menu has no feature card). Uncommitted.
+## Build log
+- 2026-11-13 featured card editable: build OK, uncommitted.
+
+## 2026-11-13 — Mobile check of menu editor (tabs + featured card)
+375px: Menu editor with all "Dropdown content" accordions open → no overflow (scrollWidth 375), fields stack, featured-card block incl. image picker fits. Public mobile drill-down with edited tabs: Who we are → tabs → links correct, no overflow. No fixes needed. Uncommitted.
+## Build log
+- 2026-11-13 mobile check (menu editor + mobile menu): pass, no code changes.
+
+## 2026-11-13 — Menu → All Menus / Add New Menu
+**Ask:** Menu tab dropdown with "All Menu" and "Add New Menu".
+**Done:** Sidebar "Menu" is now a group: All Menus (`#/menu`), Add New Menu (`#/menu/new`). `#/menu` = table (Header menu = built-in, edit only; extra menus: edit/delete). `#/menu/header` = existing header-menu editor (with "← All Menus"). `#/menu/new` and `#/menu/<id>` = `MenuForm` (name, flat links with reorder, display location: Footer | Not shown/draft). Server `menu.js`: `menus.json` (create/update/delete, unique name, safe hrefs, ≤30 links), endpoints `/api/admin/menus[/:id]` (write needs cap `menu`), backup includes `menus`. Public: `/api/content.footerMenus` (footer + ≥1 link) → `window.__FOOTER_MENUS`; Footer.jsx renders a `.foot-menus` column row above the legal line.
+**Verified (temp instance):** API validation + roles (support 403), footer render, list/new screens in browser, 375px no overflow on all menu screens and footer. Real server restarted. Uncommitted.
+## Build log
+- 2026-11-13 All Menus / Add New Menu: build OK, tested, uncommitted.
+
+## 2026-11-13 — Footer tab
+**Ask:** "Footer" edit tab in dashboard.
+**Done:** `server/cms/footer.js` (footer.json; `DEFAULT_FOOTER`, `saveFooter` validation, `footerForSite`), `/api/admin/footer` GET/PUT (cap `menu`) + `/footer/default`; `/api/home` overlays saved footer (server/index.js); backup includes `footer`. Footer.jsx: column titles, link list (`data.links`, else legacy firm list), office list, contact-person card with photo, social icons (LinkedIn/Instagram shown only when set; hidden "Follow us" if none once saved), copyright/disclaimer. Admin: sidebar "Footer" (`#/footer`) → `FooterAdmin` in Sections.jsx (offices, link column w/ reorder, mailing list text, person card + photo, social URLs, legal line, Save/Reset). Extra footer link columns still via Menu → Add New Menu.
+**Bug fixed during test:** missing `Lines` import crashed the screen (caught in browser).
+**Verified (temp instance):** API validation (javascript: dropped, empty title→default), public footer render, UI edit→save→API, support role 403, 375px no overflow admin + 3 public pages. Real server restarted, still on built-in footer. Uncommitted.
+## Build log
+- 2026-11-13 Footer tab: build OK, tested, uncommitted.
+
+## 2026-11-13 — Sidebar regrouped
+**Ask:** organise sidebar into headed groups.
+**Done (Admin.jsx NAV with `g` group field, grouped render with `.ad-navh` headings):** Dashboard | CONTENT MANAGEMENT: Pages, Knowledge, Media Library | PEOPLE & RECRUITMENT: Careers, Team | FIRM INFORMATION: Practice Areas | WEBSITE CONFIGURATION: Navigation (was Menu), Footer Settings | COMMUNICATION: Inbox | SYSTEM & ADMINISTRATION: Site Settings, Audit Log, Backup, Users & Permissions | MY ACCOUNT: My Profile, View Website (opens site in new tab; old bottom "View site" link removed). Items/groups hide per role cap (empty group heading hidden). Sub-menus unchanged. Page titles renamed to match (Site Settings, Audit Log, Footer Settings). CSS: nav scrolls on desktop (`overflow-y:auto`), headings hidden ≤960px.
+**Bug fixed during test:** `flex:none` on mobile nav made it a single clipped row → `flex: 0 1 auto` (wraps again).
+**Verified (temp instance):** order matches spec for admin; seo/hr/support see only allowed groups; mobile 375px wraps, no overflow. Real server unchanged (client bundle only). Uncommitted.
+## Build log
+- 2026-11-13 sidebar groups: build OK, tested, uncommitted.
+
+## 2026-11-13 — Inbox / Applications split
+**Ask:** Careers → Applications shouldn't redirect to Inbox; Inbox = Enquiries + Subscribers only; applications on their own page.
+**Done:** `Inbox` component has `mode`: "inbox" (tabs Enquiries = type contact, Subscribers) and "apps" (route `#/jobs/applications`, title "Applications", tabs All / Job / Internship, "← All Jobs"). Careers sub-menu "Applications" → `#/jobs/applications` (cap inbox; HR/Editor/Admin). Server stats: `unread` = unread enquiries, `unreadApps`, counts `enquiries`/`applications`; sidebar badges: Inbox = unread enquiries, Careers = unread applications; dashboard glance split into Enquiries + Job & internship applications. Job slug "applications"/"new" auto-suffixed `-job` (route collision).
+**Verified (temp instance):** seeded contact/job×2/internship/subscriber → Inbox shows only contact + subscriber tabs, Applications page lists 3 (filter works), badges Careers 3 / Inbox 1, active sub highlight. Real server restarted. Uncommitted.
+## Build log
+- 2026-11-13 applications split from inbox: build OK, tested, uncommitted.
+
+## 2026-11-13 — Sidebar scrollbar styling
+admin.css: `.ad-nav nav` thin scrollbar, transparent track, translucent white rounded thumb (brighter on nav hover, red on thumb hover), `scrollbar-gutter: stable` (auto on mobile). Firefox via `scrollbar-width/color`, WebKit via `::-webkit-scrollbar*`. Verified computed styles on temp instance; client bundle only. Uncommitted.
+## Build log
+- 2026-11-13 sidebar scrollbar: build OK, uncommitted.
+
+## 2026-11-13 — Sidebar group rename
+"System & Administration" → "System Settings" (Admin.jsx NAV group heading; items unchanged: Site Settings, Audit Log, Backup, Users & Permissions). Note: group heading and the "Site Settings" item now sit close in naming. Uncommitted.
+## Build log
+- 2026-11-13 group rename: build OK, uncommitted.
+
+## 2026-11-13 — Sidebar width: max-content
+admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`, grid `.ad { grid-template-columns: auto minmax(0,1fr) }` (a fixed 230px column would have ignored max-content); ≤960px: `width:auto; min-width:0; max-width:none`. Result on desktop: 245px wide (widest item/heading), all group headings single-line (admin). min/max guard keeps width stable across roles and caps long labels. Verified on temp instance (no page overflow). Client bundle only. Uncommitted.
+## Build log
+- 2026-11-13 sidebar max-content: build OK, uncommitted.
