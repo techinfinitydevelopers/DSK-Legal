@@ -28,6 +28,9 @@
 - **Sector pages:** `/sectors/:slug` (slug = slugify(name), 37 sectors from server/data/menu.js; server `exists()` + sitemap + SEO). dsklegal.com has NO per-sector content (only the shared intro) → description per sector is editable in admin (Page Text → Sector pages); empty = shared intro. Lists the 14 practice areas + other sectors.
 - **Page Text (admin, cap `pages`):** server/cms/texts.js registry + `texts.json` (in backup). Home overrides patched into `/api/home` by path (applyHomeTexts); About/Awards/sector text via `window.__TEXT` + `tx(key, fallback)` (seo.js). Empty/unchanged = built-in. Not editable still: headings with typewriter parts on About/Awards, Home hero slide copy per image, belief list, offices.
 - Verified on temp instance: all routes 200/404, texts API (unknown keys ignored, default-equal dropped), UI save, mobile 375 (banner, legal, sector, footer, admin tabs) no overflow. Real server restarted on 5001.
+## 2026-11-16 — Awards timeline redesign
+Red tile masonry (`.x-tile`, 3D tilt, shimmer) replaced by a year-grouped ledger in Rankings.jsx `Timeline`: sticky serif year + rows (rank | publication | practice), neutral ink, red only on the active year tab; "Firm of the Year" rows get a dark "Winner" pill. Old tile CSS/tilt/TileMark removed. Desktop + 375px checked, no overflow. Uncommitted.
+
 ## Build log
 - 2026-10-21 — Home page replicated (header, hero, values, profile, recognition, testimonials carousel, practice areas, awards, knowledge centre, offices, footer). Client build passes; served on :5001 and visually checked (hero/header).
 - 2026-10-21 (v2) — Redesign against original dsklegal.com: real copy/images, full-bleed hero crossfade slider + glass stats with count-up, scroll reveals, sticky header w/ progress bar, hover lifts/zoom, award marquee. Build OK, no broken images.
@@ -310,3 +313,4 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 ## Build log
 - 2026-11-13 sidebar max-content: build OK, uncommitted.
 - 2026-11-13 legal pages + cookie banner + sector pages + Page Text admin: build OK, tested desktop+mobile, uncommitted.
+- 2026-11-16 awards timeline redesign (neutral ledger): build OK, tested desktop+mobile, uncommitted.
