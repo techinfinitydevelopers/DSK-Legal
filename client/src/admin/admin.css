@@ -155,3 +155,5 @@ body:has(.ad), body:has(.ad-login), body:has(.ad-boot) { background: var(--ad-bg
 .ad-nav nav:hover::-webkit-scrollbar-thumb { background: rgba(255,255,255,.34); background-clip: padding-box; }
 .ad-nav nav::-webkit-scrollbar-thumb:hover { background: var(--ad-red); background-clip: padding-box; }
 @media (max-width: 960px) { .ad-nav nav { scrollbar-gutter: auto; } }
+
+.ad-pw { position: relative; display: block; width: 100%; } .ad-pw input { padding-right: 38px !important; } .ad-pw-t { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: grid; place-items: center; border: 0; background: none; color: var(--ad-mut); cursor: pointer; border-radius: 4px; } .ad-pw-t:hover { color: var(--ad-ink); background: #f0f0f1; } .ad-pw-t:focus-visible { outline: 2px solid var(--ad-red); }

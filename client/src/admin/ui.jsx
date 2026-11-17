@@ -35,7 +35,21 @@ export const Icon = ({ n }) => {
 export function Field({ label, hint, children, wide }) {
   return <label className={`ad-f${wide ? ' wide' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>;
 }
-export const Input = ({ v, set, ...p }) => <input value={v ?? ''} onChange={(e) => set(e.target.value)} {...p} />;
+export function Input({ v, set, type, ...p }) {
+  const [show, setShow] = useState(false);
+  if (type !== 'password') return <input value={v ?? ''} onChange={(e) => set(e.target.value)} type={type} {...p} />;
+  return (
+    <span className="ad-pw">
+      <input value={v ?? ''} onChange={(e) => set(e.target.value)} type={show ? 'text' : 'password'} {...p} />
+      <button type="button" className="ad-pw-t" onClick={() => setShow(!show)} aria-label={show ? 'Hide password' : 'Show password'} aria-pressed={show} title={show ? 'Hide password' : 'Show password'}>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" />
+          {show && <path d="M3 3l18 18" />}
+        </svg>
+      </button>
+    </span>
+  );
+}
 export const Text = ({ v, set, rows = 4, ...p }) => <textarea rows={rows} value={v ?? ''} onChange={(e) => set(e.target.value)} {...p} />;
 /** array ↔ one-item-per-line textarea */
 export const Lines = ({ v, set, rows = 4, sep = '\n' }) => {

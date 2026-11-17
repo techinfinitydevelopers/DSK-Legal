@@ -314,3 +314,14 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 - 2026-11-13 sidebar max-content: build OK, uncommitted.
 - 2026-11-13 legal pages + cookie banner + sector pages + Page Text admin: build OK, tested desktop+mobile, uncommitted.
 - 2026-11-16 awards timeline redesign (neutral ledger): build OK, tested desktop+mobile, uncommitted.
+
+## 2026-11-17 — Railway deploy
+- Project "DSK LEGAL" (80ccc8c2-…), service DSK-Legal, auto-deploys from GitHub main.
+- Build: `npm run install:all && npm run build`; start: `npm start`. Volume `dsk-cms-data` mounted at /data; env CMS_DIR=/data/content, NODE_ENV=production, ADMIN_PASSWORD (set in Railway Variables, not in repo).
+- Live: https://dsk-legal-production.up.railway.app (admin at /admin). Vercel URL has no API → admin login 404 there; use Railway URL.
+- TODO: point dsklegal.com DNS to Railway, set Site URL in admin Settings, change admin password in Profile.
+- Build log: Railway deploy SUCCESS; / 200, /api/content 200, /api/admin/me 401 (unauth, expected).
+
+## 2026-11-17 — Password show/hide
+- `Input` in client/src/admin/ui.jsx: type="password" now renders an eye toggle (`.ad-pw`, `.ad-pw-t` in admin.css). Covers login, Add User, Change Password, SMTP password.
+- Build log: client build OK; toggle verified on local /admin login (password↔text). Uncommitted.
