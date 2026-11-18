@@ -67,11 +67,37 @@ function Index() {
   );
 }
 
-/** "Label: text" bullets get the label in bold. */
-function Item({ x }) {
-  const m = x.match(/^([^:]{3,70}):\s+([\s\S]+)$/);
-  return m ? <li><b>{m[1]}:</b> {m[2]}</li> : <li>{x}</li>;
+/** "Label: text" bullets get the label in bold; `kids` are nested sub-bullets. */
+function Item({ x, kids }) {
+  const m = x.match(/^([^:]{3,70}):(?!\/)\s*(\S[\s\S]*)$/); // the space after the colon is optional: some imported bullets read "Label:Text"
+  return (
+    <li>
+      {m ? <><b>{m[1]}:</b> {m[2]}</> : x}
+      {kids.length > 0 && <ul className="x-pg-sublist">{kids.map((k) => <li key={k}>{k}</li>)}</ul>}
+    </li>
+  );
 }
+
+/** Bullets that start in lower case continue the bullet above them ("…include investments:" → "in the real estate sector…"), so they are nested under it.
+ *  Imported text sometimes also repeats those sub-points inside the parent bullet; that repeated tail is cut. */
+function nest(list) {
+  const out = [];
+  for (const it of list) {
+    const last = out[out.length - 1];
+    if (last && /^[a-z]/.test(it.x)) last.kids.push(it.x);
+    else out.push({ x: it.x, kids: [] });
+  }
+  return out.map((o) => {
+    const at = o.kids.length ? o.x.indexOf(o.kids[0].slice(0, 30)) : -1;
+    return at > 0 ? { ...o, x: o.x.slice(0, at).trim() } : o;
+  });
+}
+
+/** A short paragraph with no sentence punctuation that is followed by more text is a sub-heading inside a service (e.g. "Cartels", "Other Agreements"). */
+const isSub = (items, i) => {
+  const it = items[i]; const x = it.x.trim();
+  return it.t === 'p' && i < items.length - 1 && x.length <= 70 && x.split(/\s+/).length <= 8 && !/[.:;!?,]$/.test(x);
+};
 
 function Body({ items }) {
   const out = [];
@@ -79,9 +105,10 @@ function Body({ items }) {
     if (items[i].t === 'li') {
       const j = items.findIndex((it, k) => k > i && it.t !== 'li');
       const end = j === -1 ? items.length : j;
-      out.push(<ul key={i} className="x-pg-list">{items.slice(i, end).map((it, k) => <Item key={k} x={it.x} />)}</ul>);
+      out.push(<ul key={i} className="x-pg-list">{nest(items.slice(i, end)).map((it, k) => <Item key={k} x={it.x} kids={it.kids} />)}</ul>);
       i = end;
-    } else { out.push(<p key={i} className="x-p">{items[i].x}</p>); i += 1; }
+    } else if (isSub(items, i)) { out.push(<h4 key={i} className="x-pg-sub">{items[i].x}</h4>); i += 1; }
+    else { out.push(<p key={i} className="x-p">{items[i].x}</p>); i += 1; }
   }
   return out;
 }
@@ -111,7 +138,6 @@ function Detail({ p, i }) {
       <PageHero
         crumbs={[['Practice areas', '/practice'], [p.name]]}
         parts={[{ text: p.name }]}
-        lede={firstSentence(p.intro[0], 260)}
       >
         <p className="x-pg-facts"><b>{p.services.length}</b> services <i /> <b>{p.contacts.length}</b> key contacts</p>
       </PageHero>

@@ -25,7 +25,7 @@ export default function App4() {
         <Recognition
           recognition={data.recognition}
           strengths={data.strengths}
-          renderCta={(label) => <Magnetic><a className="x-btn x-btn-red" href="#awards">{label} <b>→</b></a></Magnetic>}
+          renderCta={(label) => <Magnetic><a className="x-btn x-btn-red" href="/awards">{label} <b>→</b></a></Magnetic>}
         />
         <Testimonials2 items={data.testimonialsAll || data.testimonials} />
         <Practice2 data={data.practice} />

@@ -598,6 +598,11 @@ export function FooterAdmin({ api, toast, has }) {
         <aside className="ad-side">
           {can && <section className="ad-box"><button className="ad-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save footer' : 'Saved'}</button>
             <button type="button" className="ad-btn ghost" onClick={reset}>Reset to default</button></section>}
+          <section className="ad-box"><h2>Featured image</h2>
+            <p className="ad-muted">Shown in the last footer column (for example a news or announcement graphic). When empty, the contact person card below is shown instead.</p>
+            <Field label="Image"><MediaField v={f.promoImage} set={set('promoImage')} toast={toast} /></Field>
+            <Field label="Link" hint="Opens in a new tab when the image is clicked."><Input v={f.promoLink} set={set('promoLink')} placeholder="https://…" disabled={ro} /></Field>
+            <Field label="Description (alt text)" hint="Read out by screen readers; say what the image shows."><Input v={f.promoAlt} set={set('promoAlt')} disabled={ro} /></Field></section>
           <section className="ad-box"><h2>Contact person card</h2>
             <Field label="Name"><Input v={f.personName} set={set('personName')} disabled={ro} /></Field>
             <Field label="Role"><Input v={f.personRole} set={set('personRole')} disabled={ro} /></Field>

@@ -325,3 +325,43 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 ## 2026-11-17 — Password show/hide
 - `Input` in client/src/admin/ui.jsx: type="password" now renders an eye toggle (`.ad-pw`, `.ad-pw-t` in admin.css). Covers login, Add User, Change Password, SMTP password.
 - Build log: client build OK; toggle verified on local /admin login (password↔text). Uncommitted.
+
+## 2026-11-18 — i18n (Arabic ar-AE) pilot reverted
+- Pilot for /ar/contact was built (gettext-style t(), /ar prefix, rtl.css, Plex Sans Arabic, server hreflang) and then reverted at the user's request before any commit. Nothing of it is in git. Plan discussed: /ar prefix, t() dictionary, logical-CSS RTL, per-language CMS fields.
+
+## 2026-11-18 — Home page Disclaimer pop-up
+- `components/DisclaimerGate.jsx` (rendered in main.jsx on `/` only) mirrors the WP Terms Popup on dsklegal.com: red "Disclaimer" bar, dark overlay, scrollable text, Accept / Decline. Text is `LEGAL['/disclaimer']` from v2/legalData.js (single source, same as /disclaimer page), lazy-loaded.
+- Accept → localStorage `dsk_disclaimer` (timestamp), valid 30 days. Decline → stays open with a "must accept" note (live site reloads the homepage). Cookie banner hidden while open (`html[data-disclaimer=open] .ck`), body scroll locked via CSS. Styles `.dg*` in styles.css. Focus on Accept, Tab trapped, role=dialog aria-modal.
+- Build log: build OK; verified popup shows, Decline keeps it, Accept persists across reload, /about has no popup, cookie banner appears after Accept. Checked at mobile width only (pane). Uncommitted.
+- Redesign (2026-11-18): DisclaimerGate now has logo + "Bar Council of India" kicker + serif title header, red-ruled lead paragraph, numbered list with red circle counters, bold closing line, "Scroll to read all" pill + bottom fade until scrolled to end, footer with ghost Decline + red pill "I accept →"; blurred backdrop, fade/pop-in (off for reduced motion); 720px card on desktop, full-width stacked buttons ≤600px. Verified 1280 and narrow widths: hint disappears at end, Decline note, Accept closes and unlocks scroll. Uncommitted.
+
+## 2026-11-18 — Home profile heading + link
+- Home "Institutional profile": accent now "solution oriented" (no hyphen; server/data/home.js `profile.accent`); button "Explore our nationwide presence →" links to `/about` (client/src/v4/Sections4.jsx Profile2 — the live home uses v4/Sections4, not v2/Sections2). If a saved Page Text override exists for home.profile.accent it would win over the default.
+- Build log: build OK; verified aria-label heading + href=/about on localhost:5001. Uncommitted (with the disclaimer popup work).
+- Home "Recent recognitions" button "View all accolades →" now links to `/awards` (client/src/v4/App4.jsx renderCta; was #awards). Verified href in browser. Uncommitted.
+- Home "Our Strengths" card: copy replaced (server/data/home.js `strengths.paras`, 2 paragraphs: quality of lawyers / diverse service lines incl. dispute resolution, environment); CTA renamed "About DSK Legal" and linked to `/about` (client/src/components/About.jsx; was #practice). A saved Page Text override for home.strengths.* would win over these defaults. Verified on localhost:5001 (server restarted). Uncommitted.
+
+## 2026-11-18 — Practice page banner text removed
+- Practice detail banner (`/practice/:slug`) no longer shows the intro line (it duplicated the Overview). A short-lived optional "Banner tagline" field (15-word cap) was built and then reverted at the user's request; not in git. Banner = breadcrumb, heading, "N services · N key contacts". Overview section below keeps the full text; /practice list cards unchanged. Build OK, verified on localhost:5001. Uncommitted.
+
+## 2026-11-18 — Practice sub-headings
+- Inside a service accordion (`/practice/:slug`), short paragraphs (≤8 words / ≤70 chars, no ending punctuation, followed by more text) render as `<h4 class="x-pg-sub">` (serif 21px, red left rule) via `isSub()` in v2/PracticePage.jsx + CSS in v2.css. Applies at render time, so admin-edited services work too. Hits 22 items: Competition ("Cartels", "Other Agreements") and Technology (20 sub-sector titles). No data changes. Build OK, verified on both pages. Uncommitted.
+
+## 2026-11-18 — Footer social icons
+- Footer "Follow us": text placeholders ("in", "◎") replaced by LinkedIn and Instagram SVG icons in 38px round buttons (red on hover) — components/Footer.jsx `Social`, `.follow` styles in styles.css. Links come from admin → Footer (linkedin/instagram). No footer settings saved → both icons shown but not clickable; once saved, only icons with an address show (none if both blank). dsklegal.com's home page has no social links, so no URLs were invented. Build OK, rendered check on localhost:5001/contact. Link mode not exercised. Uncommitted.
+
+## 2026-11-18 — Back to top button
+- `components/BackToTop.jsx` (rendered in main.jsx on all public pages, not /admin): round red button bottom-right, fades in after ~80% of a screen of scrolling, smooth-scrolls to top (instant under reduced motion), hidden from tab order while hidden, hidden while the disclaimer pop-up is open. Styles `.btt` in styles.css. Verified on /about: hidden at top, visible after scroll, click returns to 0 and hides; not present on /admin. Uncommitted.
+
+## 2026-11-18 — Practice page nested bullets / repeated text
+- Corporate & Securities → "Private Equity, Funds & Investment Management" → "Private Equity Investments and Divestments" bullet had its three sub-points pasted inside its own text AND as separate bullets (scrape artefact). Fix: `nest()` in v2/PracticePage.jsx nests any bullet that starts in lower case under the bullet above it and cuts the repeated tail from the parent (works on live CMS data without a migration); sub-list style `.x-pg-sublist` (v2.css). Default data (practiceData.js) also cleaned. Scan of all 14 pages found no other case (a Technology false alarm was different content). The admin editor still shows the old merged text for this bullet in existing CMS copies (server/content / Railway volume); editing it there is optional. Verified on localhost:5001. Uncommitted.
+
+## 2026-11-18 — Practice bold parity with dsklegal.com
+- Compared bold markup (b/strong) on all 14 live practice pages vs ours. Live bold exists only on Technology (90 bullet labels + 21 standalone sub-headings), Corporate (32 labels), International Trade (12 labels), Competition (2 sub-headings). Other 10 pages have no bold in service content.
+- Gaps fixed in v2/PracticePage.jsx: (1) sub-heading rule now accepts titles ending in ")" → "Internet of Things (IoT)"; (2) bullet label rule `Label:` now allows no space after the colon (5 Intl Trade bullets read "Label:Text"). Counts now match live: Tech 90/21, Corp 32, Intl 12/…, Competition 2 sub-headings; 0 elsewhere (checked with scripts on practiceData.js; browser-verified Technology + Intl Trade). Bold is still rule-based (no explicit bold markup in content/admin). Uncommitted.
+
+## 2026-11-18 — Footer featured image (replaces contact person card)
+- Last footer column now shows `/img/footer-announcement.png` (copied from ~/Downloads/footer image.png; "DSK Legal welcomes its new Partner, Mr. S.V. Giridhar") as a link to the LinkedIn post (opens new tab, rel noopener). Default in server/data/home.js `footer.promo`; editable in admin → Footer → "Featured image" (image, link, alt) via footer.js (`promoImage/promoLink/promoAlt`, `footerForSite().promo`). If no image is set the old contact person card shows. Styles `.foot-promo`. The LinkedIn link was stored without the `utm_*`/`rcm` tracking parameters (they identify the sharer; the post opens the same). Build OK; server restarted; verified render, href, target on localhost:5001. Admin editor UI and mobile not exercised. Uncommitted.
+
+## 2026-11-18 — Footer social links
+- Footer LinkedIn/Instagram icons now link to https://www.linkedin.com/company/dsk-legal/ and https://www.instagram.com/dsklegal/ (new tab, noopener). Source: the links in dsklegal.com's own page HTML (web search could not confirm either). Defaults in server/data/home.js `footer.social` → DEFAULT_FOOTER in server/cms/footer.js; admin → Footer → Social links overrides them. If a footer was already saved in the admin (e.g. on Railway) with blank social fields, those blanks override the defaults — fill them in there. Verified hrefs on localhost:5001. Uncommitted.

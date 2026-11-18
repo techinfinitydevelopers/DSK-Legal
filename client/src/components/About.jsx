@@ -69,7 +69,7 @@ export function Recognition({ recognition: r, strengths: s, renderCta }) {
           {s.paras.map((p) => (
             <p key={p.slice(0, 20)} className="body">{p}</p>
           ))}
-          <a className="link-red" href="#practice">{s.link.toUpperCase()} →</a>
+          <a className="link-red" href="/about">{s.link.toUpperCase()} →</a>
         </article>
       </div>
     </section>

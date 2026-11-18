@@ -4,6 +4,8 @@ import './styles.css';
 import { Loader } from './v2/Mark.jsx';
 import { applyMeta } from './seo.js';
 import CookieBanner from './components/CookieBanner.jsx';
+import DisclaimerGate from './components/DisclaimerGate.jsx';
+import BackToTop from './components/BackToTop.jsx';
 import './v2/v2.css'; // scoped to .v2 / x- / xh- classes, so safe to ship with v1
 import './v4/v4.css'; // Deloitte-style header (v4 only, scoped to .dl classes)
 
@@ -57,6 +59,8 @@ createRoot(document.getElementById('root')).render(
     <React.Suspense fallback={<Loader />}>
       <App />
     </React.Suspense>
+    {path !== '/admin' && <BackToTop />}
     {path !== '/admin' && <CookieBanner />}
+    {(stripped === '' || stripped === '/') && <DisclaimerGate />}
   </>
 );

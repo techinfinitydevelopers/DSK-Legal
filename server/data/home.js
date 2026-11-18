@@ -26,7 +26,7 @@ export const home = {
   profile: {
     eyebrow: 'Institutional Profile',
     title: 'A full service law firm with',
-    accent: 'solution-oriented',
+    accent: 'solution oriented',
     titleTail: 'and globally minded lawyers.',
     paras: [
       'DSK Legal was set up in 2001 in India and in 2025 in the UAE, and has since established an excellent full-service law firm with a strong focus on integrity and value-based proactive, pragmatic, and innovative legal advice and inform. Our clients effectively tackle the complex legal and regulatory regimes of India.',
@@ -45,10 +45,10 @@ export const home = {
   strengths: {
     eyebrow: 'Our Strengths',
     paras: [
-      'DSK Legal ranks consistently in the top tier of the lawyers. Their depth of specialization is a hallmark and testament of experience and a better-informed outcome.',
-      'We pride ourselves in having achieved proficiency across diverse sectors, including recognition by regulatory for aviation, banking and finance, capital markets, corporate & commercial, media and entertainment, and high-stakes white collar investigations.',
+      'DSK Legal’s strength lies in the quality of its lawyers. Their depth of specialization is combined with breadth of experience and a keen commercial focus.',
+      'We pride ourselves in having achieved proficiency across diverse service lines, including being recognized by legal journals for aviation, banking and finance, capital markets (debt and equity), corporate & commercial, dispute resolution, environment.',
     ],
-    link: 'Learn more about practice breadth',
+    link: 'About DSK Legal',
   },
   testimonials: [
     { quote: 'DSK understand the practicalities of market conditions and provide excellent services. The team have a good understanding about the transactions and requirements of the clients. Based on this, they are able to revert with good inputs on complex structures and provide appropriate documents.', who: 'Chambers and Partners', role: 'Asia-Pacific' },
@@ -102,6 +102,8 @@ export const home = {
     firm: ['Home', 'Our Team', 'Awards & Recognition', 'Contact', 'Contact Us', 'Careers'],
     mailing: 'Receive monthly knowledge insights, legal briefings and firm updates directly to your inbox.',
     person: { name: 'Hariharan SK', role: 'Founder, Corporate & M&A Partner' },
+    social: { linkedin: 'https://www.linkedin.com/company/dsk-legal/', instagram: 'https://www.instagram.com/dsklegal/' }, // the firm's own links, as published on dsklegal.com
+    promo: { image: '/img/footer-announcement.png', href: 'https://www.linkedin.com/posts/mukundraate-shreyamehta-dsklegal-share-7500094543376314368-m0ec/', alt: 'DSK Legal welcomes its new Partner, Mr. S.V. Giridhar. Read the announcement on LinkedIn.' },
     disclaimer: 'The bodies below are the full independence not affiliated with DSK Legal; any representation made would be solely on behalf of the Consult of India regulations.',
     copyright: '© 2026 DSK Legal. All rights reserved.',
   },

@@ -453,7 +453,7 @@ export const PRACTICE_PAGES = [
      },
      {
       "t": "li",
-      "x": "Private Equity Investments and Divestments: Our services include advising private equity investors through the entire lifecycle of an investment, from acquisition and management to eventual exit. We ensure each transaction is structured to maximize returns while mitigating legal and regulatory risks. Our Dispute Resolution Team is experienced in supporting exits in an efficient manner, to aid this critical aspect of investments. Sectors we have deep experience in include investments:in the real estate sector, including residential, commercial, and mixed-use developments.in infrastructure projects, including roads, ports, power, and renewable energy platforms.in renewable energy platforms, ensuring compliance with environmental regulations and supporting long-term sustainable growth strategies."
+      "x": "Private Equity Investments and Divestments: Our services include advising private equity investors through the entire lifecycle of an investment, from acquisition and management to eventual exit. We ensure each transaction is structured to maximize returns while mitigating legal and regulatory risks. Our Dispute Resolution Team is experienced in supporting exits in an efficient manner, to aid this critical aspect of investments. Sectors we have deep experience in include investments:"
      },
      {
       "t": "li",

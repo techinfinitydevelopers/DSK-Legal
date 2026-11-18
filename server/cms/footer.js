@@ -16,7 +16,8 @@ export const DEFAULT_FOOTER = {
   mailingTitle: 'Join Our Mailing List',
   mailing: F.mailing,
   personName: F.person.name, personRole: F.person.role, personPhoto: '',
-  linkedin: '', instagram: '',
+  promoImage: F.promo.image, promoLink: F.promo.href, promoAlt: F.promo.alt,
+  linkedin: F.social.linkedin, instagram: F.social.instagram,
   copyright: F.copyright,
   disclaimer: F.disclaimer,
 };
@@ -34,6 +35,7 @@ export function saveFooter(b = {}) {
     mailingTitle: str(b.mailingTitle, 60) || DEFAULT_FOOTER.mailingTitle,
     mailing: str(b.mailing, 300),
     personName: str(b.personName, 80), personRole: str(b.personRole, 120), personPhoto: img(b.personPhoto),
+    promoImage: img(b.promoImage), promoLink: href(b.promoLink), promoAlt: str(b.promoAlt, 200),
     linkedin: web(b.linkedin), instagram: web(b.instagram),
     copyright: str(b.copyright, 200),
     disclaimer: str(b.disclaimer, 600),
@@ -47,5 +49,5 @@ export function footerForSite() {
   const s = savedFooter(); if (!s) return null;
   const f = { ...DEFAULT_FOOTER, ...s };
   return { offices: f.offices, officesTitle: f.officesTitle, links: f.links, linksTitle: f.linksTitle, mailingTitle: f.mailingTitle, mailing: f.mailing,
-    person: { name: f.personName, role: f.personRole, photo: f.personPhoto }, social: { linkedin: f.linkedin, instagram: f.instagram }, copyright: f.copyright, disclaimer: f.disclaimer };
+    person: { name: f.personName, role: f.personRole, photo: f.personPhoto }, promo: { image: f.promoImage, href: f.promoLink, alt: f.promoAlt }, social: { linkedin: f.linkedin, instagram: f.instagram }, copyright: f.copyright, disclaimer: f.disclaimer };
 }

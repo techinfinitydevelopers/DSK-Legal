@@ -129,7 +129,7 @@ export function Profile2({ data }) {
           <p className="x-kicker">{data.eyebrow}</p>
           <Typewriter parts={[{ text: data.title }, { text: data.accent, as: 'em' }, { text: data.titleTail }]} />
           {data.paras.map((p) => <p key={p.slice(0, 18)} className="x-p">{p}</p>)}
-          <a className="x-link" href="#offices">{data.link} <b>→</b></a>
+          <a className="x-link" href="/about">{data.link} <b>→</b></a>
         </Reveal>
       </div>
     </section>
