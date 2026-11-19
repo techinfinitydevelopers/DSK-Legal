@@ -8,14 +8,12 @@ const BUILTIN = { who: 'Who we are', what: 'What we do', thinking: 'Our Thinking
 const L = (label, href) => ({ label, href });
 export const DEFAULT_TABS = {
   who: [
-    { label: 'About DSK Legal', links: [L('About DSK Legal', '/about'), L('Our Values', '/#about'), L('Firm Profile', '/about'), L('Our Team', '/people'), L('Awards & Recognition', '/awards')] },
+    { label: 'About DSK Legal', links: [L('About DSK Legal', '/about'), L('Awards & Recognition', '/awards')] },
     { label: 'Our People', links: [L('Meet our team', '/people'), L('Partners & leadership', '/people?level=Partner')] },
-    { label: 'Our Offices', links: home.offices.cities.map((c) => L(c.city, '/#offices')) },
   ],
   what: [
     { label: 'Practice Areas', auto: 'practice' },
     { label: 'Sectors & Industries', auto: 'sectors' },
-    { label: 'Awards & Rankings', links: [L('All awards & rankings', '/awards'), L('Client testimonials', '/#testimonials')] },
   ],
   thinking: [{ label: 'Knowledge Centre', auto: 'knowledge' }],
 };

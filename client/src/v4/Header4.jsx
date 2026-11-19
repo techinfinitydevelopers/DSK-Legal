@@ -31,19 +31,17 @@ export default function Header4({ data }) {
       id: 'who', label: 'Who we are',
       tabs: [
         { label: 'About DSK Legal', cols: [[
-          ['About DSK Legal', about], ['Our Values', base + '#about'], ['Firm Profile', about], ['Our Team', people], ['Awards & Recognition', awards],
+          ['About DSK Legal', about], ['Awards & Recognition', awards],
         ]] },
         { label: 'Our People', cols: [[['Meet our team', people], ['Partners & leadership', people + '?level=Partner']]] },
-        { label: 'Our Offices', cols: [data.offices.cities.map((c) => [c.city, base + '#offices'])] },
       ],
       feature: { img: '/img/mumbai.png', kicker: 'Strategic locations', title: 'Offices across India and the UAE', href: base + '#offices' },
     },
     {
       id: 'what', label: 'What we do',
       tabs: [
-        { label: 'Practice Areas', cols: split([['All practice areas', '/practice']].concat(menu.practice.map((g) => [g.title, practiceHref(g.title)])), 3) },
-        { label: 'Sectors & Industries', cols: split([['All sectors & industries', '/sectors']].concat(menu.sectors.map((s) => [s, '/sectors'])), 3) },
-        { label: 'Awards & Rankings', cols: [[['All awards & rankings', awards], ['Client testimonials', base + '#testimonials']]] },
+        { label: 'Practice Areas', cols: split(menu.practice.map((g) => [g.title, practiceHref(g.title)]), 3) },
+        { label: 'Sectors & Industries', cols: split(menu.sectors.map((s) => [s, '/sectors']), 3) },
       ],
       feature: { img: '/img/banner1.jpg', kicker: 'Recognition', title: 'Awards and rankings from the leading legal guides', href: awards },
     },

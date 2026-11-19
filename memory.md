@@ -365,3 +365,18 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 
 ## 2026-11-18 — Footer social links
 - Footer LinkedIn/Instagram icons now link to https://www.linkedin.com/company/dsk-legal/ and https://www.instagram.com/dsklegal/ (new tab, noopener). Source: the links in dsklegal.com's own page HTML (web search could not confirm either). Defaults in server/data/home.js `footer.social` → DEFAULT_FOOTER in server/cms/footer.js; admin → Footer → Social links overrides them. If a footer was already saved in the admin (e.g. on Railway) with blank social fields, those blanks override the defaults — fill them in there. Verified hrefs on localhost:5001. Uncommitted.
+
+- Build log 2026-11-18: Removed Our Values, Firm Profile, Our Team from Who we are > About DSK Legal dropdown (server/cms/menu.js DEFAULT_TABS). A menu saved in admin overrides defaults.
+- Build log 2026-11-18: Removed "Our Offices" tab from Who we are mega-menu (menu.js DEFAULT_TABS).
+- Build log 2026-11-18: Removed "Awards & Rankings" tab from What we do mega-menu (menu.js DEFAULT_TABS).
+- Build log 2026-11-18: Header4.jsx BASE fallback menu also trimmed (client uses it when no saved menu; server menu.js alone had no effect locally).
+- Build log 2026-11-18: Sectors page: embedded dsklegal.com "Request Practice Area Credentials" Microsoft Form (iframe, after sector grid). Header: removed "All practice areas" / "All sectors & industries" links.
+- Build log 2026-11-18: Removed sector search + 37-sector grid from /sectors (intro + credentials form remain). Sector detail pages still exist at /sectors/<slug>.
+- Build log 2026-11-18: /sectors credentials form rebuilt as native 2-column form (CredForm in SectorsPage.jsx; replaces MS Forms iframe). Posts to /api/forms/contact with topic "Practice area credentials" -> admin Enquiries (+ email notification if SMTP set). NOT sent to the firm Microsoft Form; to revert, re-embed the iframe (src in git history of SectorsPage.jsx).
+- Build log 2026-11-18: Reverted native credentials form; /sectors again embeds the firm Microsoft Form (iframe in styled card). Responses go to Microsoft Forms.
+- Build log 2026-11-18: /sectors MS Form iframe height 1680->1440px (desktop) to remove empty gap below form. Cross-origin iframe cannot auto-size.
+- Build log 2026-11-19: Practice bullet labels now visibly bold: TheSans has only a Plain cut declared 400-700 so font-weight never showed bold; added 400-only alias @font-face TheSansBold (faux bold) for .x-pg-svc-body li > b in v2.css.
+- Build log 2026-11-19: Practice labels: added -webkit-text-stroke .45px (faux bold alias was not visible in user Chrome).
+- Build log 2026-11-19: Header dropdown: .dl-links top padding 38->55px (v4.css) so links align with first tab label after menu items were removed.
+- Build log 2026-11-19: /about rebuilt to mirror dsklegal.com/about-us word for word: hero (no lede), left "We believe in" panel, right "Profile" + 6 exact paragraphs (bold on "over 300 fee-earners, including 74 partners and associate partners"). Removed invented stats strip, pillar cards/titles, offices chips, summary block. texts.js ABOUT fields replaced (about.p.1-6, about.profile.title, about.believe.title); old saved about.* overrides on Railway are now unused.
+- Build log 2026-11-19: Home practice list: clicking a row now opens its /practice/<slug> page (hover still previews). Sections4.jsx.

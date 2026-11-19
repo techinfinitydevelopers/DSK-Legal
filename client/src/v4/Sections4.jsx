@@ -191,7 +191,8 @@ export function Practice2({ data }) {
                   className={x.name === cur.name ? 'on' : ''}
                   onMouseEnter={() => setActive(x.name)}
                   onFocus={() => setActive(x.name)}
-                  onClick={() => setActive(x.name)}
+                  onClick={() => { window.location.href = `/practice/${PRACTICE_PAGES[x.i]?.slug || ''}`; }}
+                  title={`Open ${x.name}`}
                 >
                   <span className="x-pn">{String(x.i + 1).padStart(2, '0')}</span>
                   <span className="x-pname">{x.name}</span>
