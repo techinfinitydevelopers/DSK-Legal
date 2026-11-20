@@ -157,3 +157,23 @@ body:has(.ad), body:has(.ad-login), body:has(.ad-boot) { background: var(--ad-bg
 @media (max-width: 960px) { .ad-nav nav { scrollbar-gutter: auto; } }
 
 .ad-pw { position: relative; display: block; width: 100%; } .ad-pw input { padding-right: 38px !important; } .ad-pw-t { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: grid; place-items: center; border: 0; background: none; color: var(--ad-mut); cursor: pointer; border-radius: 4px; } .ad-pw-t:hover { color: var(--ad-ink); background: #f0f0f1; } .ad-pw-t:focus-visible { outline: 2px solid var(--ad-red); }
+
+/* Forms editor */
+.ad-pill.off { background: #eceff1; color: #50575e; }
+.ad-fsec-head { display: flex; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
+.ad-fsec-head .ad-f { flex: 1; margin: 0; }
+.ad-ff-list { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 8px; }
+.ad-ff { border: 1px solid var(--ad-line); border-radius: 4px; background: #fbfbfc; }
+.ad-ff.open { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.ad-ff-top { display: flex; align-items: center; gap: 10px; padding: 8px 10px; flex-wrap: wrap; }
+.ad-ff-n { width: 22px; height: 22px; border-radius: 50%; background: #eceff1; color: #50575e; font-size: 11px; font-weight: 600; display: grid; place-items: center; flex: none; }
+.ad-ff-label { flex: 1 1 220px; min-width: 160px; }
+.ad-ff-top select { max-width: 170px; }
+.ad-ff-req { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; white-space: nowrap; }
+.ad-ff-more { border-top: 1px solid var(--ad-line); padding: 12px 14px 14px; display: grid; gap: 12px; }
+.ad-ff-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ad-ff-cond { border-top: 1px dashed var(--ad-line); padding-top: 10px; display: grid; gap: 8px; }
+.ad-ff-inline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+.ad-ff-cond-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.ad-ff-cond-row select, .ad-ff-cond-row input { flex: 1 1 160px; min-width: 0; }
+.ad-ico:disabled { opacity: .3; cursor: default; }

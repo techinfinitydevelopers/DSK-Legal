@@ -11,6 +11,7 @@ import { REGISTRY, seoFor, savedPages } from './pages.js';
 import { renderIndex } from './head.js';
 import { savedMenu, footerMenus } from './menu.js';
 import { clientTexts, SECTOR_SLUGS } from './texts.js';
+import { savedForms, readSubmission } from './forms.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const t = (v, n) => String(v ?? '').slice(0, n).trim();
@@ -34,7 +35,7 @@ export async function mountCms(app, dist) {
       articles: live.map((p) => ({ slug: p.slug, title: p.title, pdf: p.pdf, blocks: p.blocks })),
       custom: custom.filter((c) => c.published !== false).map((c) => ({ slug: c.slug, title: c.title, lede: c.lede, blocks: c.blocks })),
       jobs: jobs.filter((j) => j.published !== false && !(j.closingDate && j.closingDate < new Date().toISOString().slice(0, 10))).map(({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate }) => ({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate })),
-      menu: savedMenu(), footerMenus: footerMenus(), texts: clientTexts(),
+      menu: savedMenu(), footerMenus: footerMenus(), texts: clientTexts(), forms: savedForms(),
       site: { contactEmail: st.contactEmail, phone: st.phone, siteName: st.siteName }, seo: page,
     });
   });
@@ -54,9 +55,17 @@ export async function mountCms(app, dist) {
     if (limited(req.ip)) return res.status(429).json({ error: 'Too many submissions. Please try later.' });
     const body = req.body || {};
     if (body.website) return res.json({ ok: true }); // honeypot
-    const fields = {};
-    for (const [k, v] of Object.entries(body.fields || {}).slice(0, 120)) fields[t(k, 80)] = t(Array.isArray(v) ? v.join(', ') : v, 4000);
-    if (type === 'contact' && (!fields.name || !EMAIL.test(fields.email || '') || !fields.message)) return res.status(400).json({ error: 'Name, valid email and message are required.' });
+    let fields = {};
+    if (body.values && typeof body.values === 'object') {
+      // current clients send answers by field id; they are checked against the form saved in the dashboard
+      const r = readSubmission(type, body.values, !!body.cv?.data);
+      if (r.error) return res.status(400).json({ error: r.error });
+      fields = r.data;
+      if (type === 'contact' && body.topic) fields.topic = t(body.topic, 200);
+    } else {
+      for (const [k, v] of Object.entries(body.fields || {}).slice(0, 120)) fields[t(k, 80)] = t(Array.isArray(v) ? v.join(', ') : v, 4000);
+      if (type === 'contact' && (!fields.name || !EMAIL.test(fields.email || '') || !fields.message)) return res.status(400).json({ error: 'Name, valid email and message are required.' });
+    }
     const sub = { id: uid(), type, at: new Date().toISOString(), read: false, data: fields };
     const cv = body.cv;
     if (cv?.data) {

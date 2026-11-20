@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import './admin.css';
 import { api, Icon, Field, Input, Select, Toasts, when } from './ui.jsx';
 import { PersonEditor, PostEditor, PracticeEditor, CustomEditor, JobEditor } from './Editors.jsx';
+import { FormsList, FormEditor } from './FormsAdmin.jsx';
 import { PagesList, PagesAdmin, SettingsAdmin, AuditLog, BackupAdmin, MediaAdmin, MenuAdmin, MenusList, MenuForm, FooterAdmin, TextAdmin } from './Sections.jsx';
 
 // Sidebar, grouped by purpose. `g` = group heading (none = top item). Items hide per role (`cap`), empty groups hide with them.
@@ -16,6 +17,7 @@ const NAV = [
   { g: 'Firm Information', k: 'practice', l: 'Practice Areas', ic: 'scale', cap: 'content', href: '#/practice' },
   { g: 'Website Configuration', k: 'menu', l: 'Navigation', ic: 'page', cap: 'menu', sub: [['All Menus', '#/menu'], ['Add New Menu', '#/menu/new']] },
   { g: 'Website Configuration', k: 'footer', l: 'Footer Settings', ic: 'page', cap: 'menu', href: '#/footer' },
+  { g: 'Website Configuration', k: 'forms', l: 'Forms', ic: 'page', cap: 'content', href: '#/forms' },
   { g: 'Communication', k: 'inbox', l: 'Inbox', ic: 'mail', cap: 'inbox', href: '#/inbox' },
   { g: 'System Settings', k: 'settings', l: 'Site Settings', ic: 'gear', cap: 'seo', sub: [['General', '#/settings/general'], ['Email (Microsoft 365)', '#/settings/email', 'admin']] },
   { g: 'System Settings', k: 'audit', l: 'Audit Log', ic: 'log', cap: 'admin', href: '#/audit' },
@@ -26,6 +28,9 @@ const NAV = [
 ];
 /** Which submenu entry is current: exact hash, else a deeper path under it, else the first (list) entry. */
 const activeSub = (sub, hash) => sub.find(([, h]) => hash === h) || sub.slice(1).find(([, h]) => hash.startsWith(h + '/')) || sub[0];
+/** Inbox entries are keyed by field id (contact) or label (applications): find the person's name and email whatever the key. */
+const nameKey = (d) => d.name || d['Full name'] || Object.entries(d).find(([k, v]) => /name/i.test(k) && v)?.[1] || emailKey(d);
+const emailKey = (d) => Object.entries(d).map(([k, v]) => (/e-?mail/i.test(k) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim()) ? String(v).trim() : '')).find(Boolean) || '';
 const go = (h) => { window.location.hash = h; };
 
 export default function Admin() {
@@ -53,7 +58,7 @@ export default function Admin() {
   const A = (m, u, b) => api(m, u, b, lost);
   const has = (c) => !!user.caps?.includes(c);
   const ctx = { toast, nav: go, user, api: A, has };
-  const NEED = { posts: 'content', people: 'content', practice: 'content', jobs: 'jobs', menu: 'menu', footer: 'menu', texts: 'pages', media: 'media', inbox: 'inbox', pages: 'seo', settings: 'seo', audit: 'admin', backup: 'admin', users: 'admin' };
+  const NEED = { posts: 'content', people: 'content', practice: 'content', jobs: 'jobs', menu: 'menu', footer: 'menu', forms: 'content', texts: 'pages', media: 'media', inbox: 'inbox', pages: 'seo', settings: 'seo', audit: 'admin', backup: 'admin', users: 'admin' };
   const logout = async () => { await api('POST', '/logout').catch(() => {}); setUser(null); };
   const body = (() => {
     if (NEED[section] && !has(NEED[section])) return <p className="ad-err">Your role ({user.role}) cannot open this section.</p>;
@@ -66,6 +71,7 @@ export default function Admin() {
       case 'pages': return !slug ? <PagesList {...ctx} /> : slug === 'new' ? <CustomEditor key="new" slug="new" {...ctx} /> : slug === 'custom' ? <CustomEditor key={slug2} slug={slug2} {...ctx} /> : <PagesAdmin id={slug} {...ctx} />;
       case 'menu': return !slug ? <MenusList {...ctx} /> : slug === 'header' ? <MenuAdmin {...ctx} /> : <MenuForm key={slug} id={slug} {...ctx} />;
       case 'footer': return <FooterAdmin {...ctx} />;
+      case 'forms': return slug ? <FormEditor key={slug} id={slug} {...ctx} /> : <FormsList {...ctx} />;
       case 'texts': return <TextAdmin {...ctx} />;
       case 'media': return <MediaAdmin mode={slug === 'upload' ? 'upload' : 'library'} {...ctx} />;
       case 'settings': return user.role === 'admin' ? <SettingsAdmin tab={slug} {...ctx} /> : <p className="ad-err">Admins only.</p>;
@@ -209,11 +215,11 @@ function Inbox({ api, toast, mode = 'inbox' }) {
         <ul className="ad-inbox">{shown.map((r) => (
           <li key={r.id} className={r.read ? '' : 'unread'}>
             <button className="ad-in-row" onClick={() => toggle(r)}><i />
-              <b>{r.data.name || r.data['Full name'] || r.data.email || r.data['Email'] || '—'}</b><span className="ad-pill">{LABEL[r.type]}</span><small>{when(r.at)}</small></button>
+              <b>{nameKey(r.data) || '—'}</b><span className="ad-pill">{LABEL[r.type]}</span><small>{when(r.at)}</small></button>
             {open === r.id && (
               <div className="ad-in-body">{r.mail && <p className={`ad-mailst${r.mail.startsWith('failed') ? ' bad' : ''}`}>Email: {r.mail}</p>}<dl>{Object.entries(r.data).map(([k, v]) => v && <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
                 <div className="ad-row">{r.cv && <a className="ad-btn" href={`/api/admin/submissions/${r.id}/cv`}><Icon n="dl" /> Download CV{r.cvName ? ` (${r.cvName})` : ''}</a>}
-                  {r.data.email && <a className="ad-btn" href={`mailto:${r.data.email}`}>Reply</a>}<button className="ad-btn danger" onClick={() => del(r)}>Delete</button></div></div>
+                  {emailKey(r.data) && <a className="ad-btn" href={`mailto:${emailKey(r.data)}`}>Reply</a>}<button className="ad-btn danger" onClick={() => del(r)}>Delete</button></div></div>
             )}
           </li>))}</ul>
       )}

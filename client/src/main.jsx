@@ -29,7 +29,7 @@ const applyCms = () => (cmsReady ||= (async () => {
     const c = await r.json();
     const swap = (arr, next) => Array.isArray(next) && next.length && arr.splice(0, arr.length, ...next);
     const [pe, pr, kn, ar] = await Promise.all([import('./v2/peopleData.js'), import('./v2/practiceData.js'), import('./v2/knowledgeData.js'), import('./v2/articleData.js')]);
-    window.__CUSTOM = c.custom || []; window.__JOBS = c.jobs || []; window.__MENU = c.menu || null; window.__FOOTER_MENUS = c.footerMenus || []; window.__SITE = c.site; window.__SEO = c.seo; window.__TEXT = c.texts || {}; applyMeta(c.seo);
+    window.__CUSTOM = c.custom || []; window.__JOBS = c.jobs || []; window.__MENU = c.menu || null; window.__FOOTER_MENUS = c.footerMenus || []; window.__SITE = c.site; window.__SEO = c.seo; window.__TEXT = c.texts || {}; window.__FORMS = c.forms || {}; applyMeta(c.seo);
     swap(pe.PEOPLE, c.people); swap(pr.PRACTICE_PAGES, c.practice); swap(kn.KNOWLEDGE, c.knowledge); swap(ar.ARTICLES, c.articles);
   } catch { /* keep built-in content */ }
 })());

@@ -11,6 +11,7 @@ import { publicMail, saveMail, sendTest } from './mail.js';
 import { recordUpload, dropMeta, details as mediaDetails, saveMeta } from './media.js';
 import { buildZip, createBackup, listBackups, backupPath, restoreZip } from './backup.js';
 import { requireAuth, capsOf, ROLES, login, logout, listUsers, addUser, removeUser, setPassword, updateUser, verifyPassword, users } from './auth.js';
+import { FORMS, FORM_IDS, TYPE_LABEL, getForm, isCustom, defaultForm, saveForm, resetForm } from './forms.js';
 
 // ---- sanitising: article HTML is rendered with dangerouslySetInnerHTML, so only a small tag whitelist survives ----
 const ALLOWED = new Set(['a', 'b', 'strong', 'i', 'em', 'u', 'sup', 'sub', 'br']);
@@ -265,6 +266,18 @@ export default function cmsRouter(peopleLookup) {
   });
   r.get('/texts', requireAuth('pages'), (_req, res) => res.json(listTexts()));
   r.put('/texts', requireAuth('pages'), (req, res) => { const n = saveTexts(req.body?.values || {}); logActivity(req, 'updated page text', `${Object.keys(req.body?.values || {}).length} fields`); res.json(listTexts()); });
+  // Forms: editable fields for the Contact, Internship and Job forms
+  r.get('/forms', auth, (_req, res) => res.json(FORM_IDS.map((id) => { const f = getForm(id); return { id, title: FORMS[id].title, about: FORMS[id].about, page: FORMS[id].page, custom: isCustom(id), fields: f.sections.reduce((n, s) => n + s.fields.length, 0), sections: f.sections.length }; })));
+  r.get('/forms/:id', auth, (req, res) => (FORMS[req.params.id] ? res.json({ id: req.params.id, title: FORMS[req.params.id].title, page: FORMS[req.params.id].page, multiSection: FORMS[req.params.id].multiSection, custom: isCustom(req.params.id), form: getForm(req.params.id), typeLabels: TYPE_LABEL }) : res.status(404).json({ error: 'Unknown form' })));
+  r.get('/forms/:id/default', auth, (req, res) => (FORMS[req.params.id] ? res.json(defaultForm(req.params.id)) : res.status(404).json({ error: 'Unknown form' })));
+  r.put('/forms/:id', requireAuth('content'), (req, res) => {
+    if (!FORMS[req.params.id]) return res.status(404).json({ error: 'Unknown form' });
+    try { const f = saveForm(req.params.id, req.body); logActivity(req, 'updated form', `${FORMS[req.params.id].title}: ${f.sections.reduce((n, s) => n + s.fields.length, 0)} fields`); res.json(f); } catch (e) { res.status(400).json({ error: e.message }); }
+  });
+  r.delete('/forms/:id', requireAuth('content'), (req, res) => {
+    if (!FORMS[req.params.id]) return res.status(404).json({ error: 'Unknown form' });
+    const f = resetForm(req.params.id); logActivity(req, 'reset form', FORMS[req.params.id].title); res.json(f);
+  });
   r.get('/footer', auth, (_req, res) => res.json(getFooter()));
   r.get('/footer/default', auth, (_req, res) => res.json(DEFAULT_FOOTER));
   r.put('/footer', requireAuth('menu'), (req, res) => {

@@ -14,11 +14,14 @@ const CV_TYPES = /\.(pdf|docx?|rtf)$/i;
 const MAX_CV = 5 * 1024 * 1024;
 
 const PAGES = {
-  '/careers/internship': { form: INTERN_FORM, title: 'Internship application', crumb: 'Internship', parts: [{ text: 'Internship' }, { text: 'application', as: 'em' }], lede: 'Apply for a one-month internship at DSK Legal. Fields marked * are required.', subject: 'Internship application' },
-  '/careers/apply': { form: JOB_FORM, title: 'Job application', crumb: 'Apply for a position', parts: [{ text: 'Apply for a' }, { text: 'position', as: 'em' }], lede: 'Tell us about your education and experience. Fields marked * are required.', subject: 'Job application' },
+  '/careers/internship': { id: 'internship', fallback: INTERN_FORM, title: 'Internship application', crumb: 'Internship', parts: [{ text: 'Internship' }, { text: 'application', as: 'em' }], lede: 'Apply for a one-month internship at DSK Legal. Fields marked * are required.', subject: 'Internship application' },
+  '/careers/apply': { id: 'job', fallback: JOB_FORM, title: 'Job application', crumb: 'Apply for a position', parts: [{ text: 'Apply for a' }, { text: 'position', as: 'em' }], lede: 'Tell us about your education and experience. Fields marked * are required.', subject: 'Job application' },
 };
 const path = window.location.pathname.replace(/\/$/, '');
 const cfg = PAGES[path] || PAGES['/careers/apply'];
+/** The form as edited in the dashboard (Forms tab); the built-in copy when none is saved or the API is absent. */
+const formDef = () => window.__FORMS?.[cfg.id] || cfg.fallback;
+const isJobs = (f) => f.source === 'jobs' || f.label === 'Job ID';
 
 const visible = (f, v) => !f.showIf || (f.showIf.any ? !!v[f.showIf.id] : v[f.showIf.id] === f.showIf.eq);
 
@@ -35,14 +38,16 @@ function validate(form, v, cv, ok) {
     }
     if (!val) { if (f.required) e[f.id] = 'This field is required.'; continue; }
     if (f.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) e[f.id] = 'Enter a valid email address.';
-    if (f.type === 'tel' && !/^\d{10}$/.test(val)) e[f.id] = 'Enter the 10-digit number without +91.';
+    if (f.type === 'tel') {
+      if (f.format === 'any' ? !/^[+\d][\d\s()-]{4,24}$/.test(val) : !/^\d{10}$/.test(val)) e[f.id] = f.format === 'any' ? 'Enter a valid phone number.' : 'Enter the 10-digit number without +91.';
+    }
     if (f.type === 'number') {
       const n = Number(val);
       if (Number.isNaN(n) || n < (f.min ?? 0)) e[f.id] = f.min ? `Must be between ${f.min} and ${f.max}.` : 'Enter a valid number.';
       else if (f.max && n > f.max) e[f.id] = `Must be between ${f.min} and ${f.max}.`;
     }
   }
-  if (!ok) e._confirm = 'Please confirm the declaration.';
+  if (form.confirm && !ok) e._confirm = 'Please confirm the declaration.';
   return e;
 }
 
@@ -94,22 +99,22 @@ function withJobs(form) {
   const jobs = window.__JOBS || [];
   if (!jobs.length) return form;
   const opts = jobs.map((j) => ({ label: j.jobId ? `${j.title} (${j.jobId})` : j.title, j }));
-  return { ...form, sections: form.sections.map((s) => ({ ...s, fields: s.fields.map((f) => (f.label === 'Job ID'
+  return { ...form, sections: form.sections.map((s) => ({ ...s, fields: s.fields.map((f) => (isJobs(f)
     ? { ...f, label: 'Open position', type: 'select', placeholder: undefined, options: ['N/A — general application', ...opts.map((o) => o.label)], _jobs: opts }
     : f)) })) };
 }
 
 function Form() {
-  const form = useMemo(() => withJobs(cfg.form), []);
+  const form = useMemo(() => withJobs(formDef()), []);
   const [v, setV] = useState(() => {
     const job = new URLSearchParams(window.location.search).get('job');
-    const f = job && form.sections.flatMap((s) => s.fields).find((x) => x.label === 'Job ID' || x.label === 'Open position');
+    const f = job && form.sections.flatMap((s) => s.fields).find((x) => isJobs(x) || x.label === 'Open position');
     if (!f) return {};
     const hit = f._jobs?.find((o) => o.j.jobId === job || o.j.title === job);
     return f._jobs ? (hit ? { [f.id]: hit.label } : {}) : { [f.id]: job.slice(0, 120) };
   });
   const [cv, setCv] = useState(null);
-  const [ok, setOk] = useState(false);
+  const [ok, setOk] = useState(!formDef().confirm);
   const [err, setErr] = useState({});
   const [sent, setSent] = useState(false);
   const [active, setActive] = useState(0);
@@ -123,8 +128,8 @@ function Form() {
     const done = req.filter((f) => isFilled(f, v, cv)).length;
     return { total: req.length, done };
   });
-  const total = prog.reduce((n, p) => n + p.total, 0) + 1;
-  const done = prog.reduce((n, p) => n + p.done, 0) + (ok ? 1 : 0);
+  const total = prog.reduce((n, p) => n + p.total, 0) + (form.confirm ? 1 : 0);
+  const done = prog.reduce((n, p) => n + p.done, 0) + (form.confirm && ok ? 1 : 0);
 
   // highlight the section being read in the left rail
   useEffect(() => {
@@ -150,7 +155,8 @@ function Form() {
       const rows = s.fields.filter((f) => f.type !== 'file' && visible(f, v) && (v[f.id] ?? '').toString().trim()).map((f) => `${f.label}: ${v[f.id].toString().trim()}`);
       if (rows.length) lines.push(`== ${s.title} ==`, ...rows, '');
     }
-    lines.push(`CV: ${cv?.name || '—'} (attach this file to the email)`, 'Declaration: confirmed');
+    if (fileField) lines.push(`CV: ${cv?.name || '—'} (attach this file to the email)`);
+    if (form.confirm) lines.push('Declaration: confirmed');
     const name = v[form.sections[0].fields[0].id] || '';
     // Preferred: deliver to the site's inbox with the CV stored privately. If there is no backend, fall back to mailto.
     try {
@@ -158,7 +164,7 @@ function Form() {
       for (const s of form.sections) for (const f of s.fields) if (f.type !== 'file' && visible(f, v) && (v[f.id] ?? '').toString().trim()) fields[f.label] = v[f.id].toString().trim();
       fields.name = name;
       const cvData = cv ? await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(cv); }) : null;
-      const r = await fetch(`/api/forms/${cfg === PAGES['/careers/internship'] ? 'internship' : 'job'}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fields, cv: cvData && { name: cv.name, data: cvData }, website: '' }) });
+      const r = await fetch(`/api/forms/${cfg === PAGES['/careers/internship'] ? 'internship' : 'job'}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fields, values: { ...v, _confirm: ok }, cv: cvData && { name: cv.name, data: cvData }, website: '' }) });
       if (r.ok) { setSent('stored'); return; }
     } catch { /* fall through to mailto */ }
     window.location.href = `mailto:${siteEmail()}?subject=${encodeURIComponent(`${cfg.subject} — ${name}`)}&body=${encodeURIComponent(lines.join('\n'))}`;
@@ -214,17 +220,19 @@ function Form() {
                 </section>
               );
             })}
+            {form.confirm && <>
             <label className={`x-af-confirm${err._confirm ? ' bad' : ''}`}>
               <input type="checkbox" checked={ok} onChange={(e) => setOk(e.target.checked)} />
               <span>{form.confirm.label} <b aria-hidden="true">*</b></span>
             </label>
             {err._confirm && <p className="x-af-err" role="alert">{err._confirm}</p>}
+            </>}
             {errCount > 0 && <p className="x-af-summary" role="alert">Please fix {errCount} field{errCount === 1 ? '' : 's'} highlighted above.</p>}
             <div className="x-af-actions">
-              <Magnetic><button className="x-btn x-btn-red" type="submit">Send application <b>→</b></button></Magnetic>
+              <Magnetic><button className="x-btn x-btn-red" type="submit">{form.submitLabel || 'Send application'} <b>→</b></button></Magnetic>
               <a className="x-link" href="/careers">Back to careers</a>
             </div>
-            {sent === 'stored' && <p className="x-ct-note" role="status">Thank you — your application has been received. We will be in touch if your profile is shortlisted.</p>}
+            {sent === 'stored' && <p className="x-ct-note" role="status">{form.success || 'Thank you — your application has been received. We will be in touch if your profile is shortlisted.'}</p>}
             {sent === 'mail' && (
               <p className="x-ct-note" role="status">
                 Your email app should have opened with your answers. <b>Attach {cv ? `“${cv.name}”` : fileField?.label}</b> before sending. If nothing opened, write to <a href={`mailto:${siteEmail()}`}>{siteEmail()}</a>.

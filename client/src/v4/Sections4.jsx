@@ -154,7 +154,8 @@ export function Practice2({ data }) {
     document.fonts?.ready.then(place);
     return () => ro.disconnect();
   }, [cat]);
-  const all = data.items.map((name, i) => ({ name, i, ...(PRACTICE[name] || { cat: 'Advisory', desc: '' }) }));
+  // preview text = first paragraph of the practice page intro, copied from dsklegal.com (practiceData.js); category chips come from practiceMeta.js
+  const all = data.items.map((name, i) => { const m = PRACTICE[name] || { cat: 'Advisory', desc: '' }; return { name, i, ...m, desc: PRACTICE_PAGES[i]?.intro?.[0] || m.desc }; });
   const list = all.filter((x) => cat === 'All' || x.cat === cat);
   const [active, setActive] = useState(all[0].name);
   const cur = list.find((x) => x.name === active) || list[0];
