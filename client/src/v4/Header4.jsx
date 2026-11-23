@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Flag } from '../v2/Flags.jsx';
 import { practiceHref, serviceHref } from '../v2/practiceLinks.js';
-import { slugify } from '../v2/sectorSlug.js';
 
 /*
  * v4 header modelled on deloitte.com (in DSK brand colours): a fixed 48px bar (logo, four top-level items with chevrons,
@@ -27,7 +26,7 @@ export default function Header4({ data }) {
   const BASE = useMemo(() => [
     { id: 'about', label: 'About Us', href: '/about' },
     { id: 'practice', label: 'Practice Areas', single: true, tabs: [{ label: 'Practice Areas', cols: split(menu.practice.map((g) => [g.title, practiceHref(g.title)]), 3) }] },
-    { id: 'sectors', label: 'Sectors & Industries', single: true, tabs: [{ label: 'Sectors & Industries', cols: split(menu.sectors.map((s) => [s, `/sectors/${slugify(s)}`]), 3) }] },
+    { id: 'sectors', label: 'Sectors & Industries', single: true, tabs: [{ label: 'Sectors & Industries', cols: split(menu.sectors.map((s) => [s, '/sectors']), 3) }] },
     { id: 'team', label: 'Our Team', href: '/people' },
     { id: 'knowledge', label: 'Knowledge Centre', single: true, tabs: [{ label: 'Knowledge Centre', cols: [[['Monthly Newsletters', '/knowledge'], ['Practice Area Newsletters', '/knowledge'], ['Articles', '/knowledge']]] }] },
     { id: 'careers', label: 'Careers', href: '/careers' },
