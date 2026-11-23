@@ -352,7 +352,8 @@ function MediaDetails({ name, api, toast, onClose, onChanged }) {
 }
 
 /* ---------- Menu (header navigation) ---------- */
-const BUILTIN_NOTE = { who: 'Mega-menu', what: 'Mega-menu', thinking: 'Mega-menu', careers: 'Link' };
+const BUILTIN_NOTE = { about: 'Link', practice: 'Dropdown', sectors: 'Dropdown', team: 'Link', knowledge: 'Dropdown', careers: 'Link', contact: 'Link' };
+const LINK_BUILTIN = new Set(['about', 'team', 'careers', 'contact']);
 const swap = (a, i, d) => { const b = [...a]; const j = i + d; if (j < 0 || j >= b.length) return b; [b[i], b[j]] = [b[j], b[i]]; return b; };
 export function MenuAdmin({ api, toast, has }) {
   const [m, setM] = useState(null); const [busy, setBusy] = useState(false); const [dirty, setDirty] = useState(false);
@@ -374,14 +375,14 @@ export function MenuAdmin({ api, toast, has }) {
       <div className="ad-cols">
         <div className="ad-main">
           <section className="ad-box"><h2>Header menu</h2>
-            <p className="ad-muted">Rename, reorder or hide items. Open “Dropdown content” on a mega-menu to edit its tabs, links and featured card. Practice-area, sector and knowledge lists are automatic. Add your own links or dropdowns at the bottom.</p>
+            <p className="ad-muted">Rename, reorder or hide items. Open “Dropdown content” on a dropdown to edit its title and links. The practice-area and sector lists are automatic. Add your own links or dropdowns at the bottom.</p>
             <ol className="ad-menu">
               {m.items.map((x, i) => (
                 <li key={x.id || i} className={`ad-mi${x.hidden ? ' off' : ''}`}>
                   <div className="ad-mi-row">
                     <div className="ad-mi-fields">
                       <Input v={x.label} set={(v) => item(i, { label: v })} placeholder="Label" disabled={!can} aria-label="Menu label" />
-                      {(!x.builtin || x.id === 'careers') && !x.children && <Input v={x.href || ''} set={(v) => item(i, { href: v })} placeholder="/page or https://…" disabled={!can} aria-label="Link" />}
+                      {(!x.builtin || LINK_BUILTIN.has(x.id)) && !x.children && <Input v={x.href || ''} set={(v) => item(i, { href: v })} placeholder="/page or https://…" disabled={!can} aria-label="Link" />}
                     </div>
                     <span className="ad-pill">{x.builtin ? BUILTIN_NOTE[x.id] : x.children ? 'Dropdown' : 'Link'}</span>
                     {can && <div className="ad-mi-acts">

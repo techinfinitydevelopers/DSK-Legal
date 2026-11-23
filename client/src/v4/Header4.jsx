@@ -1,20 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Flag } from '../v2/Flags.jsx';
 import { practiceHref, serviceHref } from '../v2/practiceLinks.js';
+import { slugify } from '../v2/sectorSlug.js';
 
 /*
  * v4 header modelled on deloitte.com (in DSK brand colours): a fixed 48px bar (logo, four top-level items with chevrons,
  * Search / locale / contact icons on the right). Clicking an item drops a full-width panel:
  * a tab column on the left, link columns in the middle and a featured card on the right.
- * Below 1024px: logo + search + contact + burger, with a full-screen drill-down menu.
+ * Below 1200px: logo + search + contact + burger, with a full-screen drill-down menu.
  */
 
 const Chev = () => <i className="dl-chev" aria-hidden="true" />;
 const IconSearch = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 5 5" /></svg>
-);
-const IconUser = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6" /></svg>
 );
 
 export default function Header4({ data }) {
@@ -25,34 +23,15 @@ export default function Header4({ data }) {
   const people = '/people';
   const about = '/about';
 
-  // Top-level items → tabs → links. Every link points at a real section or page.
+  // Top-level items, named as on dsklegal.com. Links go straight to a page; dropdowns hold one list of links (`single`).
   const BASE = useMemo(() => [
-    {
-      id: 'who', label: 'Who we are',
-      tabs: [
-        { label: 'About DSK Legal', cols: [[
-          ['About DSK Legal', about], ['Awards & Recognition', awards],
-        ]] },
-        { label: 'Our People', cols: [[['Meet our team', people], ['Partners & leadership', people + '?level=Partner']]] },
-      ],
-      feature: { img: '/img/mumbai.png', kicker: 'Strategic locations', title: 'Offices across India and the UAE', href: base + '#offices' },
-    },
-    {
-      id: 'what', label: 'What we do',
-      tabs: [
-        { label: 'Practice Areas', cols: split(menu.practice.map((g) => [g.title, practiceHref(g.title)]), 3) },
-        { label: 'Sectors & Industries', cols: split(menu.sectors.map((s) => [s, '/sectors']), 3) },
-      ],
-      feature: { img: '/img/banner1.jpg', kicker: 'Recognition', title: 'Awards and rankings from the leading legal guides', href: awards },
-    },
-    {
-      id: 'thinking', label: 'Our Thinking',
-      tabs: [
-        { label: 'Knowledge Centre', cols: [data.knowledge.cards.map((c) => [c.title, '/knowledge']).concat([[data.ticker.text, '/knowledge']])] },
-      ],
-      feature: { img: '/img/banner2.jpg', kicker: data.ticker.label.replace(':', ''), title: data.ticker.text, href: '/knowledge' },
-    },
+    { id: 'about', label: 'About Us', href: '/about' },
+    { id: 'practice', label: 'Practice Areas', single: true, tabs: [{ label: 'Practice Areas', cols: split(menu.practice.map((g) => [g.title, practiceHref(g.title)]), 3) }] },
+    { id: 'sectors', label: 'Sectors & Industries', single: true, tabs: [{ label: 'Sectors & Industries', cols: split(menu.sectors.map((s) => [s, `/sectors/${slugify(s)}`]), 3) }] },
+    { id: 'team', label: 'Our Team', href: '/people' },
+    { id: 'knowledge', label: 'Knowledge Centre', single: true, tabs: [{ label: 'Knowledge Centre', cols: [[['Monthly Newsletters', '/knowledge'], ['Practice Area Newsletters', '/knowledge'], ['Articles', '/knowledge']]] }] },
     { id: 'careers', label: 'Careers', href: '/careers' },
+    { id: 'contact', label: 'Contact Us', href: '/contact' },
   ], [base, data, menu]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Order, labels, visibility and extra links set in the dashboard (Menu tab); without a saved menu the built-in one is used.
@@ -63,7 +42,7 @@ export default function Header4({ data }) {
       const b = BASE.find((n) => n.id === i.id);
       if (b) {
         // saved dropdown tabs: manual tabs list their own links; auto tabs are generated from site data
-        const AUTO = { practice: b.tabs?.find((t) => t.label === 'Practice Areas')?.cols, sectors: b.tabs?.find((t) => t.label === 'Sectors & Industries')?.cols, knowledge: b.tabs?.[0]?.cols };
+        const AUTO = { practice: b.tabs?.[0]?.cols, sectors: b.tabs?.[0]?.cols, knowledge: b.tabs?.[0]?.cols };
         const tabs = b.tabs && i.tabs?.length ? i.tabs.map((t) => (t.auto ? { label: t.label, cols: AUTO[t.auto] || [[]] } : { label: t.label, cols: [t.links.map((l) => [l.label, l.href])] })) : b.tabs;
         const feature = i.feature ? (i.feature.hidden ? null : i.feature) : b.feature;
         return { ...b, label: i.label || b.label, ...(tabs ? { tabs } : {}), feature, ...(b.href !== undefined ? { href: i.href || b.href } : {}) };
@@ -142,7 +121,6 @@ export default function Header4({ data }) {
               ))}
             </ul>
           </div>
-          <a className="dl-icon" href="/contact" aria-label="Contact us" onClick={closeAll}><IconUser /></a>
           <button className={`dl-burger${mobile ? ' on' : ''}`} aria-label={mobile ? 'Close menu' : 'Open menu'} aria-expanded={mobile} onClick={() => (mobile ? closeAll() : (setDrop(null), setMobile(true)))}>
             <i /><i /><i />
           </button>
@@ -152,14 +130,14 @@ export default function Header4({ data }) {
       {/* desktop slide-down */}
       <div className={`dl-panel${cur ? ' open' : ''}`} aria-hidden={!cur}>
         {cur && (
-          <div className="dl-panel-in">
-            <ul className="dl-tabs" role="tablist">
+          <div className={`dl-panel-in${cur.single ? ' single' : ''}`}>
+            {!cur.single && <ul className="dl-tabs" role="tablist">
               {cur.tabs.map((t, i) => (
                 <li key={t.label}>
                   <button role="tab" aria-selected={tab === i} className={tab === i ? 'on' : ''} onMouseEnter={() => setTab(i)} onClick={() => setTab(i)}>{t.label}</button>
                 </li>
               ))}
-            </ul>
+            </ul>}
             <div className="dl-links" key={cur.id + tab}>
               {cur.tabs[tab].cols.map((col, ci) => (
                 <ul key={ci}>
@@ -203,7 +181,6 @@ export default function Header4({ data }) {
                   : <a href={n.href.startsWith('/') ? n.href : base + n.href} onClick={closeAll}>{n.label}</a>}
               </li>
             ))}
-            <li><a href="/contact" onClick={closeAll}>Contact us</a></li>
           </ul>
         ) : (() => {
           const n = NAV.find((x) => x.id === mStack[0]);

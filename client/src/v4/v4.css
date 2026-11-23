@@ -10,8 +10,8 @@
 .dl-bar { position: relative; z-index: 2; height: 48px; display: flex; align-items: center; gap: 40px; padding: 0 56px; background: var(--dl-bar); border-bottom: 1px solid var(--dl-line); }
 .dl-brand { flex: none; display: flex; align-items: center; height: 48px; }
 .dl-brand img { height: 26px; width: auto; display: block; }
-.dl-nav { display: flex; align-items: stretch; height: 48px; gap: 36px; }
-.dl-nav > a, .dl-nav > button { position: relative; display: flex; align-items: center; font-size: 14px; letter-spacing: .01em; color: var(--dl-txt); transition: color .2s; }
+.dl-nav { display: flex; align-items: stretch; height: 48px; gap: 30px; }
+.dl-nav > a, .dl-nav > button { white-space: nowrap; position: relative; display: flex; align-items: center; font-size: 14px; letter-spacing: .01em; color: var(--dl-txt); transition: color .2s; }
 .dl-nav > a:hover, .dl-nav > button:hover, .dl-nav > .on { color: var(--dl-hi); }
 .dl-nav > .on { color: var(--dl-acc); }
 .dl-nav > .on .dl-chev { transform: translateY(1px) rotate(225deg); }
@@ -19,7 +19,7 @@
 .dl-nav > .on::after { transform: scaleX(1); }
 
 .dl-tools { margin-left: auto; display: flex; align-items: center; gap: 22px; height: 48px; }
-.dl-tools > button, .dl-tools > a, .dl-locale > button { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--dl-txt); transition: color .2s; }
+.dl-tools > button, .dl-tools > a, .dl-locale > button { white-space: nowrap; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--dl-txt); transition: color .2s; }
 .dl-tools > button:hover, .dl-tools > a:hover, .dl-locale > button:hover, .dl-tools .on { color: var(--dl-hi); }
 .dl-search-btn.on, .dl-locale > button.on { color: var(--dl-acc); }
 .dl-locale { position: relative; }
@@ -68,7 +68,7 @@
 /* mobile drill-down */
 .dl-mobile { display: none; }
 @media (max-width: 1100px) { .dl-nav { gap: 24px; } .dl-bar { gap: 28px; padding: 0 28px; } .dl-feature { display: none; } }
-@media (max-width: 1023px) {
+@media (max-width: 1199px) {
   .dl-bar { padding: 0 16px; gap: 0; }
   .dl-nav, .dl-locale, .dl-search-btn span, .dl-panel:not(.dl-search) { display: none; }
   .dl-tools { gap: 20px; }
@@ -103,3 +103,11 @@
 .v4 .x-hero-in { padding-top: 112px; }
 .v4 .x-ap-hero { padding-top: 120px; }
 @media (max-width: 700px) { .v4 .x-hero-in { padding-top: 88px; } .v4 .x-ap-hero { padding-top: 96px; } }
+
+/* single-list dropdowns (Practice Areas, Sectors, Knowledge Centre): no tab column */
+.dl-panel-in.single { min-height: 0; }
+.dl-panel-in.single .dl-links { padding: 34px 56px 40px; gap: 48px; }
+.dl-panel-in.single .dl-links ul { max-width: 320px; }
+
+/* seven header items: tighter spacing on mid-size desktops */
+@media (min-width: 1200px) and (max-width: 1440px) { .dl-bar { padding: 0 32px; gap: 28px; } .dl-nav { gap: 20px; } .dl-tools { gap: 16px; } }
