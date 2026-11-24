@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api, Field, Input, Text, Lines, Select, MediaField, Icon, Modal, when, bytes, readFile } from './ui.jsx';
+import { PageContent } from './PageContent.jsx';
 
 const Counter = ({ v = '', max }) => <small className={(v.length > max ? 'ad-over' : '')}>{v.length}/{max} characters{v.length > max ? ' — search engines may cut this off' : ''}</small>;
 
@@ -35,9 +36,9 @@ export function PagesList({ api, toast, nav }) {
 
 /* ---------------- Page SEO editor (dropdown) ---------------- */
 export function PagesAdmin({ id, api, toast, nav, has }) {
-  const [pages, setPages] = useState(null);
-  useEffect(() => { api('GET', '/pages').then(setPages).catch((e) => toast(e.message, 'err')); }, []); // eslint-disable-line
-  if (!pages) return <p>Loading…</p>;
+  const [pages, setPages] = useState(null); const [texts, setTexts] = useState(null);
+  useEffect(() => { api('GET', '/pages').then(setPages).catch((e) => toast(e.message, 'err')); if (has('pages')) api('GET', '/texts').then(setTexts).catch(() => setTexts([])); else setTexts([]); }, []); // eslint-disable-line
+  if (!pages || !texts) return <p>Loading…</p>;
   const cur = pages.find((p) => p.id === id) || pages[0];
   return (
     <>
@@ -47,24 +48,37 @@ export function PagesAdmin({ id, api, toast, nav, has }) {
         </select>
         <a className="ad-btn ghost" href={cur.path} target="_blank" rel="noreferrer">View page <Icon n="ext" /></a>
       </div>
-      <PageForm key={cur.id} page={cur} api={api} toast={toast} canText={has('pages')} onSaved={(p) => setPages((x) => x.map((y) => (y.id === p.id ? p : y)))} />
+      <PageForm key={cur.id} page={cur} texts={texts.filter((t) => (t.page || t.id) === cur.id)} api={api} toast={toast} canText={has('pages')} onSaved={(p) => setPages((x) => x.map((y) => (y.id === p.id ? p : y)))} />
       <p className="ad-muted">Knowledge posts, team profiles and practice areas have their own pages under <a href="#/posts">Knowledge</a>, <a href="#/people">Team</a> and <a href="#/practice">Practice Areas</a>; their title and description are created from their content automatically.</p>
     </>
   );
 }
-function PageForm({ page, api, toast, onSaved, canText }) {
+function PageForm({ page, texts, api, toast, onSaved, canText }) {
   const [f, setF] = useState({ metaTitle: '', metaDescription: '', ogImage: '', noindex: false, heading: '', lede: '', ...page.saved });
+  const fields = texts.flatMap((t) => t.fields);
+  const [vals, setVals] = useState(() => Object.fromEntries(fields.map((x) => [x.key, x.value || x.def])));
   const [busy, setBusy] = useState(false);
   const set = (k) => (v) => setF((s) => ({ ...s, [k]: v }));
-  const save = async (e, body = f) => {
+  const setVal = (k, v) => setVals((s) => ({ ...s, [k]: v }));
+  const save = async (e, body = f, textVals = vals) => {
     e?.preventDefault(); setBusy(true);
-    try { const p = await api('PUT', `/pages/${page.id}`, body); onSaved(p); toast('Page saved'); } catch (x) { toast(x.message, 'err'); } finally { setBusy(false); }
+    try {
+      const p = await api('PUT', `/pages/${page.id}`, body); onSaved(p);
+      if (canText && fields.length) await api('PUT', '/texts', { values: Object.fromEntries(fields.map((x) => [x.key, textVals[x.key]])) });
+      toast('Page saved — live on the site');
+    } catch (x) { toast(x.message, 'err'); } finally { setBusy(false); }
   };
-  const reset = () => { if (!window.confirm('Reset this page’s SEO and text to the defaults?')) return; const b = { metaTitle: '', metaDescription: '', ogImage: '', noindex: false, heading: '', lede: '' }; setF(b); save(null, b); };
+  const reset = () => {
+    if (!window.confirm('Reset this page’s content, heading and SEO to the built-in defaults?')) return;
+    const b = { metaTitle: '', metaDescription: '', ogImage: '', noindex: false, heading: '', lede: '' };
+    const d = Object.fromEntries(fields.map((x) => [x.key, x.def]));
+    setF(b); setVals(d); save(null, b, d);
+  };
   const title = f.metaTitle || page.metaTitle, desc = f.metaDescription || page.metaDescription;
   return (
     <form onSubmit={save} className="ad-cols">
       <div className="ad-main">
+        {canText && fields.length > 0 && <PageContent pages={texts} vals={vals} setVal={setVal} />}
         {page.heading !== undefined && canText && (
           <section className="ad-box"><h2>Page heading and intro</h2>
             <Field label="Heading" hint="Wrap the highlighted (italic red) words in *asterisks*, e.g. Get in *touch*. Without asterisks the last word is highlighted."><Input v={f.heading} set={set('heading')} placeholder={page.heading} /></Field>
@@ -618,36 +632,3 @@ export function FooterAdmin({ api, toast, has }) {
 }
 
 /** Page Text: edit the built-in copy of Home, About, Awards and each sector page. Empty / unchanged = built-in text. */
-export function TextAdmin({ api, toast }) {
-  const [pages, setPages] = useState(null); const [tab, setTab] = useState('home'); const [vals, setVals] = useState({}); const [busy, setBusy] = useState(false); const [dirty, setDirty] = useState(false);
-  const load = (d) => { setPages(d); setVals(Object.fromEntries(d.flatMap((p) => p.fields.map((f) => [f.key, f.value || f.def])))); setDirty(false); };
-  useEffect(() => { api('GET', '/texts').then(load).catch((e) => toast(e.message, 'err')); }, []); // eslint-disable-line
-  if (!pages) return <p>Loading…</p>;
-  const page = pages.find((p) => p.id === tab);
-  const group = (f) => f.label.split(' — ')[0];
-  const save = async (e) => { e.preventDefault(); setBusy(true); try { load(await api('PUT', '/texts', { values: Object.fromEntries(page.fields.map((f) => [f.key, vals[f.key]])) })); toast('Text saved — live on the site'); } catch (x) { toast(x.message, 'err'); } finally { setBusy(false); } };
-  const reset = () => { if (!window.confirm(`Reset all ${page.name} text to the built-in copy? Save afterwards to apply.`)) return; setVals((v) => ({ ...v, ...Object.fromEntries(page.fields.map((f) => [f.key, f.def])) })); setDirty(true); };
-  const view = { home: '/', about: '/about', awards: '/awards', sectors: '/sectors' }[tab];
-  let last = '';
-  return (
-    <form onSubmit={save}>
-      <div className="ad-head"><h1>Page Text</h1><a className="ad-btn ghost" href={view} target="_blank" rel="noreferrer">View page <Icon n="ext" /></a></div>
-      <p className="ad-muted">Edit the wording of the fixed pages. Leave a field as it is to keep the built-in text. Headings, images, rankings and the team are managed in their own sections.</p>
-      <div className="ad-tabs">{pages.map((p) => <button type="button" key={p.id} className={p.id === tab ? 'on' : ''} onClick={() => setTab(p.id)}>{p.name}</button>)}</div>
-      <section className="ad-box">
-        {page.fields.map((f) => {
-          const g = group(f); const head = page.id !== 'sectors' && g !== last ? g : null; last = g;
-          return (
-            <div key={f.key}>
-              {head && <h2 className="ad-tx-h">{head}</h2>}
-              <Field label={page.id === 'sectors' ? f.label : f.label.split(' — ').slice(1).join(' — ') || f.label} hint={page.id === 'sectors' ? 'Leave empty to show the standard sector introduction.' : undefined}>
-                {f.multi ? <Text v={vals[f.key]} set={(v) => { setVals((s) => ({ ...s, [f.key]: v })); setDirty(true); }} rows={f.def.length > 260 ? 6 : 3} /> : <Input v={vals[f.key]} set={(v) => { setVals((s) => ({ ...s, [f.key]: v })); setDirty(true); }} />}
-              </Field>
-            </div>
-          );
-        })}
-      </section>
-      <div className="ad-box" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}><button className="ad-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : 'Save text'}</button><button type="button" className="ad-btn ghost" onClick={reset}>Reset {page.name} to default</button></div>
-    </form>
-  );
-}

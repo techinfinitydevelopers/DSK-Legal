@@ -12,6 +12,7 @@ import { recordUpload, dropMeta, details as mediaDetails, saveMeta } from './med
 import { buildZip, createBackup, listBackups, backupPath, restoreZip } from './backup.js';
 import { requireAuth, capsOf, ROLES, login, logout, listUsers, addUser, removeUser, setPassword, updateUser, verifyPassword, users } from './auth.js';
 import { FORMS, FORM_IDS, TYPE_LABEL, getForm, isCustom, defaultForm, saveForm, resetForm } from './forms.js';
+import { getFaqs, saveFaqs } from './faqs.js';
 
 // ---- sanitising: article HTML is rendered with dangerouslySetInnerHTML, so only a small tag whitelist survives ----
 const ALLOWED = new Set(['a', 'b', 'strong', 'i', 'em', 'u', 'sup', 'sub', 'br']);
@@ -38,7 +39,7 @@ const cleanBlocks = (arr, byline) => (Array.isArray(arr) ? arr : []).slice(0, 50
   const t = x?.t === 'h3' || (byline && x?.t === 'byline') ? x.t : 'p';
   return { t, h: cleanHtml(str(x?.h, 8000)) };
 }).filter((x) => x.t === 'hr' || x.h || x.items?.length);
-const RESERVED = new Set(['admin', 'api', 'uploads', 'p', 'about', 'awards', 'people', 'practice', 'sectors', 'knowledge', 'careers', 'contact', 'assets', 'img', 'fonts', 'robots', 'sitemap', 'index', 'logo', 'favicon', 'v1', 'v2', 'v3', 'v4']);
+const RESERVED = new Set(['admin', 'api', 'uploads', 'p', 'about', 'awards', 'people', 'practice', 'sectors', 'knowledge', 'careers', 'contact', 'faq', 'assets', 'img', 'fonts', 'robots', 'sitemap', 'index', 'logo', 'favicon', 'v1', 'v2', 'v3', 'v4']);
 const imgUrl = (v) => { v = str(v, 400); return !v || /^(https?:\/\/|\/)/i.test(v) ? v : ''; };
 
 // ---- per-collection validators: whatever the browser sends is rebuilt field by field ----
@@ -266,6 +267,11 @@ export default function cmsRouter(peopleLookup) {
   });
   r.get('/texts', requireAuth('pages'), (_req, res) => res.json(listTexts()));
   r.put('/texts', requireAuth('pages'), (req, res) => { const n = saveTexts(req.body?.values || {}); logActivity(req, 'updated page text', `${Object.keys(req.body?.values || {}).length} fields`); res.json(listTexts()); });
+  // FAQs shown on /faq
+  r.get('/faqs', auth, (_req, res) => res.json(getFaqs()));
+  r.put('/faqs', requireAuth('content'), (req, res) => {
+    try { const f = saveFaqs(req.body); logActivity(req, 'updated FAQs', `${f.items.length} questions`); res.json(f); } catch (e) { res.status(400).json({ error: e.message }); }
+  });
   // Forms: editable fields for the Contact, Internship and Job forms
   r.get('/forms', auth, (_req, res) => res.json(FORM_IDS.map((id) => { const f = getForm(id); return { id, title: FORMS[id].title, about: FORMS[id].about, page: FORMS[id].page, custom: isCustom(id), fields: f.sections.reduce((n, s) => n + s.fields.length, 0), sections: f.sections.length }; })));
   r.get('/forms/:id', auth, (req, res) => (FORMS[req.params.id] ? res.json({ id: req.params.id, title: FORMS[req.params.id].title, page: FORMS[req.params.id].page, multiSection: FORMS[req.params.id].multiSection, custom: isCustom(req.params.id), form: getForm(req.params.id), typeLabels: TYPE_LABEL }) : res.status(404).json({ error: 'Unknown form' })));

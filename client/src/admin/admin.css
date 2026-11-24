@@ -177,3 +177,27 @@ body:has(.ad), body:has(.ad-login), body:has(.ad-boot) { background: var(--ad-bg
 .ad-ff-cond-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .ad-ff-cond-row select, .ad-ff-cond-row input { flex: 1 1 160px; min-width: 0; }
 .ad-ico:disabled { opacity: .3; cursor: default; }
+
+/* Page content (inside Pages → Edit page) */
+.ad-pc h2 { margin: 0 0 14px; font-size: 15px; }
+.ad-pc .ad-f > span { display: flex; align-items: center; gap: 10px; }
+.ad-pc-edit { font-style: normal; font-size: 11px; font-weight: 600; color: var(--ad-ok); background: #e6f3ea; border-radius: 10px; padding: 1px 8px; }
+.ad-pc-edit button { border: 0; background: transparent; color: #2271b1; font: inherit; font-size: 11px; text-decoration: underline; cursor: pointer; margin-left: 6px; padding: 0; }
+.ad-rich { border: 1px solid #8c8f94; border-radius: 4px; background: #fff; overflow: hidden; }
+.ad-rich-bar { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-bottom: 1px solid var(--ad-line); background: #f6f7f7; }
+.ad-rich-bar button { width: 28px; height: 28px; border: 1px solid #8c8f94; border-radius: 3px; background: #fff; cursor: pointer; }
+.ad-rich textarea { border: 0 !important; border-radius: 0; width: 100%; box-shadow: none !important; }
+.ad-pc-more summary { cursor: pointer; font-weight: 600; }
+
+/* FAQs */
+.ad-faq-tools { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+.ad-faq-tools input { flex: 1; }
+.ad-faq-list { display: grid; gap: 8px; }
+.ad-faq { border: 1px solid var(--ad-line); border-radius: 4px; background: #fbfbfc; }
+.ad-faq.open { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.ad-faq.off .ad-faq-q { color: #787c82; }
+.ad-faq-top { display: flex; align-items: center; gap: 10px; padding: 8px 10px; }
+.ad-faq-q { flex: 1; text-align: left; border: 0; background: transparent; font: inherit; font-weight: 600; cursor: pointer; padding: 4px 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ad-faq-q i { font-weight: 400; color: #787c82; }
+.ad-faq-body { border: 0; border-top: 1px solid var(--ad-line); padding: 12px 14px 14px; margin: 0; display: grid; gap: 12px; min-width: 0; }
+.ad-faq-pub { align-self: end; padding-bottom: 6px; }

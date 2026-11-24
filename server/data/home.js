@@ -99,7 +99,7 @@ export const home = {
   },
   footer: {
     offices: ['Abu Dhabi', 'Dubai', 'Mumbai Office', 'Mumbai - Litigation Office', 'New Delhi Office', 'Bengaluru Office', 'Chennai', 'Pune Office'],
-    firm: ['Home', 'Our Team', 'Awards & Recognition', 'Contact', 'Contact Us', 'Careers'],
+    firm: ['Home', 'Our Team', 'Awards & Recognition', 'Contact', 'Contact Us', 'Careers', 'FAQs'],
     mailing: 'Receive monthly knowledge insights, legal briefings and firm updates directly to your inbox.',
     person: { name: 'Hariharan SK', role: 'Founder, Corporate & M&A Partner' },
     social: { linkedin: 'https://www.linkedin.com/company/dsk-legal/', instagram: 'https://www.instagram.com/dsklegal/' }, // the firm's own links, as published on dsklegal.com

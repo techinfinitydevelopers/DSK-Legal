@@ -1074,3 +1074,10 @@
 .x-ab-card .x-ab-list b { color: #ff4b52; font-weight: 700; }
 .x-ct-err { color: var(--red); font-size: 12px; letter-spacing: 0; text-transform: none; margin-top: 4px; }
 .x-ct-form select { font: inherit; padding: 12px 14px; border: 1px solid var(--line); background: #fff; }
+
+/* FAQ page */
+.x-faq-in { max-width: 880px; }
+.x-faq-group { margin-bottom: 34px; }
+.x-faq-cat { font-family: var(--serif); font-size: clamp(22px, 2.4vw, 28px); margin: 0 0 14px; padding-left: 14px; border-left: 3px solid var(--red); color: var(--ink); }
+.x-faq-a { padding-left: 24px; }
+.x-faq-a .x-p { margin-bottom: 12px; }

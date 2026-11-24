@@ -47,7 +47,7 @@ export default function Footer({ data, awardsHref = '/awards', teamHref = '/peop
             {data.links
               ? data.links.map((l) => <li key={l.label + l.href}><a href={l.href}>{l.label}</a></li>)
               : (aboutHref ? data.firm.flatMap((f) => (f === 'Home' ? [f, 'About Us'] : [f])) : data.firm).map((f) => (
-                <li key={f}><a href={f === 'Awards & Recognition' ? awardsHref : f === 'Our Team' ? teamHref : f === 'About Us' ? aboutHref : f === 'Home' ? '/' : f === 'Careers' ? '/careers' : /^Contact/.test(f) ? '/contact' : '#'}>{f}</a></li>
+                <li key={f}><a href={f === 'Awards & Recognition' ? awardsHref : f === 'Our Team' ? teamHref : f === 'About Us' ? aboutHref : f === 'Home' ? '/' : f === 'Careers' ? '/careers' : f === 'FAQs' ? '/faq' : /^Contact/.test(f) ? '/contact' : '#'}>{f}</a></li>
               ))}
           </ul>
         </div>

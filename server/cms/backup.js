@@ -4,7 +4,7 @@ import AdmZip from 'adm-zip';
 import { CONTENT_DIR, UPLOAD_DIR, PRIVATE_DIR, readJson, writeJson, resetCache, uid } from './store.js';
 
 export const BACKUP_DIR = path.join(CONTENT_DIR, 'backups');
-const DATA = ['people', 'posts', 'practice', 'custom', 'jobs', 'menu', 'menus', 'footer', 'pages', 'texts', 'settings', 'media'];
+const DATA = ['people', 'posts', 'practice', 'custom', 'jobs', 'menu', 'menus', 'footer', 'pages', 'texts', 'forms', 'faqs', 'settings', 'media'];
 const NAME = /^dsk-backup-[\d-]+(-pre-restore)?\.zip$/;
 const SAFE_FILE = /^[\w][\w.-]{0,150}\.(jpg|png|webp|gif|pdf|doc|docx|rtf)$/i;
 const stamp = () => new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);

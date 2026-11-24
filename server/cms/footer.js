@@ -12,7 +12,7 @@ export const DEFAULT_FOOTER = {
   officesTitle: 'Office Locations',
   offices: F.offices,
   linksTitle: 'The Firm',
-  links: [['Home', '/'], ['About Us', '/about'], ['Our Team', '/people'], ['Awards & Recognition', '/awards'], ['Careers', '/careers'], ['Contact Us', '/contact']].map(([label, h]) => ({ label, href: h })),
+  links: [['Home', '/'], ['About Us', '/about'], ['Our Team', '/people'], ['Awards & Recognition', '/awards'], ['Careers', '/careers'], ['FAQs', '/faq'], ['Contact Us', '/contact']].map(([label, h]) => ({ label, href: h })),
   mailingTitle: 'Join Our Mailing List',
   mailing: F.mailing,
   personName: F.person.name, personRole: F.person.role, personPhoto: '',

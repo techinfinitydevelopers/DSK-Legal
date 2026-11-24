@@ -12,6 +12,7 @@ import { renderIndex } from './head.js';
 import { savedMenu, footerMenus } from './menu.js';
 import { clientTexts, SECTOR_SLUGS } from './texts.js';
 import { savedForms, readSubmission } from './forms.js';
+import { publicFaqs } from './faqs.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const t = (v, n) => String(v ?? '').slice(0, n).trim();
@@ -35,7 +36,7 @@ export async function mountCms(app, dist) {
       articles: live.map((p) => ({ slug: p.slug, title: p.title, pdf: p.pdf, blocks: p.blocks })),
       custom: custom.filter((c) => c.published !== false).map((c) => ({ slug: c.slug, title: c.title, lede: c.lede, blocks: c.blocks })),
       jobs: jobs.filter((j) => j.published !== false && !(j.closingDate && j.closingDate < new Date().toISOString().slice(0, 10))).map(({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate }) => ({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate })),
-      menu: savedMenu(), footerMenus: footerMenus(), texts: clientTexts(), forms: savedForms(),
+      menu: savedMenu(), footerMenus: footerMenus(), texts: clientTexts(), forms: savedForms(), faqs: publicFaqs(),
       site: { contactEmail: st.contactEmail, phone: st.phone, siteName: st.siteName }, seo: page,
     });
   });
@@ -98,7 +99,7 @@ export async function mountCms(app, dist) {
 
   if (fs.existsSync(dist)) {
     app.use(express.static(dist, { index: false }));
-    const STATIC = new Set(['/', '/about', '/awards', '/people', '/practice', '/sectors', '/knowledge', '/careers', '/careers/internship', '/careers/apply', '/contact', '/admin', '/privacy-policy', '/terms-and-conditions', '/disclaimer', '/email-disclaimer']);
+    const STATIC = new Set(['/', '/about', '/awards', '/people', '/practice', '/sectors', '/knowledge', '/careers', '/careers/internship', '/careers/apply', '/contact', '/faq', '/admin', '/privacy-policy', '/terms-and-conditions', '/disclaimer', '/email-disclaimer']);
     /** Does this URL exist? Unknown ones still get the app shell (it draws the 404 page) but with a real 404 status. */
     const exists = async (p) => {
       p = p.replace(/\/+$/, '') || '/';

@@ -1,5 +1,5 @@
 import PageShell, { PageHero } from './PageShell.jsx';
-import { siteEmail } from '../seo.js';
+import { siteEmail, tx } from '../seo.js';
 import { CtaBand } from './Sections2.jsx';
 import { Reveal } from '../hooks.jsx';
 import { Spotlight } from './fx.jsx';
@@ -72,7 +72,7 @@ export default function CareersPage() {
           <section className="x-sec x-values x-cr-values">
             <div className="container">
               <Reveal className="x-head">
-                <p className="x-kicker">Our culture</p>
+                <p className="x-kicker">{tx('careers.culture.kicker', 'Our culture')}</p>
                 <Typewriter parts={[{ text: 'What it’s like to' }, { text: 'work here', as: 'em' }]} />
               </Reveal>
               <div className="x-grid3">
@@ -80,8 +80,8 @@ export default function CareersPage() {
                   <Reveal key={v.n} delay={(i % 3) * 120}>
                     <Spotlight className="x-card">
                       <span className="x-num">{v.n}</span>
-                      <h3>{v.title}</h3>
-                      <p>{v.text}</p>
+                      <h3>{tx(`careers.v.${i + 1}.title`, v.title)}</h3>
+                      <p>{tx(`careers.v.${i + 1}.text`, v.text)}</p>
                     </Spotlight>
                   </Reveal>
                 ))}
