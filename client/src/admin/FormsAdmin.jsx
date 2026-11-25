@@ -17,20 +17,20 @@ export function FormsList({ api, toast }) {
   useEffect(() => { api('GET', '/forms').then(setRows).catch((e) => toast(e.message, 'err')); }, []); // eslint-disable-line
   return (
     <>
-      <div className="ad-head"><h1>Forms</h1></div>
-      <p className="ad-muted">Change what each public form asks for: add, remove, reorder or rename fields, make them required, edit dropdown options and show a field only when another answer matches. Entries still arrive in the Inbox.</p>
+      <div className="cm-head"><h1>Forms</h1></div>
+      <p className="cm-muted">Change what each public form asks for: add, remove, reorder or rename fields, make them required, edit dropdown options and show a field only when another answer matches. Entries still arrive in the Inbox.</p>
       {!rows ? <p>Loading…</p> : (
-        <div className="ad-tablewrap"><table className="ad-table"><thead><tr><th>Form</th><th>Public page</th><th>Fields</th><th>Status</th><th /></tr></thead>
+        <div className="cm-tablewrap"><table className="cm-table"><thead><tr><th>Form</th><th>Public page</th><th>Fields</th><th>Status</th><th /></tr></thead>
           <tbody>{rows.map((r) => (
             <tr key={r.id}>
-              <td><a href={`#/forms/${r.id}`}><b>{r.title}</b></a><br /><small className="ad-muted">{r.about}</small></td>
+              <td><a href={`#/forms/${r.id}`}><b>{r.title}</b></a><br /><small className="cm-muted">{r.about}</small></td>
               <td><a href={r.page} target="_blank" rel="noreferrer">{r.page} <Icon n="ext" /></a></td>
               <td>{r.fields} in {r.sections} section{r.sections === 1 ? '' : 's'}</td>
-              <td><span className={`ad-pill${r.custom ? '' : ' off'}`}>{r.custom ? 'Customised' : 'Built-in'}</span></td>
-              <td><a className="ad-btn" href={`#/forms/${r.id}`}>Edit fields</a></td>
+              <td><span className={`cm-pill${r.custom ? '' : ' off'}`}>{r.custom ? 'Customised' : 'Built-in'}</span></td>
+              <td><a className="cm-btn" href={`#/forms/${r.id}`}>Edit fields</a></td>
             </tr>))}</tbody></table></div>
       )}
-      <p className="ad-muted">The credentials form on the Sectors &amp; Industries page is a Microsoft Form and is edited in Microsoft Forms, not here.</p>
+      <p className="cm-muted">The credentials form on the Sectors &amp; Industries page is a Microsoft Form and is edited in Microsoft Forms, not here.</p>
     </>
   );
 }
@@ -40,13 +40,13 @@ function Condition({ f, prior, set }) {
   const src = prior.find((p) => p.id && p.id === f.showIf?.id) || null;
   const choose = (id) => { const p = prior.find((x) => x.id === id); set({ showIf: id ? { id, ...(p?.type === 'select' && p.options?.length ? { eq: p.options[0] } : { eq: '' }) } : undefined }); };
   return (
-    <div className="ad-ff-cond">
-      <label className="ad-ff-inline"><span>Show this field</span>
+    <div className="cm-ff-cond">
+      <label className="cm-ff-inline"><span>Show this field</span>
         <select value={on ? 'when' : 'always'} onChange={(e) => (e.target.value === 'always' ? set({ showIf: undefined }) : choose(prior[0]?.id || ''))} disabled={!prior.length}>
           <option value="always">Always</option><option value="when">Only when another answer matches…</option>
         </select></label>
       {on && (
-        <div className="ad-ff-cond-row">
+        <div className="cm-ff-cond-row">
           <select value={f.showIf.id} onChange={(e) => choose(e.target.value)}>{prior.map((p) => <option key={p._k} value={p.id}>{p.label || p.id}</option>)}</select>
           <select value={f.showIf.any ? 'any' : 'eq'} onChange={(e) => set({ showIf: e.target.value === 'any' ? { id: f.showIf.id, any: true } : { id: f.showIf.id, eq: src?.options?.[0] || '' } })}>
             <option value="eq">is exactly</option><option value="any">is filled in</option>
@@ -56,7 +56,7 @@ function Condition({ f, prior, set }) {
             : <input value={f.showIf.eq ?? ''} onChange={(e) => set({ showIf: { id: f.showIf.id, eq: e.target.value } })} placeholder="value" />)}
         </div>
       )}
-      {!prior.length && <small className="ad-muted">Add a field above this one to use it as a condition.</small>}
+      {!prior.length && <small className="cm-muted">Add a field above this one to use it as a condition.</small>}
     </div>
   );
 }
@@ -65,28 +65,28 @@ function FieldRow({ f, n, count, prior, upd, move, dup, del }) {
   const [open, setOpen] = useState(!f.label);
   const jobs = f.source === 'jobs';
   return (
-    <div className={`ad-ff${open ? ' open' : ''}`}>
-      <div className="ad-ff-top">
-        <span className="ad-ff-n">{n + 1}</span>
-        <input className="ad-ff-label" value={f.label} onChange={(e) => upd({ label: e.target.value })} placeholder="Field label, e.g. Full name" aria-label="Field label" />
+    <div className={`cm-ff${open ? ' open' : ''}`}>
+      <div className="cm-ff-top">
+        <span className="cm-ff-n">{n + 1}</span>
+        <input className="cm-ff-label" value={f.label} onChange={(e) => upd({ label: e.target.value })} placeholder="Field label, e.g. Full name" aria-label="Field label" />
         <select value={f.type} onChange={(e) => upd({ type: e.target.value })} aria-label="Field type" disabled={jobs}>{TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
-        <label className="ad-ff-req"><input type="checkbox" checked={!!f.required} onChange={(e) => upd({ required: e.target.checked })} /> Required</label>
-        <div className="ad-mi-acts">
-          <button type="button" className="ad-ico" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="More options" title="More options"><Icon n={open ? 'up' : 'down'} /></button>
-          <button type="button" className="ad-ico" onClick={() => move(-1)} disabled={n === 0} aria-label="Move up" title="Move up"><Icon n="up" /></button>
-          <button type="button" className="ad-ico" onClick={() => move(1)} disabled={n === count - 1} aria-label="Move down" title="Move down"><Icon n="down" /></button>
-          <button type="button" className="ad-ico" onClick={dup} aria-label="Duplicate field" title="Duplicate"><Icon n="plus" /></button>
-          <button type="button" className="ad-ico" onClick={del} aria-label="Delete field" title="Delete"><Icon n="x" /></button>
+        <label className="cm-ff-req"><input type="checkbox" checked={!!f.required} onChange={(e) => upd({ required: e.target.checked })} /> Required</label>
+        <div className="cm-mi-acts">
+          <button type="button" className="cm-ico" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="More options" title="More options"><Icon n={open ? 'up' : 'down'} /></button>
+          <button type="button" className="cm-ico" onClick={() => move(-1)} disabled={n === 0} aria-label="Move up" title="Move up"><Icon n="up" /></button>
+          <button type="button" className="cm-ico" onClick={() => move(1)} disabled={n === count - 1} aria-label="Move down" title="Move down"><Icon n="down" /></button>
+          <button type="button" className="cm-ico" onClick={dup} aria-label="Duplicate field" title="Duplicate"><Icon n="plus" /></button>
+          <button type="button" className="cm-ico" onClick={del} aria-label="Delete field" title="Delete"><Icon n="x" /></button>
         </div>
       </div>
       {open && (
-        <div className="ad-ff-more">
-          {jobs && <p className="ad-muted">This field turns into a dropdown of the open positions published under Careers, when there are any.</p>}
+        <div className="cm-ff-more">
+          {jobs && <p className="cm-muted">This field turns into a dropdown of the open positions published under Careers, when there are any.</p>}
           {!['select', 'file', 'date'].includes(f.type) && <Field label="Placeholder" hint="Grey hint shown inside the empty field."><Input v={f.placeholder} set={(v) => upd({ placeholder: v })} /></Field>}
           {f.type === 'select' && !jobs && <Field label="Options" hint="One per line, in the order visitors see them."><Lines v={f.options || []} set={(v) => upd({ options: v })} rows={5} /></Field>}
-          {f.type === 'number' && <div className="ad-ff-two"><Field label="Minimum"><Input type="number" v={f.min ?? ''} set={(v) => upd({ min: v === '' ? undefined : v })} /></Field><Field label="Maximum"><Input type="number" v={f.max ?? ''} set={(v) => upd({ max: v === '' ? undefined : v })} /></Field></div>}
+          {f.type === 'number' && <div className="cm-ff-two"><Field label="Minimum"><Input type="number" v={f.min ?? ''} set={(v) => upd({ min: v === '' ? undefined : v })} /></Field><Field label="Maximum"><Input type="number" v={f.max ?? ''} set={(v) => upd({ max: v === '' ? undefined : v })} /></Field></div>}
           {f.type === 'tel' && <Field label="Phone format"><Select v={f.format || 'any'} set={(v) => upd({ format: v })} options={[{ value: '10', label: '10-digit Indian number, without +91' }, { value: 'any', label: 'Any phone number' }]} /></Field>}
-          {f.type === 'file' && <p className="ad-muted">Visitors can attach a PDF, DOC, DOCX or RTF up to 5 MB. Only one upload field per form.</p>}
+          {f.type === 'file' && <p className="cm-muted">Visitors can attach a PDF, DOC, DOCX or RTF up to 5 MB. Only one upload field per form.</p>}
           <Condition f={f} prior={prior} set={upd} />
         </div>
       )}
@@ -119,21 +119,21 @@ export function FormEditor({ id, api, toast, has }) {
   const priorOf = (si, fi) => form.sections.flatMap((s, i) => s.fields.map((x, j) => ({ x, i, j }))).filter(({ i, j }) => i < si || (i === si && j < fi)).map(({ x }) => x).filter((x) => x.type !== 'file' && x.id);
   return (
     <form onSubmit={save}>
-      <div className="ad-head"><h1>{d.title}</h1><a className="ad-btn ghost" href="#/forms">← All forms</a><a className="ad-btn ghost" href={d.page} target="_blank" rel="noreferrer">View page <Icon n="ext" /></a></div>
-      {!can && <p className="ad-muted">Your role can view this form but not change it.</p>}
-      <div className="ad-cols">
-        <div className="ad-main">
+      <div className="cm-head"><h1>{d.title}</h1><a className="cm-btn ghost" href="#/forms">← All forms</a><a className="cm-btn ghost" href={d.page} target="_blank" rel="noreferrer">View page <Icon n="ext" /></a></div>
+      {!can && <p className="cm-muted">Your role can view this form but not change it.</p>}
+      <div className="cm-cols">
+        <div className="cm-main">
           {form.sections.map((s, si) => (
-            <section className="ad-box ad-fsec" key={s._k}>
-              <div className="ad-fsec-head">
+            <section className="cm-box cm-fsec" key={s._k}>
+              <div className="cm-fsec-head">
                 <Field label={d.multiSection ? `Section ${si + 1} title` : 'Form heading'}><Input v={s.title} set={(v) => sec(si, { title: v })} disabled={!can} /></Field>
-                {d.multiSection && can && <div className="ad-mi-acts">
-                  <button type="button" className="ad-ico" onClick={() => edit((f) => ({ ...f, sections: swap(f.sections, si, -1) }))} disabled={si === 0} aria-label="Move section up"><Icon n="up" /></button>
-                  <button type="button" className="ad-ico" onClick={() => edit((f) => ({ ...f, sections: swap(f.sections, si, 1) }))} disabled={si === form.sections.length - 1} aria-label="Move section down"><Icon n="down" /></button>
-                  <button type="button" className="ad-ico" onClick={() => { if (window.confirm(`Delete the section “${s.title || si + 1}” and its ${s.fields.length} fields?`)) edit((f) => ({ ...f, sections: f.sections.filter((_, i) => i !== si) })); }} disabled={form.sections.length < 2} aria-label="Delete section"><Icon n="x" /></button>
+                {d.multiSection && can && <div className="cm-mi-acts">
+                  <button type="button" className="cm-ico" onClick={() => edit((f) => ({ ...f, sections: swap(f.sections, si, -1) }))} disabled={si === 0} aria-label="Move section up"><Icon n="up" /></button>
+                  <button type="button" className="cm-ico" onClick={() => edit((f) => ({ ...f, sections: swap(f.sections, si, 1) }))} disabled={si === form.sections.length - 1} aria-label="Move section down"><Icon n="down" /></button>
+                  <button type="button" className="cm-ico" onClick={() => { if (window.confirm(`Delete the section “${s.title || si + 1}” and its ${s.fields.length} fields?`)) edit((f) => ({ ...f, sections: f.sections.filter((_, i) => i !== si) })); }} disabled={form.sections.length < 2} aria-label="Delete section"><Icon n="x" /></button>
                 </div>}
               </div>
-              <fieldset disabled={!can} className="ad-ff-list">
+              <fieldset disabled={!can} className="cm-ff-list">
                 {s.fields.map((f, fi) => (
                   <FieldRow key={f._k} f={f} n={fi} count={s.fields.length} prior={priorOf(si, fi)}
                     upd={(p) => fld(si, fi, p)}
@@ -141,23 +141,23 @@ export function FormEditor({ id, api, toast, has }) {
                     dup={() => sec(si, { fields: [...s.fields.slice(0, fi + 1), { ...f, _k: key(), id: `f_${key()}`, label: `${f.label} (copy)` }, ...s.fields.slice(fi + 1)] })}
                     del={() => { if (window.confirm(`Delete the field “${f.label || 'untitled'}”?`)) sec(si, { fields: s.fields.filter((_, i) => i !== fi) }); }} />
                 ))}
-                {can && <button type="button" className="ad-btn" onClick={() => sec(si, { fields: [...s.fields, newField()] })}><Icon n="plus" /> Add field</button>}
+                {can && <button type="button" className="cm-btn" onClick={() => sec(si, { fields: [...s.fields, newField()] })}><Icon n="plus" /> Add field</button>}
               </fieldset>
             </section>
           ))}
-          {d.multiSection && can && <button type="button" className="ad-btn" onClick={() => edit((f) => ({ ...f, sections: [...f.sections, { _k: key(), title: '', fields: [newField()] }] }))}><Icon n="plus" /> Add section</button>}
+          {d.multiSection && can && <button type="button" className="cm-btn" onClick={() => edit((f) => ({ ...f, sections: [...f.sections, { _k: key(), title: '', fields: [newField()] }] }))}><Icon n="plus" /> Add section</button>}
         </div>
-        <aside className="ad-side">
-          {can && <section className="ad-box"><button className="ad-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save form' : 'Saved'}</button>
-            {d.custom && <button type="button" className="ad-btn ghost" onClick={reset}>Reset to built-in</button>}
-            <p className="ad-muted">{total} fields · {d.custom ? 'customised' : 'built-in fields'}. Saved changes go live straight away.</p></section>}
-          <section className="ad-box"><h2>Button and messages</h2>
+        <aside className="cm-side">
+          {can && <section className="cm-box"><button className="cm-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save form' : 'Saved'}</button>
+            {d.custom && <button type="button" className="cm-btn ghost" onClick={reset}>Reset to built-in</button>}
+            <p className="cm-muted">{total} fields · {d.custom ? 'customised' : 'built-in fields'}. Saved changes go live straight away.</p></section>}
+          <section className="cm-box"><h2>Button and messages</h2>
             <Field label="Submit button text"><Input v={form.submitLabel} set={(v) => edit((f) => ({ ...f, submitLabel: v }))} disabled={!can} /></Field>
             <Field label="Message after sending"><Text v={form.success} set={(v) => edit((f) => ({ ...f, success: v }))} rows={3} disabled={!can} /></Field></section>
-          {d.multiSection && <section className="ad-box"><h2>Declaration checkbox</h2>
+          {d.multiSection && <section className="cm-box"><h2>Declaration checkbox</h2>
             <Field label="Text" hint="Visitors must tick it before sending. Leave empty to remove the checkbox."><Text v={form.confirm?.label || ''} set={(v) => edit((f) => ({ ...f, confirm: v.trim() ? { id: 'confirm', label: v, required: true } : null }))} rows={4} disabled={!can} /></Field></section>}
-          <section className="ad-box"><h2>How it works</h2>
-            <p className="ad-muted">Answers are checked again on the server. Entries appear in the Inbox with each field’s label{id === 'contact' ? '' : ' as the heading'}. Renaming a field only affects new entries.</p></section>
+          <section className="cm-box"><h2>How it works</h2>
+            <p className="cm-muted">Answers are checked again on the server. Entries appear in the Inbox with each field’s label{id === 'contact' ? '' : ' as the heading'}. Renaming a field only affects new entries.</p></section>
         </aside>
       </div>
     </form>

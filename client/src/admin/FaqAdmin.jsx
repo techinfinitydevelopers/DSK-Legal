@@ -10,25 +10,25 @@ const swap = (a, i, d) => { const j = i + d; if (j < 0 || j >= a.length) return 
 
 function Row({ x, n, count, cats, open, toggle, upd, move, del, ro }) {
   return (
-    <div className={`ad-faq${open ? ' open' : ''}${x.published === false ? ' off' : ''}`}>
-      <div className="ad-faq-top">
-        <span className="ad-ff-n">{n + 1}</span>
-        <button type="button" className="ad-faq-q" onClick={toggle} aria-expanded={open}>{x.question || <i>New question</i>}</button>
-        {x.category && <span className="ad-pill off">{x.category}</span>}
-        {x.published === false && <span className="ad-pill off">Hidden</span>}
-        {!ro && <div className="ad-mi-acts">
-          <button type="button" className="ad-ico" onClick={() => move(-1)} disabled={n === 0} aria-label="Move up" title="Move up"><Icon n="up" /></button>
-          <button type="button" className="ad-ico" onClick={() => move(1)} disabled={n === count - 1} aria-label="Move down" title="Move down"><Icon n="down" /></button>
-          <button type="button" className="ad-ico" onClick={del} aria-label="Delete question" title="Delete"><Icon n="x" /></button>
+    <div className={`cm-faq${open ? ' open' : ''}${x.published === false ? ' off' : ''}`}>
+      <div className="cm-faq-top">
+        <span className="cm-ff-n">{n + 1}</span>
+        <button type="button" className="cm-faq-q" onClick={toggle} aria-expanded={open}>{x.question || <i>New question</i>}</button>
+        {x.category && <span className="cm-pill off">{x.category}</span>}
+        {x.published === false && <span className="cm-pill off">Hidden</span>}
+        {!ro && <div className="cm-mi-acts">
+          <button type="button" className="cm-ico" onClick={() => move(-1)} disabled={n === 0} aria-label="Move up" title="Move up"><Icon n="up" /></button>
+          <button type="button" className="cm-ico" onClick={() => move(1)} disabled={n === count - 1} aria-label="Move down" title="Move down"><Icon n="down" /></button>
+          <button type="button" className="cm-ico" onClick={del} aria-label="Delete question" title="Delete"><Icon n="x" /></button>
         </div>}
       </div>
       {open && (
-        <fieldset className="ad-faq-body" disabled={ro}>
+        <fieldset className="cm-faq-body" disabled={ro}>
           <Field label="Question"><Input v={x.question} set={(v) => upd({ question: v })} placeholder="e.g. Which areas of law does DSK Legal cover?" /></Field>
           <Field label="Answer" hint="Leave a blank line between paragraphs."><Text v={x.answer} set={(v) => upd({ answer: v })} rows={6} /></Field>
-          <div className="ad-ff-two">
-            <Field label="Category (optional)" hint="Questions with the same category are grouped under a heading."><input list="ad-faq-cats" value={x.category || ''} onChange={(e) => upd({ category: e.target.value })} /><datalist id="ad-faq-cats">{cats.map((c) => <option key={c} value={c} />)}</datalist></Field>
-            <label className="ad-pub ad-faq-pub"><input type="checkbox" checked={x.published !== false} onChange={(e) => upd({ published: e.target.checked })} /> Show on the site</label>
+          <div className="cm-ff-two">
+            <Field label="Category (optional)" hint="Questions with the same category are grouped under a heading."><input list="cm-faq-cats" value={x.category || ''} onChange={(e) => upd({ category: e.target.value })} /><datalist id="cm-faq-cats">{cats.map((c) => <option key={c} value={c} />)}</datalist></Field>
+            <label className="cm-pub cm-faq-pub"><input type="checkbox" checked={x.published !== false} onChange={(e) => upd({ published: e.target.checked })} /> Show on the site</label>
           </div>
         </fieldset>
       )}
@@ -58,30 +58,30 @@ export function FaqAdmin({ api, toast, has }) {
   const live = items.filter((x) => x.published !== false).length;
   return (
     <form onSubmit={save}>
-      <div className="ad-head"><h1>FAQs</h1><a className="ad-btn ghost" href="/faq" target="_blank" rel="noreferrer">View page <Icon n="ext" /></a><a className="ad-btn ghost" href="#/pages/faq">Page heading &amp; SEO</a></div>
-      {ro && <p className="ad-muted">Your role can view the FAQs but not change them.</p>}
-      <div className="ad-cols">
-        <div className="ad-main">
-          <section className="ad-box">
-            <div className="ad-faq-tools"><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search questions" aria-label="Search questions" />{!ro && <button type="button" className="ad-btn" onClick={add}><Icon n="plus" /> Add question</button>}</div>
-            {!items.length && <p className="ad-muted">No questions yet. Press “Add question” to write the first one.</p>}
-            <div className="ad-faq-list">
+      <div className="cm-head"><h1>FAQs</h1><a className="cm-btn ghost" href="/faq" target="_blank" rel="noreferrer">View page <Icon n="ext" /></a><a className="cm-btn ghost" href="#/pages/faq">Page heading &amp; SEO</a></div>
+      {ro && <p className="cm-muted">Your role can view the FAQs but not change them.</p>}
+      <div className="cm-cols">
+        <div className="cm-main">
+          <section className="cm-box">
+            <div className="cm-faq-tools"><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search questions" aria-label="Search questions" />{!ro && <button type="button" className="cm-btn" onClick={add}><Icon n="plus" /> Add question</button>}</div>
+            {!items.length && <p className="cm-muted">No questions yet. Press “Add question” to write the first one.</p>}
+            <div className="cm-faq-list">
               {shown.map(({ x, i }) => (
                 <Row key={x._k} x={x} n={i} count={items.length} cats={cats} ro={ro} open={openK === x._k} toggle={() => setOpenK(openK === x._k ? null : x._k)}
                   upd={(p) => edit((a) => a.map((y) => (y._k === x._k ? { ...y, ...p } : y)))}
                   move={(d) => edit((a) => swap(a, i, d))}
                   del={() => { if (window.confirm(`Delete this question?\n\n${x.question || 'Untitled'}`)) edit((a) => a.filter((y) => y._k !== x._k)); }} />
               ))}
-              {items.length > 0 && !shown.length && <p className="ad-muted">No question matches “{q}”.</p>}
+              {items.length > 0 && !shown.length && <p className="cm-muted">No question matches “{q}”.</p>}
             </div>
-            {q.trim() && <p className="ad-muted">Reordering works on the full list; clear the search to see every position.</p>}
+            {q.trim() && <p className="cm-muted">Reordering works on the full list; clear the search to see every position.</p>}
           </section>
         </div>
-        <aside className="ad-side">
-          {!ro && <section className="ad-box"><button className="ad-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save FAQs' : 'Saved'}</button>
-            <p className="ad-muted">{items.length} questions · {live} shown on the site. Saved changes go live straight away.</p></section>}
-          <section className="ad-box"><h2>How it works</h2>
-            <p className="ad-muted">The order here is the order on the /faq page. A category groups questions under a heading. Hidden questions stay saved but do not appear on the site. The page title and search description are under <a href="#/pages/faq">Pages → FAQs</a>.</p></section>
+        <aside className="cm-side">
+          {!ro && <section className="cm-box"><button className="cm-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save FAQs' : 'Saved'}</button>
+            <p className="cm-muted">{items.length} questions · {live} shown on the site. Saved changes go live straight away.</p></section>}
+          <section className="cm-box"><h2>How it works</h2>
+            <p className="cm-muted">The order here is the order on the /faq page. A category groups questions under a heading. Hidden questions stay saved but do not appear on the site. The page title and search description are under <a href="#/pages/faq">Pages → FAQs</a>.</p></section>
         </aside>
       </div>
     </form>

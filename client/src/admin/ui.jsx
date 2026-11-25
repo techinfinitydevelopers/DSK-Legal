@@ -33,15 +33,15 @@ export const Icon = ({ n }) => {
 };
 
 export function Field({ label, hint, children, wide }) {
-  return <label className={`ad-f${wide ? ' wide' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>;
+  return <label className={`cm-f${wide ? ' wide' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>;
 }
 export function Input({ v, set, type, ...p }) {
   const [show, setShow] = useState(false);
   if (type !== 'password') return <input value={v ?? ''} onChange={(e) => set(e.target.value)} type={type} {...p} />;
   return (
-    <span className="ad-pw">
+    <span className="cm-pw">
       <input value={v ?? ''} onChange={(e) => set(e.target.value)} type={show ? 'text' : 'password'} {...p} />
-      <button type="button" className="ad-pw-t" onClick={() => setShow(!show)} aria-label={show ? 'Hide password' : 'Show password'} aria-pressed={show} title={show ? 'Hide password' : 'Show password'}>
+      <button type="button" className="cm-pw-t" onClick={() => setShow(!show)} aria-label={show ? 'Hide password' : 'Show password'} aria-pressed={show} title={show ? 'Hide password' : 'Show password'}>
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" />
           {show && <path d="M3 3l18 18" />}
@@ -58,14 +58,14 @@ export const Lines = ({ v, set, rows = 4, sep = '\n' }) => {
 };
 export const Select = ({ v, set, options }) => <select value={v ?? ''} onChange={(e) => set(e.target.value)}>{options.map((o) => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}</select>;
 
-export function Toasts({ items }) { return <div className="ad-toasts" aria-live="polite">{items.map((t) => <div key={t.id} className={`ad-toast ${t.kind}`}>{t.text}</div>)}</div>; }
+export function Toasts({ items }) { return <div className="cm-toasts" aria-live="polite">{items.map((t) => <div key={t.id} className={`cm-toast ${t.kind}`}>{t.text}</div>)}</div>; }
 
 export function Modal({ title, onClose, children, wide }) {
   useEffect(() => { const k = (e) => e.key === 'Escape' && onClose(); window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [onClose]);
   return (
-    <div className="ad-modal-bg" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <div className={`ad-modal${wide ? ' wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
-        <header><h3>{title}</h3><button className="ad-x" onClick={onClose} aria-label="Close"><Icon n="x" /></button></header>
+    <div className="cm-modal-bg" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className={`cm-modal${wide ? ' wide' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
+        <header><h3>{title}</h3><button className="cm-x" onClick={onClose} aria-label="Close"><Icon n="x" /></button></header>
         {children}
       </div>
     </div>
@@ -78,13 +78,13 @@ export const readFile = (f) => new Promise((res, rej) => { const r = new FileRea
 export function MediaField({ v, set, kind = 'image', toast }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="ad-media-field">
+    <div className="cm-media-field">
       {v && kind === 'image' && <img src={v} alt="" />}
       {v && kind !== 'image' && <a href={v} target="_blank" rel="noreferrer">{v.split('/').pop()}</a>}
-      <div className="ad-row">
+      <div className="cm-row">
         <input value={v ?? ''} onChange={(e) => set(e.target.value)} placeholder={kind === 'image' ? '/img/… or choose a file' : 'PDF URL or choose a file'} />
-        <button type="button" className="ad-btn" onClick={() => setOpen(true)}>Choose / Upload</button>
-        {v && <button type="button" className="ad-btn ghost" onClick={() => set('')}>Remove</button>}
+        <button type="button" className="cm-btn" onClick={() => setOpen(true)}>Choose / Upload</button>
+        {v && <button type="button" className="cm-btn ghost" onClick={() => set('')}>Remove</button>}
       </div>
       {open && <MediaPicker kind={kind} toast={toast} onClose={() => setOpen(false)} onPick={(u) => { set(u); setOpen(false); }} />}
     </div>
@@ -102,14 +102,14 @@ export function MediaPicker({ kind, onPick, onClose, toast }) {
   const shown = (files || []).filter((f) => (kind === 'image' ? !f.name.endsWith('.pdf') : f.name.endsWith('.pdf')));
   return (
     <Modal title="Media library" onClose={onClose} wide>
-      <div className="ad-modal-body">
-        <label className="ad-btn primary ad-upload">Upload {kind === 'image' ? 'image' : 'PDF'}<input type="file" hidden accept={kind === 'image' ? 'image/jpeg,image/png,image/webp,image/gif' : 'application/pdf'} onChange={(e) => upload(e.target.files[0])} /></label>
-        <div className="ad-grid-media">
+      <div className="cm-modal-body">
+        <label className="cm-btn primary cm-upload">Upload {kind === 'image' ? 'image' : 'PDF'}<input type="file" hidden accept={kind === 'image' ? 'image/jpeg,image/png,image/webp,image/gif' : 'application/pdf'} onChange={(e) => upload(e.target.files[0])} /></label>
+        <div className="cm-grid-media">
           {files === null && <p>Loading…</p>}
-          {files && !shown.length && <p className="ad-muted">Nothing uploaded yet.</p>}
+          {files && !shown.length && <p className="cm-muted">Nothing uploaded yet.</p>}
           {shown.map((f) => (
-            <button key={f.name} type="button" className="ad-tile" onClick={() => onPick(f.url)}>
-              {kind === 'image' ? <img src={f.url} alt="" /> : <span className="ad-pdf">PDF</span>}
+            <button key={f.name} type="button" className="cm-tile" onClick={() => onPick(f.url)}>
+              {kind === 'image' ? <img src={f.url} alt="" /> : <span className="cm-pdf">PDF</span>}
               <small>{f.name}</small>
             </button>
           ))}

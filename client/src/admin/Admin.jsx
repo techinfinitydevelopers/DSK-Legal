@@ -52,7 +52,7 @@ export default function Admin() {
   }, []);
   useEffect(() => { if (user) api('GET', '/stats', null, lost).then((s) => setUnread({ inbox: s.unread, apps: s.unreadApps })).catch(() => {}); }, [user, hash, lost]);
 
-  if (user === undefined) return <div className="ad-boot">Loading…</div>;
+  if (user === undefined) return <div className="cm-boot">Loading…</div>;
   if (!user) return <Login onDone={setUser} />;
 
   const [, section = 'dashboard', slug, slug2] = hash.split('/');
@@ -62,11 +62,11 @@ export default function Admin() {
   const NEED = { posts: 'content', people: 'content', practice: 'content', jobs: 'jobs', menu: 'menu', footer: 'menu', forms: 'content', faqs: 'content', texts: 'pages', media: 'media', inbox: 'inbox', pages: 'seo', settings: 'seo', audit: 'admin', backup: 'admin', users: 'admin' };
   const logout = async () => { await api('POST', '/logout').catch(() => {}); setUser(null); };
   const body = (() => {
-    if (NEED[section] && !has(NEED[section])) return <p className="ad-err">Your role ({user.role}) cannot open this section.</p>;
+    if (NEED[section] && !has(NEED[section])) return <p className="cm-err">Your role ({user.role}) cannot open this section.</p>;
     switch (section) {
       case 'dashboard': return <Dashboard {...ctx} />;
       case 'posts': return slug ? <PostEditor key={slug} slug={slug} {...ctx} /> : <Listing key="posts" coll="posts" title="Knowledge" noun="post" cols={[['title', 'Title'], ['type', 'Category'], ['date', 'Date'], ['published', 'Status']]} view={(x) => `/knowledge/${x.slug}`} {...ctx} />;
-      case 'jobs': return slug === 'applications' ? (has('inbox') ? <Inbox key="apps" mode="apps" {...ctx} /> : <p className="ad-err">Your role ({user.role}) cannot open this section.</p>) : slug ? <JobEditor key={slug} slug={slug} {...ctx} /> : <Listing key="jobs" coll="jobs" title="Careers" noun="job" cols={[['title', 'Job title'], ['department', 'Department'], ['office', 'Office'], ['type', 'Type'], ['published', 'Status']]} view={() => '/careers'} {...ctx} />;
+      case 'jobs': return slug === 'applications' ? (has('inbox') ? <Inbox key="apps" mode="apps" {...ctx} /> : <p className="cm-err">Your role ({user.role}) cannot open this section.</p>) : slug ? <JobEditor key={slug} slug={slug} {...ctx} /> : <Listing key="jobs" coll="jobs" title="Careers" noun="job" cols={[['title', 'Job title'], ['department', 'Department'], ['office', 'Office'], ['type', 'Type'], ['published', 'Status']]} view={() => '/careers'} {...ctx} />;
       case 'people': return slug ? <PersonEditor key={slug} slug={slug} {...ctx} /> : <Listing key="people" coll="people" title="Team" noun="team member" cols={[['name', 'Name'], ['level', 'Level'], ['office', 'Office'], ['email', 'Email']]} view={(x) => `/people/${x.slug}`} {...ctx} />;
       case 'practice': return slug ? <PracticeEditor key={slug} slug={slug} {...ctx} /> : <Listing key="practice" coll="practice" title="Practice Areas" noun="practice area" cols={[['name', 'Name'], ['services', 'Services'], ['contacts', 'Contacts']]} view={(x) => `/practice/${x.slug}`} {...ctx} />;
       case 'pages': return !slug ? <PagesList {...ctx} /> : slug === 'new' ? <CustomEditor key="new" slug="new" {...ctx} /> : slug === 'custom' ? <CustomEditor key={slug2} slug={slug2} {...ctx} /> : <PagesAdmin id={slug} {...ctx} />;
@@ -76,39 +76,39 @@ export default function Admin() {
       case 'forms': return slug ? <FormEditor key={slug} id={slug} {...ctx} /> : <FormsList {...ctx} />;
       case 'texts': return <PagesAdmin id="home" {...ctx} />;
       case 'media': return <MediaAdmin mode={slug === 'upload' ? 'upload' : 'library'} {...ctx} />;
-      case 'settings': return user.role === 'admin' ? <SettingsAdmin tab={slug} {...ctx} /> : <p className="ad-err">Admins only.</p>;
-      case 'audit': return user.role === 'admin' ? <AuditLog {...ctx} /> : <p className="ad-err">Admins only.</p>;
-      case 'backup': return user.role === 'admin' ? <BackupAdmin {...ctx} /> : <p className="ad-err">Admins only.</p>;
+      case 'settings': return user.role === 'admin' ? <SettingsAdmin tab={slug} {...ctx} /> : <p className="cm-err">Admins only.</p>;
+      case 'audit': return user.role === 'admin' ? <AuditLog {...ctx} /> : <p className="cm-err">Admins only.</p>;
+      case 'backup': return user.role === 'admin' ? <BackupAdmin {...ctx} /> : <p className="cm-err">Admins only.</p>;
       case 'inbox': return <Inbox key="inbox" mode="inbox" {...ctx} />;
-      case 'users': return user.role === 'admin' ? <Users mode={slug === 'new' ? 'new' : 'list'} {...ctx} /> : <p className="ad-err">Admins only.</p>;
+      case 'users': return user.role === 'admin' ? <Users mode={slug === 'new' ? 'new' : 'list'} {...ctx} /> : <p className="cm-err">Admins only.</p>;
       case 'profile': return <Profile mode={slug === 'password' ? 'password' : 'details'} {...ctx} onRelogin={() => setUser(null)} />;
       default: return <p>Page not found.</p>;
     }
   })();
 
   return (
-    <div className="ad">
-      <aside className="ad-nav">
-        <a className="ad-brand" href="#/dashboard"><img src="/logo.png" alt="" /><span>DSK Legal<small>Site manager</small></span></a>
+    <div className="cm">
+      <aside className="cm-nav">
+        <a className="cm-brand" href="#/dashboard"><img src="/logo.png" alt="" /><span>DSK Legal<small>Site manager</small></span></a>
         <nav>{NAV.filter((n) => !n.cap || has(n.cap)).map((x) => ({ ...x, sub: x.sub && x.sub.filter((c) => !c[2] || has(c[2])) })).map((n, idx, all) => {
-          const heading = n.g && n.g !== all[idx - 1]?.g ? <p className="ad-navh" key={`h-${n.g}`}>{n.g}</p> : null;
+          const heading = n.g && n.g !== all[idx - 1]?.g ? <p className="cm-navh" key={`h-${n.g}`}>{n.g}</p> : null;
           const item = (() => {
-            if (!n.sub) return <a key={n.k} href={n.href} className={section === n.k ? 'on' : ''} {...(n.ext ? { target: '_blank', rel: 'noreferrer' } : {})}><Icon n={n.ic} />{n.l}{n.k === 'inbox' && unread.inbox > 0 && <b className="ad-badge">{unread.inbox}</b>}</a>;
+            if (!n.sub) return <a key={n.k} href={n.href} className={section === n.k ? 'on' : ''} {...(n.ext ? { target: '_blank', rel: 'noreferrer' } : {})}><Icon n={n.ic} />{n.l}{n.k === 'inbox' && unread.inbox > 0 && <b className="cm-badge">{unread.inbox}</b>}</a>;
             const here = section === n.k; const open = here || !!openGrp[n.k]; const cur = here && activeSub(n.sub, hash);
             return (
-              <div key={n.k} className={`ad-grp${open ? ' open' : ''}`}>
-                <div className="ad-grp-head"><a href={n.sub[0][1]} className={here ? 'on' : ''}><Icon n={n.ic} />{n.l}{n.k === 'jobs' && unread.apps > 0 && <b className="ad-badge">{unread.apps}</b>}</a>
-                  <button type="button" className="ad-chev" aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${n.l}`} onClick={() => !here && setOpenGrp((o) => ({ ...o, [n.k]: !o[n.k] }))} disabled={here}><Icon n={open ? 'up' : 'down'} /></button></div>
-                {open && <div className="ad-sub">{n.sub.map((c) => <a key={c[1]} href={c[1]} className={cur === c ? 'on' : ''}>{c[0]}</a>)}</div>}
+              <div key={n.k} className={`cm-grp${open ? ' open' : ''}`}>
+                <div className="cm-grp-head"><a href={n.sub[0][1]} className={here ? 'on' : ''}><Icon n={n.ic} />{n.l}{n.k === 'jobs' && unread.apps > 0 && <b className="cm-badge">{unread.apps}</b>}</a>
+                  <button type="button" className="cm-chev" aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Expand'} ${n.l}`} onClick={() => !here && setOpenGrp((o) => ({ ...o, [n.k]: !o[n.k] }))} disabled={here}><Icon n={open ? 'up' : 'down'} /></button></div>
+                {open && <div className="cm-sub">{n.sub.map((c) => <a key={c[1]} href={c[1]} className={cur === c ? 'on' : ''}>{c[0]}</a>)}</div>}
               </div>
             );
           })();
           return [heading, item];
         })}</nav>
       </aside>
-      <div className="ad-wrap">
-        <header className="ad-top"><span>Signed in as <b>{user.name || user.username}</b> <em>{user.role}</em></span><button className="ad-btn ghost" onClick={logout}><Icon n="out" /> Log out</button></header>
-        <main className="ad-content">{body}</main>
+      <div className="cm-wrap">
+        <header className="cm-top"><span>Signed in as <b>{user.name || user.username}</b> <em>{user.role}</em></span><button className="cm-btn ghost" onClick={logout}><Icon n="out" /> Log out</button></header>
+        <main className="cm-content">{body}</main>
       </div>
       <Toasts items={toasts} />
     </div>
@@ -122,15 +122,15 @@ function Login({ onDone }) {
     try { onDone((await api('POST', '/login', f)).user); } catch (x) { setErr(x.message); } finally { setBusy(false); }
   };
   return (
-    <div className="ad-login">
+    <div className="cm-login">
       <form onSubmit={submit}>
         <img src="/logo.png" alt="DSK Legal" />
         <h1>Sign in</h1>
         <Field label="Username"><Input v={f.username} set={(v) => setF({ ...f, username: v })} autoComplete="username" autoFocus required /></Field>
         <Field label="Password"><Input v={f.password} set={(v) => setF({ ...f, password: v })} type="password" autoComplete="current-password" required /></Field>
-        {err && <p className="ad-err" role="alert">{err}</p>}
-        <button className="ad-btn primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
-        <a href="/" className="ad-back">← Back to site</a>
+        {err && <p className="cm-err" role="alert">{err}</p>}
+        <button className="cm-btn primary" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        <a href="/" className="cm-back">← Back to site</a>
       </form>
     </div>
   );
@@ -148,20 +148,20 @@ function Dashboard({ has, api, toast, nav, user }) {
   };
   return (
     <>
-      <div className="ad-head"><h1>Dashboard</h1></div>
-      <section className="ad-welcome"><h2>Welcome, {user.name || user.username}</h2><p>Edit the site’s content here. Changes go live on the website as soon as you save.</p>
-        <p className="ad-muted">Your role: <b>{user.role}</b></p>
-        <div className="ad-row">{has('content') && <a className="ad-btn primary" href="#/posts/new">Write a knowledge post</a>}{has('content') && <a className="ad-btn" href="#/people/new">Add a team member</a>}{has('jobs') && <a className="ad-btn" href="#/jobs/new">Add a job</a>}{has('seo') && <a className="ad-btn" href="#/pages">Edit page SEO</a>}{has('inbox') && <a className="ad-btn" href="#/inbox">Open inbox</a>}{has('media') && <a className="ad-btn" href="#/media">Upload media</a>}</div></section>
-      <div className="ad-dash">
-        <section className="ad-box"><h2>At a glance</h2><ul className="ad-glance">{glance.map(([k, n, l], i) => <li key={i}><a href={`#/${k}`}><b>{n}</b>{l}</a></li>)}</ul></section>
-        {has('content') && <section className="ad-box"><h2>Quick draft</h2><form onSubmit={quick}>
+      <div className="cm-head"><h1>Dashboard</h1></div>
+      <section className="cm-welcome"><h2>Welcome, {user.name || user.username}</h2><p>Edit the site’s content here. Changes go live on the website as soon as you save.</p>
+        <p className="cm-muted">Your role: <b>{user.role}</b></p>
+        <div className="cm-row">{has('content') && <a className="cm-btn primary" href="#/posts/new">Write a knowledge post</a>}{has('content') && <a className="cm-btn" href="#/people/new">Add a team member</a>}{has('jobs') && <a className="cm-btn" href="#/jobs/new">Add a job</a>}{has('seo') && <a className="cm-btn" href="#/pages">Edit page SEO</a>}{has('inbox') && <a className="cm-btn" href="#/inbox">Open inbox</a>}{has('media') && <a className="cm-btn" href="#/media">Upload media</a>}</div></section>
+      <div className="cm-dash">
+        <section className="cm-box"><h2>At a glance</h2><ul className="cm-glance">{glance.map(([k, n, l], i) => <li key={i}><a href={`#/${k}`}><b>{n}</b>{l}</a></li>)}</ul></section>
+        {has('content') && <section className="cm-box"><h2>Quick draft</h2><form onSubmit={quick}>
           <Field label="Title"><Input v={draft.title} set={(v) => setDraft({ ...draft, title: v })} required /></Field>
           <Field label="Summary"><textarea rows={3} value={draft.summary} onChange={(e) => setDraft({ ...draft, summary: e.target.value })} /></Field>
-          <button className="ad-btn primary">Save draft</button></form></section>}
-        {has('inbox') && <section className="ad-box"><h2>Recent enquiries</h2>{!s.recentSubs.length && <p className="ad-muted">Nothing yet.</p>}
-          <ul className="ad-feed">{s.recentSubs.map((x) => <li key={x.id}><a href="#/inbox"><b>{x.data.name || x.data.email || x.data['Full name'] || x.type}</b><small>{x.type} · {when(x.at)}</small></a></li>)}</ul></section>}
-        <section className="ad-box"><h2>Activity</h2>{!s.activity.length && <p className="ad-muted">No edits yet.</p>}
-          <ul className="ad-feed">{s.activity.map((a, i) => <li key={i}><span><b>{a.user}</b> {a.action} <em>{a.what}</em></span><small>{when(a.at)}</small></li>)}</ul></section>
+          <button className="cm-btn primary">Save draft</button></form></section>}
+        {has('inbox') && <section className="cm-box"><h2>Recent enquiries</h2>{!s.recentSubs.length && <p className="cm-muted">Nothing yet.</p>}
+          <ul className="cm-feed">{s.recentSubs.map((x) => <li key={x.id}><a href="#/inbox"><b>{x.data.name || x.data.email || x.data['Full name'] || x.type}</b><small>{x.type} · {when(x.at)}</small></a></li>)}</ul></section>}
+        <section className="cm-box"><h2>Activity</h2>{!s.activity.length && <p className="cm-muted">No edits yet.</p>}
+          <ul className="cm-feed">{s.activity.map((a, i) => <li key={i}><span><b>{a.user}</b> {a.action} <em>{a.what}</em></span><small>{when(a.at)}</small></li>)}</ul></section>
       </div>
     </>
   );
@@ -176,22 +176,22 @@ function Listing({ coll, title, noun, cols, view, api, toast }) {
     if (!window.confirm(`Delete “${r.name || r.title}”? This cannot be undone.`)) return;
     try { await api('DELETE', `/c/${coll}/${r.slug}`); toast('Deleted'); load(); } catch (e) { toast(e.message, 'err'); }
   };
-  const cell = (r, k) => (k === 'published' ? (r.published === false ? <span className="ad-pill draft">Draft</span> : <span className="ad-pill">Published</span>) : Array.isArray(r[k]) ? r[k].length : r[k]);
+  const cell = (r, k) => (k === 'published' ? (r.published === false ? <span className="cm-pill draft">Draft</span> : <span className="cm-pill">Published</span>) : Array.isArray(r[k]) ? r[k].length : r[k]);
   return (
     <>
-      <div className="ad-head"><h1>{title}</h1><a className="ad-btn primary" href={`#/${coll}/new`}><Icon n="plus" /> Add {noun}</a>
-        <input className="ad-search" type="search" placeholder={`Search ${title.toLowerCase()}…`} value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="cm-head"><h1>{title}</h1><a className="cm-btn primary" href={`#/${coll}/new`}><Icon n="plus" /> Add {noun}</a>
+        <input className="cm-search" type="search" placeholder={`Search ${title.toLowerCase()}…`} value={q} onChange={(e) => setQ(e.target.value)} /></div>
       {!rows ? <p>Loading…</p> : (
-        <div className="ad-tablewrap"><table className="ad-table">
+        <div className="cm-tablewrap"><table className="cm-table">
           <thead><tr>{cols.map(([k, l]) => <th key={k}>{l}</th>)}<th /></tr></thead>
           <tbody>{shown.map((r) => (
-            <tr key={r.slug}>{cols.map(([k], i) => <td key={k} data-l={cols[i][1]}>{i === 0 ? <a className="ad-ttl" href={`#/${coll}/${r.slug}`}>{cell(r, k)}</a> : cell(r, k)}</td>)}
-              <td className="ad-acts"><a href={`#/${coll}/${r.slug}`}>Edit</a><a href={view(r)} target="_blank" rel="noreferrer">View</a><button onClick={() => del(r)}>Delete</button></td></tr>
+            <tr key={r.slug}>{cols.map(([k], i) => <td key={k} data-l={cols[i][1]}>{i === 0 ? <a className="cm-ttl" href={`#/${coll}/${r.slug}`}>{cell(r, k)}</a> : cell(r, k)}</td>)}
+              <td className="cm-acts"><a href={`#/${coll}/${r.slug}`}>Edit</a><a href={view(r)} target="_blank" rel="noreferrer">View</a><button onClick={() => del(r)}>Delete</button></td></tr>
           ))}</tbody></table>
-          {!shown.length && <p className="ad-muted pad">No matches.</p>}
+          {!shown.length && <p className="cm-muted pad">No matches.</p>}
         </div>
       )}
-      <p className="ad-muted">{shown.length} of {rows?.length ?? 0}</p>
+      <p className="cm-muted">{shown.length} of {rows?.length ?? 0}</p>
     </>
   );
 }
@@ -211,17 +211,17 @@ function Inbox({ api, toast, mode = 'inbox' }) {
   const del = async (r) => { if (!window.confirm('Delete this entry' + (r.cv ? ' and its CV' : '') + '? This cannot be undone.')) return; await api('DELETE', `/submissions/${r.id}`).catch((e) => toast(e.message, 'err')); load(); };
   return (
     <>
-      <div className="ad-head"><h1>{apps ? 'Applications' : 'Inbox'}</h1>{apps && <a className="ad-btn ghost" href="#/jobs">← All Jobs</a>}{tab === 'subscribe' && <a className="ad-btn" href="/api/admin/export/subscribers.csv"><Icon n="dl" /> Export CSV</a>}</div>
-      <div className="ad-tabs">{(apps ? [['apps', 'All applications'], ['job', 'Job applications'], ['internship', 'Internship applications']] : [['all', 'Enquiries'], ['subscribe', 'Subscribers']]).map(([k, l]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}</div>
-      {!rows ? <p>Loading…</p> : !shown.length ? <p className="ad-muted">Nothing here yet.</p> : (
-        <ul className="ad-inbox">{shown.map((r) => (
+      <div className="cm-head"><h1>{apps ? 'Applications' : 'Inbox'}</h1>{apps && <a className="cm-btn ghost" href="#/jobs">← All Jobs</a>}{tab === 'subscribe' && <a className="cm-btn" href="/api/admin/export/subscribers.csv"><Icon n="dl" /> Export CSV</a>}</div>
+      <div className="cm-tabs">{(apps ? [['apps', 'All applications'], ['job', 'Job applications'], ['internship', 'Internship applications']] : [['all', 'Enquiries'], ['subscribe', 'Subscribers']]).map(([k, l]) => <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>)}</div>
+      {!rows ? <p>Loading…</p> : !shown.length ? <p className="cm-muted">Nothing here yet.</p> : (
+        <ul className="cm-inbox">{shown.map((r) => (
           <li key={r.id} className={r.read ? '' : 'unread'}>
-            <button className="ad-in-row" onClick={() => toggle(r)}><i />
-              <b>{nameKey(r.data) || '—'}</b><span className="ad-pill">{LABEL[r.type]}</span><small>{when(r.at)}</small></button>
+            <button className="cm-in-row" onClick={() => toggle(r)}><i />
+              <b>{nameKey(r.data) || '—'}</b><span className="cm-pill">{LABEL[r.type]}</span><small>{when(r.at)}</small></button>
             {open === r.id && (
-              <div className="ad-in-body">{r.mail && <p className={`ad-mailst${r.mail.startsWith('failed') ? ' bad' : ''}`}>Email: {r.mail}</p>}<dl>{Object.entries(r.data).map(([k, v]) => v && <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-                <div className="ad-row">{r.cv && <a className="ad-btn" href={`/api/admin/submissions/${r.id}/cv`}><Icon n="dl" /> Download CV{r.cvName ? ` (${r.cvName})` : ''}</a>}
-                  {emailKey(r.data) && <a className="ad-btn" href={`mailto:${emailKey(r.data)}`}>Reply</a>}<button className="ad-btn danger" onClick={() => del(r)}>Delete</button></div></div>
+              <div className="cm-in-body">{r.mail && <p className={`cm-mailst${r.mail.startsWith('failed') ? ' bad' : ''}`}>Email: {r.mail}</p>}<dl>{Object.entries(r.data).map(([k, v]) => v && <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+                <div className="cm-row">{r.cv && <a className="cm-btn" href={`/api/admin/submissions/${r.id}/cv`}><Icon n="dl" /> Download CV{r.cvName ? ` (${r.cvName})` : ''}</a>}
+                  {emailKey(r.data) && <a className="cm-btn" href={`mailto:${emailKey(r.data)}`}>Reply</a>}<button className="cm-btn danger" onClick={() => del(r)}>Delete</button></div></div>
             )}
           </li>))}</ul>
       )}
@@ -242,23 +242,23 @@ function Users({ api, toast, user, mode, nav }) {
   const del = async (u) => { if (!window.confirm(`Remove ${u.username}?`)) return; try { await api('DELETE', `/users/${u.id}`); load(); } catch (x) { toast(x.message, 'err'); } };
   if (mode === 'new') return (
     <>
-      <div className="ad-head"><h1>Add User</h1><a className="ad-btn ghost" href="#/users">← All Users</a></div>
-      <form className="ad-box ad-narrow" onSubmit={add}>
+      <div className="cm-head"><h1>Add User</h1><a className="cm-btn ghost" href="#/users">← All Users</a></div>
+      <form className="cm-box cm-narrow" onSubmit={add}>
         <Field label="Username"><Input v={f.username} set={(v) => setF({ ...f, username: v })} required /></Field>
         <Field label="Name"><Input v={f.name} set={(v) => setF({ ...f, name: v })} /></Field>
         <Field label="Email"><Input v={f.email} set={(v) => setF({ ...f, email: v })} type="email" /></Field>
         <Field label="Role" hint={about}><Select v={f.role} set={(v) => setF({ ...f, role: v })} options={roleOpts.length ? roleOpts : ['editor']} /></Field>
         <Field label="Password" hint="At least 10 characters."><Input v={f.password} set={(v) => setF({ ...f, password: v })} type="password" autoComplete="new-password" required minLength={10} /></Field>
-        <button className="ad-btn primary">Add user</button>
+        <button className="cm-btn primary">Add user</button>
       </form>
     </>
   );
   return (
     <>
-      <div className="ad-head"><h1>All Users</h1><a className="ad-btn primary" href="#/users/new"><Icon n="plus" /> Add user</a></div>
-      {roles.length > 0 && <section className="ad-box ad-roles"><h2>Roles</h2><dl>{roles.map((r) => <div key={r.id}><dt>{r.label}</dt><dd>{r.about}</dd></div>)}</dl></section>}
-      <div className="ad-tablewrap"><table className="ad-table"><thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th /></tr></thead>
-        <tbody>{rows.map((u) => <tr key={u.id}><td>{u.username}</td><td>{u.name}</td><td>{u.email}</td><td>{u.id === user.id || !roleOpts.length ? <span className="ad-pill">{u.role}</span> : <select value={u.role} onChange={(e) => setRole(u, e.target.value)} aria-label={`Role of ${u.username}`}>{roleOpts.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>}</td><td className="ad-acts">{u.id !== user.id && <button onClick={() => del(u)}>Remove</button>}</td></tr>)}</tbody></table></div>
+      <div className="cm-head"><h1>All Users</h1><a className="cm-btn primary" href="#/users/new"><Icon n="plus" /> Add user</a></div>
+      {roles.length > 0 && <section className="cm-box cm-roles"><h2>Roles</h2><dl>{roles.map((r) => <div key={r.id}><dt>{r.label}</dt><dd>{r.about}</dd></div>)}</dl></section>}
+      <div className="cm-tablewrap"><table className="cm-table"><thead><tr><th>Username</th><th>Name</th><th>Email</th><th>Role</th><th /></tr></thead>
+        <tbody>{rows.map((u) => <tr key={u.id}><td>{u.username}</td><td>{u.name}</td><td>{u.email}</td><td>{u.id === user.id || !roleOpts.length ? <span className="cm-pill">{u.role}</span> : <select value={u.role} onChange={(e) => setRole(u, e.target.value)} aria-label={`Role of ${u.username}`}>{roleOpts.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>}</td><td className="cm-acts">{u.id !== user.id && <button onClick={() => del(u)}>Remove</button>}</td></tr>)}</tbody></table></div>
     </>
   );
 }
@@ -276,14 +276,14 @@ function Profile({ api, toast, user, onRelogin, mode }) {
   };
   return (
     <>
-      <div className="ad-head"><h1>{pw ? 'Change Password' : 'Your Profile'}</h1></div>
-      <form className="ad-box ad-narrow" onSubmit={save}>
+      <div className="cm-head"><h1>{pw ? 'Change Password' : 'Your Profile'}</h1></div>
+      <form className="cm-box cm-narrow" onSubmit={save}>
         {pw ? (
           <>
             <Field label="Current password"><Input v={f.current} set={(v) => setF({ ...f, current: v })} type="password" autoComplete="current-password" required /></Field>
             <Field label="New password" hint="At least 10 characters. You will be signed out and must sign in again."><Input v={f.password} set={(v) => setF({ ...f, password: v })} type="password" autoComplete="new-password" required minLength={10} /></Field>
             <Field label="Repeat new password"><Input v={f.again} set={(v) => setF({ ...f, again: v })} type="password" autoComplete="new-password" required /></Field>
-            <button className="ad-btn primary">Change password</button>
+            <button className="cm-btn primary">Change password</button>
           </>
         ) : (
           <>
@@ -291,7 +291,7 @@ function Profile({ api, toast, user, onRelogin, mode }) {
             <Field label="Role"><input value={user.role} disabled /></Field>
             <Field label="Display name"><Input v={f.name} set={(v) => setF({ ...f, name: v })} /></Field>
             <Field label="Email"><Input v={f.email} set={(v) => setF({ ...f, email: v })} type="email" /></Field>
-            <button className="ad-btn primary">Save profile</button>
+            <button className="cm-btn primary">Save profile</button>
           </>
         )}
       </form>

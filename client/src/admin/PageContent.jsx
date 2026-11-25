@@ -25,8 +25,8 @@ function RichText({ v, set, rows }) {
     requestAnimationFrame(() => { el.focus(); const p = sel ? b + 4 : a + 2; el.setSelectionRange(sel ? a + 2 : p, sel ? b + 2 : p); });
   };
   return (
-    <div className="ad-rich">
-      <div className="ad-rich-bar"><button type="button" onClick={bold} title="Make the selected words bold" aria-label="Bold"><b>B</b></button><small>Select words, then press B to make them bold.</small></div>
+    <div className="cm-rich">
+      <div className="cm-rich-bar"><button type="button" onClick={bold} title="Make the selected words bold" aria-label="Bold"><b>B</b></button><small>Select words, then press B to make them bold.</small></div>
       <textarea ref={ref} rows={rows} value={v ?? ''} onChange={(e) => set(e.target.value)} />
     </div>
   );
@@ -40,13 +40,13 @@ function FieldInput({ f, v, set }) {
 
 function Group({ title, fields, vals, setVal, flat }) {
   return (
-    <section className="ad-box ad-pc">
+    <section className="cm-box cm-pc">
       {title && <h2>{title}</h2>}
       {fields.map((f) => {
         const { label, hint } = split(f, flat);
         const changed = (vals[f.key] ?? '') !== (f.def ?? '');
         return (
-          <Field key={f.key} label={<>{label}{changed && <em className="ad-pc-edit">Edited <button type="button" onClick={() => setVal(f.key, f.def)}>Reset</button></em>}</>} hint={hint || undefined}>
+          <Field key={f.key} label={<>{label}{changed && <em className="cm-pc-edit">Edited <button type="button" onClick={() => setVal(f.key, f.def)}>Reset</button></em>}</>} hint={hint || undefined}>
             <FieldInput f={f} v={vals[f.key]} set={(x) => setVal(f.key, x)} />
           </Field>
         );
@@ -64,9 +64,9 @@ export function PageContent({ pages, vals, setVal }) {
         const flat = p.id === 'sector-pages';
         if (flat) {
           return (
-            <details className="ad-box ad-pc-more" key={p.id}>
+            <details className="cm-box cm-pc-more" key={p.id}>
               <summary>{p.name} (optional — {p.fields.length} sector descriptions)</summary>
-              <p className="ad-muted">An introduction for each sector’s own page. Leave empty to show the standard introduction.</p>
+              <p className="cm-muted">An introduction for each sector’s own page. Leave empty to show the standard introduction.</p>
               <Group fields={p.fields} vals={vals} setVal={setVal} flat />
             </details>
           );

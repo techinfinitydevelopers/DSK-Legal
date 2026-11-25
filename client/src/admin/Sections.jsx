@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api, Field, Input, Text, Lines, Select, MediaField, Icon, Modal, when, bytes, readFile } from './ui.jsx';
 import { PageContent } from './PageContent.jsx';
 
-const Counter = ({ v = '', max }) => <small className={(v.length > max ? 'ad-over' : '')}>{v.length}/{max} characters{v.length > max ? ' — search engines may cut this off' : ''}</small>;
+const Counter = ({ v = '', max }) => <small className={(v.length > max ? 'cm-over' : '')}>{v.length}/{max} characters{v.length > max ? ' — search engines may cut this off' : ''}</small>;
 
 /* ---------------- All pages ---------------- */
 export function PagesList({ api, toast, nav }) {
@@ -12,22 +12,22 @@ export function PagesList({ api, toast, nav }) {
   const del = async (p) => { if (!window.confirm(`Delete “${p.title}”? This cannot be undone.`)) return; await api('DELETE', `/c/custom/${p.slug}`).catch((e) => toast(e.message, 'err')); toast('Deleted'); load(); };
   return (
     <>
-      <div className="ad-head"><h1>All Pages</h1><a className="ad-btn primary" href="#/pages/new"><Icon n="plus" /> Add page</a></div>
-      <h2 className="ad-h2">Site pages</h2>
-      <div className="ad-tablewrap"><table className="ad-table"><thead><tr><th>Page</th><th>Address</th><th>SEO</th><th /></tr></thead>
+      <div className="cm-head"><h1>All Pages</h1><a className="cm-btn primary" href="#/pages/new"><Icon n="plus" /> Add page</a></div>
+      <h2 className="cm-h2">Site pages</h2>
+      <div className="cm-tablewrap"><table className="cm-table"><thead><tr><th>Page</th><th>Address</th><th>SEO</th><th /></tr></thead>
         <tbody>{(fixed || []).map((p) => (
-          <tr key={p.id}><td><a className="ad-ttl" href={`#/pages/${p.id}`}>{p.name}</a></td><td className="nw">{p.path}</td>
-            <td>{p.saved?.metaTitle || p.saved?.metaDescription ? <span className="ad-pill">Customised</span> : <span className="ad-pill draft">Default</span>}{p.saved?.noindex && <span className="ad-pill draft">noindex</span>}</td>
-            <td className="ad-acts"><a href={`#/pages/${p.id}`}>Edit</a><a href={p.path} target="_blank" rel="noreferrer">View</a></td></tr>
+          <tr key={p.id}><td><a className="cm-ttl" href={`#/pages/${p.id}`}>{p.name}</a></td><td className="nw">{p.path}</td>
+            <td>{p.saved?.metaTitle || p.saved?.metaDescription ? <span className="cm-pill">Customised</span> : <span className="cm-pill draft">Default</span>}{p.saved?.noindex && <span className="cm-pill draft">noindex</span>}</td>
+            <td className="cm-acts"><a href={`#/pages/${p.id}`}>Edit</a><a href={p.path} target="_blank" rel="noreferrer">View</a></td></tr>
         ))}</tbody></table></div>
-      <h2 className="ad-h2">Pages you added</h2>
-      <div className="ad-tablewrap">
-        {!custom ? <p className="ad-muted pad">Loading…</p> : !custom.length ? <p className="ad-muted pad">None yet. <a href="#/pages/new">Add your first page</a> — for example a privacy policy or disclaimer.</p> : (
-          <table className="ad-table"><thead><tr><th>Title</th><th>Address</th><th>Status</th><th /></tr></thead>
+      <h2 className="cm-h2">Pages you added</h2>
+      <div className="cm-tablewrap">
+        {!custom ? <p className="cm-muted pad">Loading…</p> : !custom.length ? <p className="cm-muted pad">None yet. <a href="#/pages/new">Add your first page</a> — for example a privacy policy or disclaimer.</p> : (
+          <table className="cm-table"><thead><tr><th>Title</th><th>Address</th><th>Status</th><th /></tr></thead>
             <tbody>{custom.map((p) => (
-              <tr key={p.slug}><td><a className="ad-ttl" href={`#/pages/custom/${p.slug}`}>{p.title}</a></td><td className="nw">/{p.slug}</td>
-                <td>{p.published === false ? <span className="ad-pill draft">Draft</span> : <span className="ad-pill">Published</span>}</td>
-                <td className="ad-acts"><a href={`#/pages/custom/${p.slug}`}>Edit</a><a href={`/${p.slug}`} target="_blank" rel="noreferrer">View</a><button onClick={() => del(p)}>Delete</button></td></tr>
+              <tr key={p.slug}><td><a className="cm-ttl" href={`#/pages/custom/${p.slug}`}>{p.title}</a></td><td className="nw">/{p.slug}</td>
+                <td>{p.published === false ? <span className="cm-pill draft">Draft</span> : <span className="cm-pill">Published</span>}</td>
+                <td className="cm-acts"><a href={`#/pages/custom/${p.slug}`}>Edit</a><a href={`/${p.slug}`} target="_blank" rel="noreferrer">View</a><button onClick={() => del(p)}>Delete</button></td></tr>
             ))}</tbody></table>)}
       </div>
     </>
@@ -42,14 +42,14 @@ export function PagesAdmin({ id, api, toast, nav, has }) {
   const cur = pages.find((p) => p.id === id) || pages[0];
   return (
     <>
-      <div className="ad-head"><h1>Edit page</h1><a className="ad-btn ghost" href="#/pages">← All Pages</a>
-        <select className="ad-pagepick" value={cur.id} onChange={(e) => nav(`#/pages/${e.target.value}`)} aria-label="Choose a page">
+      <div className="cm-head"><h1>Edit page</h1><a className="cm-btn ghost" href="#/pages">← All Pages</a>
+        <select className="cm-pagepick" value={cur.id} onChange={(e) => nav(`#/pages/${e.target.value}`)} aria-label="Choose a page">
           {pages.map((p) => <option key={p.id} value={p.id}>{p.name} — {p.path}</option>)}
         </select>
-        <a className="ad-btn ghost" href={cur.path} target="_blank" rel="noreferrer">View page <Icon n="ext" /></a>
+        <a className="cm-btn ghost" href={cur.path} target="_blank" rel="noreferrer">View page <Icon n="ext" /></a>
       </div>
       <PageForm key={cur.id} page={cur} texts={texts.filter((t) => (t.page || t.id) === cur.id)} api={api} toast={toast} canText={has('pages')} onSaved={(p) => setPages((x) => x.map((y) => (y.id === p.id ? p : y)))} />
-      <p className="ad-muted">Knowledge posts, team profiles and practice areas have their own pages under <a href="#/posts">Knowledge</a>, <a href="#/people">Team</a> and <a href="#/practice">Practice Areas</a>; their title and description are created from their content automatically.</p>
+      <p className="cm-muted">Knowledge posts, team profiles and practice areas have their own pages under <a href="#/posts">Knowledge</a>, <a href="#/people">Team</a> and <a href="#/practice">Practice Areas</a>; their title and description are created from their content automatically.</p>
     </>
   );
 }
@@ -76,27 +76,27 @@ function PageForm({ page, texts, api, toast, onSaved, canText }) {
   };
   const title = f.metaTitle || page.metaTitle, desc = f.metaDescription || page.metaDescription;
   return (
-    <form onSubmit={save} className="ad-cols">
-      <div className="ad-main">
+    <form onSubmit={save} className="cm-cols">
+      <div className="cm-main">
         {canText && fields.length > 0 && <PageContent pages={texts} vals={vals} setVal={setVal} />}
         {page.heading !== undefined && canText && (
-          <section className="ad-box"><h2>Page heading and intro</h2>
+          <section className="cm-box"><h2>Page heading and intro</h2>
             <Field label="Heading" hint="Wrap the highlighted (italic red) words in *asterisks*, e.g. Get in *touch*. Without asterisks the last word is highlighted."><Input v={f.heading} set={set('heading')} placeholder={page.heading} /></Field>
             <Field label="Intro line" hint="Shown under the heading."><Text v={f.lede} set={set('lede')} rows={3} placeholder={page.lede} /></Field>
-            <p className="ad-muted">Leave a field empty to use the built-in text (shown greyed out).</p>
+            <p className="cm-muted">Leave a field empty to use the built-in text (shown greyed out).</p>
           </section>
         )}
-        <section className="ad-box"><h2>Search engine optimisation</h2>
+        <section className="cm-box"><h2>Search engine optimisation</h2>
           <Field label="Meta title" hint={<Counter v={f.metaTitle} max={60} />}><Input v={f.metaTitle} set={set('metaTitle')} placeholder={page.metaTitle} /></Field>
           <Field label="Meta description" hint={<Counter v={f.metaDescription} max={160} />}><Text v={f.metaDescription} set={set('metaDescription')} rows={3} placeholder={page.metaDescription} /></Field>
           <Field label="Social share image" hint="Shown when the page is shared on LinkedIn, WhatsApp, etc. Recommended 1200 × 630."><MediaField v={f.ogImage} set={set('ogImage')} toast={toast} /></Field>
-          <label className="ad-pub"><input type="checkbox" checked={!!f.noindex} onChange={(e) => set('noindex')(e.target.checked)} /> Hide this page from search engines (noindex)</label>
+          <label className="cm-pub"><input type="checkbox" checked={!!f.noindex} onChange={(e) => set('noindex')(e.target.checked)} /> Hide this page from search engines (noindex)</label>
         </section>
       </div>
-      <aside className="ad-side">
-        <section className="ad-box"><h2>Search preview</h2>
-          <div className="ad-serp"><small>{window.location.host}{page.path}</small><b>{title}</b><p>{desc}</p></div></section>
-        <div className="ad-row"><button className="ad-btn primary" disabled={busy}>{busy ? 'Saving…' : 'Save page'}</button><button type="button" className="ad-btn ghost" onClick={reset}>Reset to defaults</button></div>
+      <aside className="cm-side">
+        <section className="cm-box"><h2>Search preview</h2>
+          <div className="cm-serp"><small>{window.location.host}{page.path}</small><b>{title}</b><p>{desc}</p></div></section>
+        <div className="cm-row"><button className="cm-btn primary" disabled={busy}>{busy ? 'Saving…' : 'Save page'}</button><button type="button" className="cm-btn ghost" onClick={reset}>Reset to defaults</button></div>
       </aside>
     </form>
   );
@@ -107,8 +107,8 @@ export function SettingsAdmin({ api, toast, has, tab = 'general' }) {
   const admin = has('admin'); if (!admin) tab = 'general';
   return (
     <>
-      <div className="ad-head"><h1>Site Settings</h1></div>
-      <div className="ad-tabs">{[['general', 'General'], ...(admin ? [['email', 'Email (Microsoft 365)']] : [])].map(([k, l]) => <a key={k} href={`#/settings/${k}`} className={tab === k ? 'on' : ''}>{l}</a>)}</div>
+      <div className="cm-head"><h1>Site Settings</h1></div>
+      <div className="cm-tabs">{[['general', 'General'], ...(admin ? [['email', 'Email (Microsoft 365)']] : [])].map(([k, l]) => <a key={k} href={`#/settings/${k}`} className={tab === k ? 'on' : ''}>{l}</a>)}</div>
       {tab !== 'email' ? <General api={api} toast={toast} admin={admin} /> : <EmailSettings api={api} toast={toast} />}
     </>
   );
@@ -120,24 +120,24 @@ function General({ api, toast, admin }) {
   const set = (k) => (v) => setF((s) => ({ ...s, [k]: v }));
   const save = async (e) => { e.preventDefault(); setBusy(true); try { setF(await api('PUT', '/settings', f)); toast('Settings saved'); } catch (x) { toast(x.message, 'err'); } finally { setBusy(false); } };
   return (
-    <form className="ad-cols" onSubmit={save}>
-      <div className="ad-main">
-        <section className="ad-box"><h2>Website</h2><div className="ad-fgrid">
+    <form className="cm-cols" onSubmit={save}>
+      <div className="cm-main">
+        <section className="cm-box"><h2>Website</h2><div className="cm-fgrid">
           <Field label="Site name"><Input v={f.siteName} set={set('siteName')} /></Field>
           <Field label="Website address" hint="Full address, e.g. https://dsklegal.com. Needed for canonical links, sitemap.xml and share previews."><Input v={f.siteUrl} set={set('siteUrl')} placeholder="https://dsklegal.com" /></Field>
           <Field label="Default meta description" hint="Used on pages that have no description of their own." wide><Text v={f.defaultDescription} set={set('defaultDescription')} rows={3} /></Field>
           <Field label="Default social share image" wide><MediaField v={f.defaultOgImage} set={set('defaultOgImage')} toast={toast} /></Field>
         </div></section>
-        {admin && <section className="ad-box"><h2>Contact details</h2><div className="ad-fgrid">
+        {admin && <section className="cm-box"><h2>Contact details</h2><div className="cm-fgrid">
           <Field label="Public contact email" hint="Shown in the header, contact page and “Contact us” buttons, and used as the fallback mail address."><Input v={f.contactEmail} set={set('contactEmail')} type="email" /></Field>
           <Field label="Phone"><Input v={f.phone} set={set('phone')} /></Field>
         </div></section>}
-        <section className="ad-box"><h2>Search engines</h2>
-          <label className="ad-pub"><input type="checkbox" checked={f.noindexSite} onChange={(e) => set('noindexSite')(e.target.checked)} /> Discourage search engines from indexing the whole site</label>
-          <p className="ad-muted">Tick this while the site is a draft or test copy. It adds noindex to every page and blocks crawling in robots.txt. Untick it when the site goes live.</p></section>
+        <section className="cm-box"><h2>Search engines</h2>
+          <label className="cm-pub"><input type="checkbox" checked={f.noindexSite} onChange={(e) => set('noindexSite')(e.target.checked)} /> Discourage search engines from indexing the whole site</label>
+          <p className="cm-muted">Tick this while the site is a draft or test copy. It adds noindex to every page and blocks crawling in robots.txt. Untick it when the site goes live.</p></section>
       </div>
-      <aside className="ad-side"><button className="ad-btn primary" disabled={busy}>{busy ? 'Saving…' : 'Save settings'}</button>
-        <p className="ad-muted">robots.txt and sitemap.xml are generated automatically from these settings and your pages.</p></aside>
+      <aside className="cm-side"><button className="cm-btn primary" disabled={busy}>{busy ? 'Saving…' : 'Save settings'}</button>
+        <p className="cm-muted">robots.txt and sitemap.xml are generated automatically from these settings and your pages.</p></aside>
     </form>
   );
 }
@@ -153,11 +153,11 @@ function EmailSettings({ api, toast }) {
     try { await api('POST', '/mail/test', { to }); setRes({ ok: true, text: `Test email sent to ${to}. Check that inbox (and spam).` }); } catch (x) { setRes({ ok: false, text: x.message }); } finally { setBusy(''); }
   };
   return (
-    <form className="ad-cols" onSubmit={save}>
-      <div className="ad-main">
-        <section className="ad-box"><h2>Outgoing mail account</h2>
-          <label className="ad-pub"><input type="checkbox" checked={f.enabled} onChange={(e) => set('enabled')(e.target.checked)} /> Send email notifications for new enquiries and applications</label>
-          <div className="ad-fgrid" style={{ marginTop: 14 }}>
+    <form className="cm-cols" onSubmit={save}>
+      <div className="cm-main">
+        <section className="cm-box"><h2>Outgoing mail account</h2>
+          <label className="cm-pub"><input type="checkbox" checked={f.enabled} onChange={(e) => set('enabled')(e.target.checked)} /> Send email notifications for new enquiries and applications</label>
+          <div className="cm-fgrid" style={{ marginTop: 14 }}>
             <Field label="Mailbox (username)" hint="A Microsoft 365 mailbox that sends the emails, e.g. noreply@dsklegal.com."><Input v={f.user} set={set('user')} type="email" autoComplete="off" placeholder="noreply@dsklegal.com" /></Field>
             <Field label="Password" hint={f.hasPassword ? 'A password is saved. Leave blank to keep it.' : 'Mailbox password, or an app password if MFA is on.'}><Input v={pw} set={setPw} type="password" autoComplete="new-password" placeholder={f.hasPassword ? '•••••••• (saved)' : ''} /></Field>
             <Field label="Sender name"><Input v={f.fromName} set={set('fromName')} /></Field>
@@ -165,28 +165,28 @@ function EmailSettings({ api, toast }) {
             <Field label="SMTP server"><Input v={f.host} set={set('host')} /></Field>
             <Field label="Port" hint="587 (STARTTLS) for Microsoft 365."><Input v={f.port} set={set('port')} type="number" /></Field>
           </div>
-          {f.hasPassword && <button type="button" className="ad-btn ghost" onClick={async () => { if (window.confirm('Remove the saved password?')) { setF(await api('PUT', '/mail', { ...f, clearPassword: true })); toast('Password removed'); } }}>Remove saved password</button>}
+          {f.hasPassword && <button type="button" className="cm-btn ghost" onClick={async () => { if (window.confirm('Remove the saved password?')) { setF(await api('PUT', '/mail', { ...f, clearPassword: true })); toast('Password removed'); } }}>Remove saved password</button>}
         </section>
-        <section className="ad-box"><h2>Who gets notified</h2>
+        <section className="cm-box"><h2>Who gets notified</h2>
           <Field label="Notification recipients" hint="One address per line. These inboxes receive every contact enquiry and application (the CV is attached)."><textarea rows={3} value={(f.notifyTo || []).join('\n')} onChange={(e) => set('notifyTo')(e.target.value.split(/[\s,;]+/).filter(Boolean))} placeholder="hr@dsklegal.com" /></Field>
-          <label className="ad-pub"><input type="checkbox" checked={f.autoReply} onChange={(e) => set('autoReply')(e.target.checked)} /> Send an automatic confirmation to the person who wrote in</label>
+          <label className="cm-pub"><input type="checkbox" checked={f.autoReply} onChange={(e) => set('autoReply')(e.target.checked)} /> Send an automatic confirmation to the person who wrote in</label>
           {f.autoReply && <div style={{ marginTop: 12 }}><Field label="Confirmation subject"><Input v={f.autoReplySubject} set={set('autoReplySubject')} /></Field>
             <Field label="Confirmation message" hint="{name} is replaced with the sender’s name."><Text v={f.autoReplyBody} set={set('autoReplyBody')} rows={6} /></Field></div>}
         </section>
-        <section className="ad-box"><h2>Send a test email</h2>
-          <div className="ad-row"><input style={{ maxWidth: 320 }} type="email" placeholder="you@example.com" value={to} onChange={(e) => setTo(e.target.value)} />
-            <button type="button" className="ad-btn" disabled={!to || busy} onClick={test}>{busy === 'test' ? 'Sending…' : 'Save and send test'}</button></div>
-          {res && <p className={res.ok ? 'ad-ok' : 'ad-err'} role="status">{res.text}</p>}
+        <section className="cm-box"><h2>Send a test email</h2>
+          <div className="cm-row"><input style={{ maxWidth: 320 }} type="email" placeholder="you@example.com" value={to} onChange={(e) => setTo(e.target.value)} />
+            <button type="button" className="cm-btn" disabled={!to || busy} onClick={test}>{busy === 'test' ? 'Sending…' : 'Save and send test'}</button></div>
+          {res && <p className={res.ok ? 'cm-ok' : 'cm-err'} role="status">{res.text}</p>}
         </section>
       </div>
-      <aside className="ad-side"><button className="ad-btn primary" disabled={!!busy}>{busy === 'save' ? 'Saving…' : 'Save email settings'}</button>
-        <section className="ad-box ad-help"><h2>Microsoft 365 checklist</h2>
+      <aside className="cm-side"><button className="cm-btn primary" disabled={!!busy}>{busy === 'save' ? 'Saving…' : 'Save email settings'}</button>
+        <section className="cm-box cm-help"><h2>Microsoft 365 checklist</h2>
           <ol><li>Use a dedicated mailbox (or shared mailbox with a licence), not a person’s.</li>
             <li>In the Microsoft 365 admin centre: <i>Users → the mailbox → Mail → Manage email apps</i> → tick <b>Authenticated SMTP</b>.</li>
             <li>If the tenant enforces MFA / security defaults, create an <b>app password</b> for that mailbox, or ask IT to allow SMTP AUTH.</li>
             <li>Keep the From address the same as the mailbox, otherwise Microsoft rejects the message.</li>
             <li>For best deliverability, make sure SPF for dsklegal.com includes <code>spf.protection.outlook.com</code>.</li></ol>
-          <p className="ad-muted">The password is stored encrypted on the server and is never shown again. If Microsoft later disables basic SMTP login for the tenant, this will need OAuth (ask your developer).</p></section></aside>
+          <p className="cm-muted">The password is stored encrypted on the server and is never shown again. If Microsoft later disables basic SMTP login for the tenant, this will need OAuth (ask your developer).</p></section></aside>
     </form>
   );
 }
@@ -197,15 +197,15 @@ export function AuditLog({ api, toast }) {
   useEffect(() => { const t = setTimeout(() => api('GET', `/audit?limit=${n}&q=${encodeURIComponent(q)}`).then(setData).catch((e) => toast(e.message, 'err')), 200); return () => clearTimeout(t); }, [q, n]); // eslint-disable-line
   return (
     <>
-      <div className="ad-head"><h1>Audit Log</h1><a className="ad-btn" href="/api/admin/audit.csv"><Icon n="dl" /> Export CSV</a>
-        <input className="ad-search" type="search" placeholder="Search user, action, detail, IP…" value={q} onChange={(e) => { setQ(e.target.value); setN(100); }} /></div>
-      <p className="ad-muted">Every sign-in (including failed attempts), content edit, upload, settings change, backup and restore is recorded with the user and IP address. Entries cannot be edited from here.</p>
-      <div className="ad-tablewrap"><table className="ad-table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Detail</th><th>IP</th></tr></thead>
+      <div className="cm-head"><h1>Audit Log</h1><a className="cm-btn" href="/api/admin/audit.csv"><Icon n="dl" /> Export CSV</a>
+        <input className="cm-search" type="search" placeholder="Search user, action, detail, IP…" value={q} onChange={(e) => { setQ(e.target.value); setN(100); }} /></div>
+      <p className="cm-muted">Every sign-in (including failed attempts), content edit, upload, settings change, backup and restore is recorded with the user and IP address. Entries cannot be edited from here.</p>
+      <div className="cm-tablewrap"><table className="cm-table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Detail</th><th>IP</th></tr></thead>
         <tbody>{data.rows.map((r, i) => (
           <tr key={i} className={/failed|blocked/.test(r.action) ? 'warn' : ''}><td className="nw">{when(r.at)}</td><td>{r.user}</td><td>{r.action}</td><td className="wrap">{r.what}</td><td className="nw">{r.ip}</td></tr>
         ))}</tbody></table>
-        {!data.rows.length && <p className="ad-muted pad">No entries.</p>}</div>
-      <p className="ad-muted">Showing {data.rows.length} of {data.total}. {data.rows.length < data.total && <button className="ad-link" onClick={() => setN(n + 200)}>Show more</button>}</p>
+        {!data.rows.length && <p className="cm-muted pad">No entries.</p>}</div>
+      <p className="cm-muted">Showing {data.rows.length} of {data.total}. {data.rows.length < data.total && <button className="cm-link" onClick={() => setN(n + 200)}>Show more</button>}</p>
     </>
   );
 }
@@ -227,34 +227,34 @@ export function BackupAdmin({ api, toast }) {
     } catch (e) { toast(e.message, 'err'); } finally { setBusy(''); }
   };
   const del = async (b) => { if (!window.confirm(`Delete ${b.name}?`)) return; await api('DELETE', `/backup/files/${b.name}`).catch((e) => toast(e.message, 'err')); load(); };
-  const chk = (k, label, hint) => <label className="ad-chk"><input type="checkbox" checked={inc[k]} onChange={(e) => setInc({ ...inc, [k]: e.target.checked })} /><span><b>{label}</b><small>{hint}</small></span></label>;
+  const chk = (k, label, hint) => <label className="cm-chk"><input type="checkbox" checked={inc[k]} onChange={(e) => setInc({ ...inc, [k]: e.target.checked })} /><span><b>{label}</b><small>{hint}</small></span></label>;
   return (
     <>
-      <div className="ad-head"><h1>Backup</h1></div>
-      <div className="ad-cols">
-        <div className="ad-main">
-          <section className="ad-box"><h2>Export a backup</h2>
-            <p className="ad-muted">Always included: pages and SEO, knowledge posts, team, practice areas, site settings and all uploaded media.</p>
-            <div className="ad-chks">
+      <div className="cm-head"><h1>Backup</h1></div>
+      <div className="cm-cols">
+        <div className="cm-main">
+          <section className="cm-box"><h2>Export a backup</h2>
+            <p className="cm-muted">Always included: pages and SEO, knowledge posts, team, practice areas, site settings and all uploaded media.</p>
+            <div className="cm-chks">
               {chk('submissions', 'Enquiries, applications and subscribers', 'Personal data — store the file securely.')}
               {chk('cvs', 'Uploaded CVs', 'Applicants’ documents (personal data).')}
               {chk('users', 'User accounts', 'Includes password hashes. Needed only to rebuild the dashboard on a new server.')}
             </div>
-            <div className="ad-row"><a className="ad-btn primary" href={`/api/admin/backup/download?${q}`}><Icon n="dl" /> Download backup (.zip)</a>
-              <button className="ad-btn" onClick={make} disabled={!!busy}>{busy === 'make' ? 'Saving…' : 'Save a copy on the server'}</button></div>
-            <p className="ad-muted">The email password and server secrets are never part of a backup. Re-enter the email password after restoring on a new server.</p></section>
-          <section className="ad-box"><h2>Backups saved on the server</h2>
-            {!list ? <p>Loading…</p> : !list.length ? <p className="ad-muted">None yet. The newest 20 are kept.</p> : (
-              <div className="ad-tablewrap"><table className="ad-table"><tbody>{list.map((b) => <tr key={b.name}><td>{b.name}</td><td className="nw">{when(b.at)}</td><td className="nw">{bytes(b.size)}</td>
-                <td className="ad-acts"><a href={`/api/admin/backup/files/${b.name}`}>Download</a><button onClick={() => del(b)}>Delete</button></td></tr>)}</tbody></table></div>)}
-            <p className="ad-muted">Copies on the server protect against mistakes, not against losing the server. Download one regularly and keep it elsewhere.</p></section>
+            <div className="cm-row"><a className="cm-btn primary" href={`/api/admin/backup/download?${q}`}><Icon n="dl" /> Download backup (.zip)</a>
+              <button className="cm-btn" onClick={make} disabled={!!busy}>{busy === 'make' ? 'Saving…' : 'Save a copy on the server'}</button></div>
+            <p className="cm-muted">The email password and server secrets are never part of a backup. Re-enter the email password after restoring on a new server.</p></section>
+          <section className="cm-box"><h2>Backups saved on the server</h2>
+            {!list ? <p>Loading…</p> : !list.length ? <p className="cm-muted">None yet. The newest 20 are kept.</p> : (
+              <div className="cm-tablewrap"><table className="cm-table"><tbody>{list.map((b) => <tr key={b.name}><td>{b.name}</td><td className="nw">{when(b.at)}</td><td className="nw">{bytes(b.size)}</td>
+                <td className="cm-acts"><a href={`/api/admin/backup/files/${b.name}`}>Download</a><button onClick={() => del(b)}>Delete</button></td></tr>)}</tbody></table></div>)}
+            <p className="cm-muted">Copies on the server protect against mistakes, not against losing the server. Download one regularly and keep it elsewhere.</p></section>
         </div>
-        <aside className="ad-side">
-          <section className="ad-box ad-danger"><h2>Restore from a backup</h2>
-            <p className="ad-muted">This <b>replaces</b> the current pages, posts, team, practice areas, settings and media with the backup’s. A full copy of the current state is saved first so you can undo it.</p>
+        <aside className="cm-side">
+          <section className="cm-box cm-danger"><h2>Restore from a backup</h2>
+            <p className="cm-muted">This <b>replaces</b> the current pages, posts, team, practice areas, settings and media with the backup’s. A full copy of the current state is saved first so you can undo it.</p>
             <input type="file" accept=".zip,application/zip" onChange={(e) => setFile(e.target.files[0] || null)} />
             {file && <><Field label="Type RESTORE to confirm"><Input v={confirm} set={setConfirm} /></Field>
-              <button className="ad-btn danger solid" disabled={confirm !== 'RESTORE' || !!busy} onClick={restore}>{busy === 'restore' ? 'Restoring…' : 'Restore now'}</button></>}
+              <button className="cm-btn danger solid" disabled={confirm !== 'RESTORE' || !!busy} onClick={restore}>{busy === 'restore' ? 'Restoring…' : 'Restore now'}</button></>}
           </section>
         </aside>
       </div>
@@ -286,33 +286,33 @@ export function MediaAdmin({ api, toast, mode = 'library' }) {
   const chosen = (files || []).filter((f) => sel.has(f.name));
   if (upMode) return (
     <>
-      <div className="ad-head"><h1>Upload Media Files</h1><a className="ad-btn ghost" href="#/media">All Media →</a></div>
-      <label className={`ad-drop big${drag ? ' on' : ''}`} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); up(e.dataTransfer.files); }}>
+      <div className="cm-head"><h1>Upload Media Files</h1><a className="cm-btn ghost" href="#/media">All Media →</a></div>
+      <label className={`cm-drop big${drag ? ' on' : ''}`} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); up(e.dataTransfer.files); }}>
         <Icon n="dl" /><b>{busy ? 'Uploading…' : 'Drop files here'}</b><span>or <u>choose files</u> from your computer</span>
-        <small className="ad-muted">JPG, PNG, WebP, GIF or PDF · up to 6 MB each</small>
+        <small className="cm-muted">JPG, PNG, WebP, GIF or PDF · up to 6 MB each</small>
         <input type="file" hidden multiple accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" onChange={(e) => { up(e.target.files); e.target.value = ''; }} /></label>
-      {recent.length > 0 && <><h2 className="ad-h2">Uploaded just now</h2>
-        <ul className="ad-recent">{recent.map((r) => <li key={r.url}>{r.name.endsWith('.pdf') ? <span className="ad-pdf sm">PDF</span> : <img src={r.url} alt="" />}<span>{r.name}<small>{bytes(r.size)}</small></span>
-          <button className="ad-btn" onClick={() => navigator.clipboard?.writeText(location.origin + r.url).then(() => toast('URL copied'))}>Copy URL</button></li>)}</ul>
-        <a className="ad-btn primary" href="#/media">View in library</a></>}
+      {recent.length > 0 && <><h2 className="cm-h2">Uploaded just now</h2>
+        <ul className="cm-recent">{recent.map((r) => <li key={r.url}>{r.name.endsWith('.pdf') ? <span className="cm-pdf sm">PDF</span> : <img src={r.url} alt="" />}<span>{r.name}<small>{bytes(r.size)}</small></span>
+          <button className="cm-btn" onClick={() => navigator.clipboard?.writeText(location.origin + r.url).then(() => toast('URL copied'))}>Copy URL</button></li>)}</ul>
+        <a className="cm-btn primary" href="#/media">View in library</a></>}
     </>
   );
   return (
     <>
-      <div className="ad-head"><h1>All Media</h1>
-        <label className="ad-btn primary">{busy ? 'Uploading…' : <><Icon n="plus" /> Upload files</>}<input type="file" hidden multiple accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" onChange={(e) => { up(e.target.files); e.target.value = ''; }} /></label>
-        {chosen.length > 0 && <button className="ad-btn danger solid" onClick={() => del(chosen)}>Delete {chosen.length} selected</button>}
-        <input className="ad-search" type="search" placeholder="Search files…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
-      <div className="ad-tabs">{[['all', 'All'], ['img', 'Images'], ['pdf', 'PDFs']].map(([k, l]) => <button key={k} className={kind === k ? 'on' : ''} onClick={() => setKind(k)}>{l}{files ? ` (${files.filter((f) => k === 'all' || (k === 'pdf') === isPdf(f)).length})` : ''}</button>)}</div>
-      <div className={`ad-drop${drag ? ' on' : ''}`} hidden={false} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); up(e.dataTransfer.files); }}>
-        Drag files here to upload <span className="ad-muted">· JPG, PNG, WebP, GIF or PDF, up to 6 MB each</span></div>
-      <div className="ad-grid-media big">{!files && <p>Loading…</p>}{files && !shown.length && <p className="ad-muted">No files.</p>}
+      <div className="cm-head"><h1>All Media</h1>
+        <label className="cm-btn primary">{busy ? 'Uploading…' : <><Icon n="plus" /> Upload files</>}<input type="file" hidden multiple accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" onChange={(e) => { up(e.target.files); e.target.value = ''; }} /></label>
+        {chosen.length > 0 && <button className="cm-btn danger solid" onClick={() => del(chosen)}>Delete {chosen.length} selected</button>}
+        <input className="cm-search" type="search" placeholder="Search files…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+      <div className="cm-tabs">{[['all', 'All'], ['img', 'Images'], ['pdf', 'PDFs']].map(([k, l]) => <button key={k} className={kind === k ? 'on' : ''} onClick={() => setKind(k)}>{l}{files ? ` (${files.filter((f) => k === 'all' || (k === 'pdf') === isPdf(f)).length})` : ''}</button>)}</div>
+      <div className={`cm-drop${drag ? ' on' : ''}`} hidden={false} onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); up(e.dataTransfer.files); }}>
+        Drag files here to upload <span className="cm-muted">· JPG, PNG, WebP, GIF or PDF, up to 6 MB each</span></div>
+      <div className="cm-grid-media big">{!files && <p>Loading…</p>}{files && !shown.length && <p className="cm-muted">No files.</p>}
         {shown.map((f) => (
-          <div key={f.name} className={`ad-tile${sel.has(f.name) ? ' sel' : ''}`}>
-            <label className="ad-tick"><input type="checkbox" checked={sel.has(f.name)} onChange={() => tog(f.name)} aria-label={`Select ${f.name}`} /></label>
-            <button type="button" className="ad-thumb" onClick={() => setDetail(f.name)} aria-label={`Details for ${f.name}`}>{isPdf(f) ? <span className="ad-pdf">PDF</span> : <img src={f.url} alt="" loading="lazy" />}</button>
-            <small title={f.name}>{f.name}</small><small>{bytes(f.size)} · {f.used ? <b className="ad-used">used ×{f.used}</b> : 'unused'}</small>
-            <div className="ad-acts"><button className="blue" onClick={() => setDetail(f.name)}>Details</button><button className="blue" onClick={() => navigator.clipboard?.writeText(location.origin + f.url).then(() => toast('URL copied'))}>Copy URL</button><button onClick={() => del([f])}>Delete</button></div>
+          <div key={f.name} className={`cm-tile${sel.has(f.name) ? ' sel' : ''}`}>
+            <label className="cm-tick"><input type="checkbox" checked={sel.has(f.name)} onChange={() => tog(f.name)} aria-label={`Select ${f.name}`} /></label>
+            <button type="button" className="cm-thumb" onClick={() => setDetail(f.name)} aria-label={`Details for ${f.name}`}>{isPdf(f) ? <span className="cm-pdf">PDF</span> : <img src={f.url} alt="" loading="lazy" />}</button>
+            <small title={f.name}>{f.name}</small><small>{bytes(f.size)} · {f.used ? <b className="cm-used">used ×{f.used}</b> : 'unused'}</small>
+            <div className="cm-acts"><button className="blue" onClick={() => setDetail(f.name)}>Details</button><button className="blue" onClick={() => navigator.clipboard?.writeText(location.origin + f.url).then(() => toast('URL copied'))}>Copy URL</button><button onClick={() => del([f])}>Delete</button></div>
           </div>
         ))}</div>
       {detail && <MediaDetails name={detail} api={api} toast={toast} onClose={() => setDetail(null)} onChanged={load} />}
@@ -324,7 +324,7 @@ export function MediaAdmin({ api, toast, mode = 'library' }) {
 function MediaDetails({ name, api, toast, onClose, onChanged }) {
   const [d, setD] = useState(null); const [f, setF] = useState({ alt: '', title: '', caption: '', description: '' }); const [busy, setBusy] = useState(false);
   useEffect(() => { api('GET', `/media/${name}`).then((x) => { setD(x); setF({ alt: x.alt, title: x.title, caption: x.caption, description: x.description }); }).catch((e) => { toast(e.message, 'err'); onClose(); }); }, [name]); // eslint-disable-line
-  if (!d) return <Modal title="Attachment details" onClose={onClose} wide><div className="ad-modal-body">Loading…</div></Modal>;
+  if (!d) return <Modal title="Attachment details" onClose={onClose} wide><div className="cm-modal-body">Loading…</div></Modal>;
   const isPdf = d.type === 'application/pdf'; const full = location.origin + d.url;
   const dirty = ['alt', 'title', 'caption', 'description'].some((k) => f[k] !== d[k]);
   const save = async () => { setBusy(true); try { const x = await api('PUT', `/media/${name}`, f); setD(x); toast('Details saved'); onChanged(); } catch (e) { toast(e.message, 'err'); } finally { setBusy(false); } };
@@ -335,31 +335,31 @@ function MediaDetails({ name, api, toast, onClose, onChanged }) {
   const kv = [['Uploaded on', new Date(d.uploadedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })], ['Uploaded by', d.uploadedBy], ['File name', d.name], ['File type', d.type], ['File size', bytes(d.size)], d.dim && ['Dimensions', `${d.dim.w} × ${d.dim.h} px`]].filter(Boolean);
   return (
     <Modal title="Attachment details" onClose={onClose} wide>
-      <div className="ad-modal-body ad-mdet">
-        <aside className="ad-mleft">
-          <div className="ad-mprev">{isPdf ? <span className="ad-pdf">PDF</span> : <img src={d.url} alt={d.alt} />}</div>
-          <dl className="ad-kv">{kv.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+      <div className="cm-modal-body cm-mdet">
+        <aside className="cm-mleft">
+          <div className="cm-mprev">{isPdf ? <span className="cm-pdf">PDF</span> : <img src={d.url} alt={d.alt} />}</div>
+          <dl className="cm-kv">{kv.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         </aside>
-        <div className="ad-mright">
-          <section className="ad-msec"><h4>Used in</h4>
-            {d.usedIn.length ? <ul className="ad-uses">{d.usedIn.map((u, i) => <li key={i}><a href={u.href} onClick={onClose}>{u.label}</a><small>{u.kind}</small></li>)}</ul> : <p className="ad-muted">Not used anywhere yet.</p>}
+        <div className="cm-mright">
+          <section className="cm-msec"><h4>Used in</h4>
+            {d.usedIn.length ? <ul className="cm-uses">{d.usedIn.map((u, i) => <li key={i}><a href={u.href} onClick={onClose}>{u.label}</a><small>{u.kind}</small></li>)}</ul> : <p className="cm-muted">Not used anywhere yet.</p>}
           </section>
-          <section className="ad-msec"><h4>Details</h4>
+          <section className="cm-msec"><h4>Details</h4>
             <Field label="Alternative text" hint={isPdf ? 'Not used for PDFs.' : 'Describe the image for screen readers. Leave empty if it is purely decorative.'}><textarea rows={2} value={f.alt} onChange={(e) => setF({ ...f, alt: e.target.value })} disabled={isPdf} /></Field>
             <Field label="Title"><input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></Field>
             <Field label="Caption"><textarea rows={2} value={f.caption} onChange={(e) => setF({ ...f, caption: e.target.value })} /></Field>
             <Field label="Description"><textarea rows={3} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></Field>
           </section>
-          <section className="ad-msec"><h4>File URL</h4>
-            <div className="ad-urlrow"><input readOnly value={full} onFocus={(e) => e.target.select()} /><button type="button" className="ad-btn" onClick={() => navigator.clipboard?.writeText(full).then(() => toast('URL copied'))}>Copy URL</button></div>
+          <section className="cm-msec"><h4>File URL</h4>
+            <div className="cm-urlrow"><input readOnly value={full} onFocus={(e) => e.target.select()} /><button type="button" className="cm-btn" onClick={() => navigator.clipboard?.writeText(full).then(() => toast('URL copied'))}>Copy URL</button></div>
           </section>
         </div>
       </div>
-      <div className="ad-modal-foot">
-        <button className="ad-btn primary" onClick={save} disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save details' : 'Saved'}</button>
-        <a className="ad-btn" href={d.url} target="_blank" rel="noreferrer">Open file <Icon n="ext" /></a>
-        <span className="ad-spacer" />
-        <button className="ad-btn danger" onClick={del}>Delete permanently</button>
+      <div className="cm-modal-foot">
+        <button className="cm-btn primary" onClick={save} disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save details' : 'Saved'}</button>
+        <a className="cm-btn" href={d.url} target="_blank" rel="noreferrer">Open file <Icon n="ext" /></a>
+        <span className="cm-spacer" />
+        <button className="cm-btn danger" onClick={del}>Delete permanently</button>
       </div>
     </Modal>
   );
@@ -384,68 +384,68 @@ export function MenuAdmin({ api, toast, has }) {
   const reset = async () => { if (!window.confirm('Reset the menu to the built-in default? Your custom links and edits are removed (save to apply).')) return; try { upd(await api('GET', '/menu/default')); } catch (x) { toast(x.message, 'err'); } };
   return (
     <form onSubmit={save}>
-      <div className="ad-head"><h1>Header menu</h1><a className="ad-btn ghost" href="#/menu">← All Menus</a><a className="ad-btn ghost" href="/" target="_blank" rel="noreferrer">View site <Icon n="ext" /></a></div>
-      {!can && <p className="ad-muted">Your role can view the menu but not change it.</p>}
-      <div className="ad-cols">
-        <div className="ad-main">
-          <section className="ad-box"><h2>Header menu</h2>
-            <p className="ad-muted">Rename, reorder or hide items. Open “Dropdown content” on a dropdown to edit its title and links. The practice-area and sector lists are automatic. Add your own links or dropdowns at the bottom.</p>
-            <ol className="ad-menu">
+      <div className="cm-head"><h1>Header menu</h1><a className="cm-btn ghost" href="#/menu">← All Menus</a><a className="cm-btn ghost" href="/" target="_blank" rel="noreferrer">View site <Icon n="ext" /></a></div>
+      {!can && <p className="cm-muted">Your role can view the menu but not change it.</p>}
+      <div className="cm-cols">
+        <div className="cm-main">
+          <section className="cm-box"><h2>Header menu</h2>
+            <p className="cm-muted">Rename, reorder or hide items. Open “Dropdown content” on a dropdown to edit its title and links. The practice-area and sector lists are automatic. Add your own links or dropdowns at the bottom.</p>
+            <ol className="cm-menu">
               {m.items.map((x, i) => (
-                <li key={x.id || i} className={`ad-mi${x.hidden ? ' off' : ''}`}>
-                  <div className="ad-mi-row">
-                    <div className="ad-mi-fields">
+                <li key={x.id || i} className={`cm-mi${x.hidden ? ' off' : ''}`}>
+                  <div className="cm-mi-row">
+                    <div className="cm-mi-fields">
                       <Input v={x.label} set={(v) => item(i, { label: v })} placeholder="Label" disabled={!can} aria-label="Menu label" />
                       {(!x.builtin || LINK_BUILTIN.has(x.id)) && !x.children && <Input v={x.href || ''} set={(v) => item(i, { href: v })} placeholder="/page or https://…" disabled={!can} aria-label="Link" />}
                     </div>
-                    <span className="ad-pill">{x.builtin ? BUILTIN_NOTE[x.id] : x.children ? 'Dropdown' : 'Link'}</span>
-                    {can && <div className="ad-mi-acts">
-                      <button type="button" className="ad-ico" onClick={() => upd({ ...m, items: swap(m.items, i, -1) })} aria-label="Move up"><Icon n="up" /></button>
-                      <button type="button" className="ad-ico" onClick={() => upd({ ...m, items: swap(m.items, i, 1) })} aria-label="Move down"><Icon n="down" /></button>
-                      <label className="ad-pub"><input type="checkbox" checked={!x.hidden} onChange={(e) => item(i, { hidden: !e.target.checked })} /> Show</label>
-                      {!x.builtin && <button type="button" className="ad-ico" onClick={() => upd({ ...m, items: m.items.filter((_, k) => k !== i) })} aria-label="Remove item"><Icon n="x" /></button>}
+                    <span className="cm-pill">{x.builtin ? BUILTIN_NOTE[x.id] : x.children ? 'Dropdown' : 'Link'}</span>
+                    {can && <div className="cm-mi-acts">
+                      <button type="button" className="cm-ico" onClick={() => upd({ ...m, items: swap(m.items, i, -1) })} aria-label="Move up"><Icon n="up" /></button>
+                      <button type="button" className="cm-ico" onClick={() => upd({ ...m, items: swap(m.items, i, 1) })} aria-label="Move down"><Icon n="down" /></button>
+                      <label className="cm-pub"><input type="checkbox" checked={!x.hidden} onChange={(e) => item(i, { hidden: !e.target.checked })} /> Show</label>
+                      {!x.builtin && <button type="button" className="cm-ico" onClick={() => upd({ ...m, items: m.items.filter((_, k) => k !== i) })} aria-label="Remove item"><Icon n="x" /></button>}
                     </div>}
                   </div>
                   {x.tabs && (
-                    <details className="ad-mi-drop">
+                    <details className="cm-mi-drop">
                       <summary>Dropdown content ({x.tabs.length} {x.tabs.length === 1 ? 'tab' : 'tabs'}, {x.tabs.reduce((n, t) => n + (t.links?.length || 0), 0)} links{x.tabs.some((t) => t.auto) ? ' + automatic lists' : ''})</summary>
                       {x.tabs.map((t, k) => (
-                        <div className="ad-tab" key={k}>
-                          <div className="ad-mi-row">
-                            <div className="ad-mi-fields"><Input v={t.label} set={(v) => tab(i, k, { label: v })} placeholder="Tab title" disabled={!can} aria-label="Tab title" /></div>
-                            {t.auto && <span className="ad-pill">Automatic</span>}
-                            {can && <div className="ad-mi-acts">
-                              <button type="button" className="ad-ico" onClick={() => item(i, { tabs: swap(x.tabs, k, -1) })} aria-label="Move tab up"><Icon n="up" /></button>
-                              <button type="button" className="ad-ico" onClick={() => item(i, { tabs: swap(x.tabs, k, 1) })} aria-label="Move tab down"><Icon n="down" /></button>
-                              {x.tabs.length > 1 && <button type="button" className="ad-ico" onClick={() => item(i, { tabs: x.tabs.filter((_, n) => n !== k) })} aria-label="Remove tab"><Icon n="x" /></button>}
+                        <div className="cm-tab" key={k}>
+                          <div className="cm-mi-row">
+                            <div className="cm-mi-fields"><Input v={t.label} set={(v) => tab(i, k, { label: v })} placeholder="Tab title" disabled={!can} aria-label="Tab title" /></div>
+                            {t.auto && <span className="cm-pill">Automatic</span>}
+                            {can && <div className="cm-mi-acts">
+                              <button type="button" className="cm-ico" onClick={() => item(i, { tabs: swap(x.tabs, k, -1) })} aria-label="Move tab up"><Icon n="up" /></button>
+                              <button type="button" className="cm-ico" onClick={() => item(i, { tabs: swap(x.tabs, k, 1) })} aria-label="Move tab down"><Icon n="down" /></button>
+                              {x.tabs.length > 1 && <button type="button" className="cm-ico" onClick={() => item(i, { tabs: x.tabs.filter((_, n) => n !== k) })} aria-label="Remove tab"><Icon n="x" /></button>}
                             </div>}
                           </div>
                           {t.auto ? (
-                            <p className="ad-muted">{{ practice: 'The list of practice areas is generated automatically from Practice Areas.', sectors: 'The list of sectors is generated automatically.', knowledge: 'The latest knowledge pieces are listed automatically.' }[t.auto]}</p>
+                            <p className="cm-muted">{{ practice: 'The list of practice areas is generated automatically from Practice Areas.', sectors: 'The list of sectors is generated automatically.', knowledge: 'The latest knowledge pieces are listed automatically.' }[t.auto]}</p>
                           ) : (
-                            <div className="ad-mi-kids">
+                            <div className="cm-mi-kids">
                               {t.links.map((l, j) => (
-                                <div className="ad-mi-row kid" key={j}>
-                                  <div className="ad-mi-fields"><Input v={l.label} set={(v) => link(i, k, j, { label: v })} placeholder="Link label" disabled={!can} /><Input v={l.href} set={(v) => link(i, k, j, { href: v })} placeholder="/page or https://…" disabled={!can} /></div>
-                                  {can && <div className="ad-mi-acts">
-                                    <button type="button" className="ad-ico" onClick={() => tab(i, k, { links: swap(t.links, j, -1) })} aria-label="Move up"><Icon n="up" /></button>
-                                    <button type="button" className="ad-ico" onClick={() => tab(i, k, { links: swap(t.links, j, 1) })} aria-label="Move down"><Icon n="down" /></button>
-                                    <button type="button" className="ad-ico" onClick={() => tab(i, k, { links: t.links.filter((_, n) => n !== j) })} aria-label="Remove link"><Icon n="x" /></button>
+                                <div className="cm-mi-row kid" key={j}>
+                                  <div className="cm-mi-fields"><Input v={l.label} set={(v) => link(i, k, j, { label: v })} placeholder="Link label" disabled={!can} /><Input v={l.href} set={(v) => link(i, k, j, { href: v })} placeholder="/page or https://…" disabled={!can} /></div>
+                                  {can && <div className="cm-mi-acts">
+                                    <button type="button" className="cm-ico" onClick={() => tab(i, k, { links: swap(t.links, j, -1) })} aria-label="Move up"><Icon n="up" /></button>
+                                    <button type="button" className="cm-ico" onClick={() => tab(i, k, { links: swap(t.links, j, 1) })} aria-label="Move down"><Icon n="down" /></button>
+                                    <button type="button" className="cm-ico" onClick={() => tab(i, k, { links: t.links.filter((_, n) => n !== j) })} aria-label="Remove link"><Icon n="x" /></button>
                                   </div>}
                                 </div>
                               ))}
-                              {can && <button type="button" className="ad-btn" onClick={() => tab(i, k, { links: [...t.links, { label: '', href: '' }] })}><Icon n="plus" /> Add link</button>}
+                              {can && <button type="button" className="cm-btn" onClick={() => tab(i, k, { links: [...t.links, { label: '', href: '' }] })}><Icon n="plus" /> Add link</button>}
                             </div>
                           )}
                         </div>
                       ))}
-                      {can && x.tabs.length < 8 && <button type="button" className="ad-btn" onClick={() => item(i, { tabs: [...x.tabs, { label: 'New tab', links: [{ label: '', href: '' }] }] })}><Icon n="plus" /> Add tab</button>}
+                      {can && x.tabs.length < 8 && <button type="button" className="cm-btn" onClick={() => item(i, { tabs: [...x.tabs, { label: 'New tab', links: [{ label: '', href: '' }] }] })}><Icon n="plus" /> Add tab</button>}
                       {x.feature && (
-                        <div className="ad-tab ad-feat">
-                          <div className="ad-mi-row"><b>Featured card (right side of the dropdown)</b>
-                            <label className="ad-pub"><input type="checkbox" checked={!x.feature.hidden} disabled={!can} onChange={(e) => feat(i, { hidden: !e.target.checked })} /> Show card</label></div>
+                        <div className="cm-tab cm-feat">
+                          <div className="cm-mi-row"><b>Featured card (right side of the dropdown)</b>
+                            <label className="cm-pub"><input type="checkbox" checked={!x.feature.hidden} disabled={!can} onChange={(e) => feat(i, { hidden: !e.target.checked })} /> Show card</label></div>
                           {!x.feature.hidden && (
-                            <div className="ad-fgrid">
+                            <div className="cm-fgrid">
                               <Field label="Small heading"><Input v={x.feature.kicker} set={(v) => feat(i, { kicker: v })} disabled={!can} placeholder="Recognition" /></Field>
                               <Field label="Title"><Input v={x.feature.title} set={(v) => feat(i, { title: v })} disabled={!can} /></Field>
                               <Field label="Link"><Input v={x.feature.href} set={(v) => feat(i, { href: v })} disabled={!can} placeholder="/awards" /></Field>
@@ -457,41 +457,41 @@ export function MenuAdmin({ api, toast, has }) {
                     </details>
                   )}
                   {x.children && (
-                    <div className="ad-mi-kids">
+                    <div className="cm-mi-kids">
                       {x.children.map((c, j) => (
-                        <div className="ad-mi-row kid" key={j}>
-                          <div className="ad-mi-fields"><Input v={c.label} set={(v) => child(i, j, { label: v })} placeholder="Link label" disabled={!can} /><Input v={c.href} set={(v) => child(i, j, { href: v })} placeholder="/page or https://…" disabled={!can} /></div>
-                          {can && <div className="ad-mi-acts">
-                            <button type="button" className="ad-ico" onClick={() => item(i, { children: swap(x.children, j, -1) })} aria-label="Move up"><Icon n="up" /></button>
-                            <button type="button" className="ad-ico" onClick={() => item(i, { children: swap(x.children, j, 1) })} aria-label="Move down"><Icon n="down" /></button>
-                            <button type="button" className="ad-ico" onClick={() => item(i, { children: x.children.filter((_, k) => k !== j) })} aria-label="Remove link"><Icon n="x" /></button>
+                        <div className="cm-mi-row kid" key={j}>
+                          <div className="cm-mi-fields"><Input v={c.label} set={(v) => child(i, j, { label: v })} placeholder="Link label" disabled={!can} /><Input v={c.href} set={(v) => child(i, j, { href: v })} placeholder="/page or https://…" disabled={!can} /></div>
+                          {can && <div className="cm-mi-acts">
+                            <button type="button" className="cm-ico" onClick={() => item(i, { children: swap(x.children, j, -1) })} aria-label="Move up"><Icon n="up" /></button>
+                            <button type="button" className="cm-ico" onClick={() => item(i, { children: swap(x.children, j, 1) })} aria-label="Move down"><Icon n="down" /></button>
+                            <button type="button" className="cm-ico" onClick={() => item(i, { children: x.children.filter((_, k) => k !== j) })} aria-label="Remove link"><Icon n="x" /></button>
                           </div>}
                         </div>
                       ))}
-                      {can && <button type="button" className="ad-btn" onClick={() => item(i, { children: [...x.children, { label: '', href: '' }] })}><Icon n="plus" /> Add dropdown link</button>}
+                      {can && <button type="button" className="cm-btn" onClick={() => item(i, { children: [...x.children, { label: '', href: '' }] })}><Icon n="plus" /> Add dropdown link</button>}
                     </div>
                   )}
                 </li>
               ))}
             </ol>
-            {can && <div className="ad-addrow">
-              <button type="button" className="ad-btn" onClick={() => upd({ ...m, items: [...m.items, { id: '', label: '', href: '' }] })}><Icon n="plus" /> Add link</button>
-              <button type="button" className="ad-btn" onClick={() => upd({ ...m, items: [...m.items, { id: '', label: '', children: [{ label: '', href: '' }] }] })}><Icon n="plus" /> Add dropdown</button>
+            {can && <div className="cm-addrow">
+              <button type="button" className="cm-btn" onClick={() => upd({ ...m, items: [...m.items, { id: '', label: '', href: '' }] })}><Icon n="plus" /> Add link</button>
+              <button type="button" className="cm-btn" onClick={() => upd({ ...m, items: [...m.items, { id: '', label: '', children: [{ label: '', href: '' }] }] })}><Icon n="plus" /> Add dropdown</button>
             </div>}
           </section>
         </div>
-        <aside className="ad-side">
-          <section className="ad-box"><h2>Country selector</h2>
+        <aside className="cm-side">
+          <section className="cm-box"><h2>Country selector</h2>
             {m.countries.map((c, i) => (
-              <div className="ad-mi-row kid" key={i}>
-                <div className="ad-mi-fields"><Input v={c.label} set={(v) => upd({ ...m, countries: m.countries.map((x, k) => (k === i ? { ...x, label: v } : x)) })} placeholder="Country" disabled={!can} /><Input v={c.href} set={(v) => upd({ ...m, countries: m.countries.map((x, k) => (k === i ? { ...x, href: v } : x)) })} placeholder="https://…" disabled={!can} /></div>
-                {can && m.countries.length > 1 && <button type="button" className="ad-ico" onClick={() => upd({ ...m, countries: m.countries.filter((_, k) => k !== i) })} aria-label="Remove country"><Icon n="x" /></button>}
+              <div className="cm-mi-row kid" key={i}>
+                <div className="cm-mi-fields"><Input v={c.label} set={(v) => upd({ ...m, countries: m.countries.map((x, k) => (k === i ? { ...x, label: v } : x)) })} placeholder="Country" disabled={!can} /><Input v={c.href} set={(v) => upd({ ...m, countries: m.countries.map((x, k) => (k === i ? { ...x, href: v } : x)) })} placeholder="https://…" disabled={!can} /></div>
+                {can && m.countries.length > 1 && <button type="button" className="cm-ico" onClick={() => upd({ ...m, countries: m.countries.filter((_, k) => k !== i) })} aria-label="Remove country"><Icon n="x" /></button>}
               </div>
             ))}
-            {can && <button type="button" className="ad-btn" onClick={() => upd({ ...m, countries: [...m.countries, { label: '', href: '' }] })}><Icon n="plus" /> Add country</button>}
+            {can && <button type="button" className="cm-btn" onClick={() => upd({ ...m, countries: [...m.countries, { label: '', href: '' }] })}><Icon n="plus" /> Add country</button>}
           </section>
-          {can && <section className="ad-box"><button className="ad-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save menu' : 'Saved'}</button>
-            <button type="button" className="ad-btn ghost" onClick={reset}>Reset to default</button></section>}
+          {can && <section className="cm-box"><button className="cm-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save menu' : 'Saved'}</button>
+            <button type="button" className="cm-btn ghost" onClick={reset}>Reset to default</button></section>}
         </aside>
       </div>
     </form>
@@ -508,17 +508,17 @@ export function MenusList({ api, toast, has }) {
   const can = has('menu');
   return (
     <>
-      <div className="ad-head"><h1>All Menus</h1>{can && <a className="ad-btn primary" href="#/menu/new"><Icon n="plus" /> Add New Menu</a>}</div>
-      <div className="ad-tablewrap"><table className="ad-table">
+      <div className="cm-head"><h1>All Menus</h1>{can && <a className="cm-btn primary" href="#/menu/new"><Icon n="plus" /> Add New Menu</a>}</div>
+      <div className="cm-tablewrap"><table className="cm-table">
         <thead><tr><th>Menu name</th><th>Location</th><th>Items</th><th /></tr></thead>
         <tbody>
-          <tr><td data-l="Menu name"><a className="ad-ttl" href="#/menu/header">{d.header.name}</a></td><td data-l="Location">{d.header.location}</td><td data-l="Items">{d.header.items} (mega-menus, links, dropdowns)</td><td className="ad-acts"><a href="#/menu/header">Edit</a><a href="/" target="_blank" rel="noreferrer">View</a></td></tr>
+          <tr><td data-l="Menu name"><a className="cm-ttl" href="#/menu/header">{d.header.name}</a></td><td data-l="Location">{d.header.location}</td><td data-l="Items">{d.header.items} (mega-menus, links, dropdowns)</td><td className="cm-acts"><a href="#/menu/header">Edit</a><a href="/" target="_blank" rel="noreferrer">View</a></td></tr>
           {d.menus.map((m) => (
-            <tr key={m.id}><td data-l="Menu name"><a className="ad-ttl" href={`#/menu/${m.id}`}>{m.name}</a></td><td data-l="Location">{d.locations[m.location]}</td><td data-l="Items">{m.links.length}</td>
-              <td className="ad-acts"><a href={`#/menu/${m.id}`}>Edit</a>{can && <button onClick={() => del(m)}>Delete</button>}</td></tr>
+            <tr key={m.id}><td data-l="Menu name"><a className="cm-ttl" href={`#/menu/${m.id}`}>{m.name}</a></td><td data-l="Location">{d.locations[m.location]}</td><td data-l="Items">{m.links.length}</td>
+              <td className="cm-acts"><a href={`#/menu/${m.id}`}>Edit</a>{can && <button onClick={() => del(m)}>Delete</button>}</td></tr>
           ))}
         </tbody></table></div>
-      {!d.menus.length && <p className="ad-muted">No extra menus yet. Use <a href="#/menu/new">Add New Menu</a> to create one, for example a footer “Quick links” column.</p>}
+      {!d.menus.length && <p className="cm-muted">No extra menus yet. Use <a href="#/menu/new">Add New Menu</a> to create one, for example a footer “Quick links” column.</p>}
     </>
   );
 }
@@ -534,33 +534,33 @@ export function MenuForm({ id, api, toast, nav, has }) {
   const del = async () => { if (!window.confirm(`Delete the menu “${m.name}”?`)) return; try { await api('DELETE', `/menus/${id}`); toast('Menu deleted'); nav('#/menu'); } catch (x) { toast(x.message, 'err'); } };
   return (
     <form onSubmit={save}>
-      <div className="ad-head"><h1>{isNew ? 'Add New Menu' : 'Edit Menu'}</h1><a className="ad-btn ghost" href="#/menu">← All Menus</a></div>
-      {!can && <p className="ad-muted">Your role can view menus but not change them.</p>}
-      <div className="ad-cols">
-        <div className="ad-main">
-          <section className="ad-box"><Field label="Menu name"><Input v={m.name} set={(v) => setM({ ...m, name: v })} required className="ad-title" placeholder="Quick links" disabled={!can} /></Field></section>
-          <section className="ad-box"><h2>Menu items</h2>
-            <p className="ad-muted">Links are shown in the order below. Use a site path (/careers) or a full address (https://…).</p>
-            <div className="ad-mi-kids nobar">
+      <div className="cm-head"><h1>{isNew ? 'Add New Menu' : 'Edit Menu'}</h1><a className="cm-btn ghost" href="#/menu">← All Menus</a></div>
+      {!can && <p className="cm-muted">Your role can view menus but not change them.</p>}
+      <div className="cm-cols">
+        <div className="cm-main">
+          <section className="cm-box"><Field label="Menu name"><Input v={m.name} set={(v) => setM({ ...m, name: v })} required className="cm-title" placeholder="Quick links" disabled={!can} /></Field></section>
+          <section className="cm-box"><h2>Menu items</h2>
+            <p className="cm-muted">Links are shown in the order below. Use a site path (/careers) or a full address (https://…).</p>
+            <div className="cm-mi-kids nobar">
               {m.links.map((l, i) => (
-                <div className="ad-mi-row kid" key={i}>
-                  <div className="ad-mi-fields"><Input v={l.label} set={(v) => link(i, { label: v })} placeholder="Link label" disabled={!can} /><Input v={l.href} set={(v) => link(i, { href: v })} placeholder="/page or https://…" disabled={!can} /></div>
-                  {can && <div className="ad-mi-acts">
-                    <button type="button" className="ad-ico" onClick={() => setM({ ...m, links: swap(m.links, i, -1) })} aria-label="Move up"><Icon n="up" /></button>
-                    <button type="button" className="ad-ico" onClick={() => setM({ ...m, links: swap(m.links, i, 1) })} aria-label="Move down"><Icon n="down" /></button>
-                    <button type="button" className="ad-ico" onClick={() => setM({ ...m, links: m.links.filter((_, k) => k !== i) })} aria-label="Remove link"><Icon n="x" /></button>
+                <div className="cm-mi-row kid" key={i}>
+                  <div className="cm-mi-fields"><Input v={l.label} set={(v) => link(i, { label: v })} placeholder="Link label" disabled={!can} /><Input v={l.href} set={(v) => link(i, { href: v })} placeholder="/page or https://…" disabled={!can} /></div>
+                  {can && <div className="cm-mi-acts">
+                    <button type="button" className="cm-ico" onClick={() => setM({ ...m, links: swap(m.links, i, -1) })} aria-label="Move up"><Icon n="up" /></button>
+                    <button type="button" className="cm-ico" onClick={() => setM({ ...m, links: swap(m.links, i, 1) })} aria-label="Move down"><Icon n="down" /></button>
+                    <button type="button" className="cm-ico" onClick={() => setM({ ...m, links: m.links.filter((_, k) => k !== i) })} aria-label="Remove link"><Icon n="x" /></button>
                   </div>}
                 </div>
               ))}
-              {can && <button type="button" className="ad-btn" onClick={() => setM({ ...m, links: [...m.links, { label: '', href: '' }] })}><Icon n="plus" /> Add link</button>}
+              {can && <button type="button" className="cm-btn" onClick={() => setM({ ...m, links: [...m.links, { label: '', href: '' }] })}><Icon n="plus" /> Add link</button>}
             </div>
           </section>
         </div>
-        <aside className="ad-side">
-          <section className="ad-box"><h2>Display location</h2>
+        <aside className="cm-side">
+          <section className="cm-box"><h2>Display location</h2>
             <Field label="Show this menu in" hint="Footer: a link column above the footer’s legal line. Not shown: keep it as a draft."><Select v={m.location} set={(v) => setM({ ...m, location: v })} options={Object.entries(locs).map(([value, label]) => ({ value, label }))} /></Field></section>
-          {can && <section className="ad-box"><button className="ad-btn primary" disabled={busy}>{busy ? 'Saving…' : isNew ? 'Create menu' : 'Save menu'}</button>
-            {!isNew && <button type="button" className="ad-btn danger" onClick={del}>Delete menu</button>}</section>}
+          {can && <section className="cm-box"><button className="cm-btn primary" disabled={busy}>{busy ? 'Saving…' : isNew ? 'Create menu' : 'Save menu'}</button>
+            {!isNew && <button type="button" className="cm-btn danger" onClick={del}>Delete menu</button>}</section>}
         </aside>
       </div>
     </form>
@@ -580,49 +580,49 @@ export function FooterAdmin({ api, toast, has }) {
   const ro = !can;
   return (
     <form onSubmit={save}>
-      <div className="ad-head"><h1>Footer Settings</h1><a className="ad-btn ghost" href="/" target="_blank" rel="noreferrer">View site <Icon n="ext" /></a></div>
-      {ro && <p className="ad-muted">Your role can view the footer but not change it.</p>}
-      <div className="ad-cols">
-        <div className="ad-main">
-          <section className="ad-box"><h2>Office locations</h2>
+      <div className="cm-head"><h1>Footer Settings</h1><a className="cm-btn ghost" href="/" target="_blank" rel="noreferrer">View site <Icon n="ext" /></a></div>
+      {ro && <p className="cm-muted">Your role can view the footer but not change it.</p>}
+      <div className="cm-cols">
+        <div className="cm-main">
+          <section className="cm-box"><h2>Office locations</h2>
             <Field label="Column title"><Input v={f.officesTitle} set={set('officesTitle')} disabled={ro} /></Field>
             <Field label="Offices" hint="One per line."><Lines key={rk} v={f.offices} set={set('offices')} rows={8} /></Field></section>
-          <section className="ad-box"><h2>Link column</h2>
+          <section className="cm-box"><h2>Link column</h2>
             <Field label="Column title"><Input v={f.linksTitle} set={set('linksTitle')} disabled={ro} /></Field>
-            <div className="ad-mi-kids nobar">
+            <div className="cm-mi-kids nobar">
               {f.links.map((l, i) => (
-                <div className="ad-mi-row kid" key={i}>
-                  <div className="ad-mi-fields"><Input v={l.label} set={(v) => link(i, { label: v })} placeholder="Link label" disabled={ro} /><Input v={l.href} set={(v) => link(i, { href: v })} placeholder="/page or https://…" disabled={ro} /></div>
-                  {can && <div className="ad-mi-acts">
-                    <button type="button" className="ad-ico" onClick={() => set('links')(swap(f.links, i, -1))} aria-label="Move up"><Icon n="up" /></button>
-                    <button type="button" className="ad-ico" onClick={() => set('links')(swap(f.links, i, 1))} aria-label="Move down"><Icon n="down" /></button>
-                    <button type="button" className="ad-ico" onClick={() => set('links')(f.links.filter((_, k) => k !== i))} aria-label="Remove link"><Icon n="x" /></button>
+                <div className="cm-mi-row kid" key={i}>
+                  <div className="cm-mi-fields"><Input v={l.label} set={(v) => link(i, { label: v })} placeholder="Link label" disabled={ro} /><Input v={l.href} set={(v) => link(i, { href: v })} placeholder="/page or https://…" disabled={ro} /></div>
+                  {can && <div className="cm-mi-acts">
+                    <button type="button" className="cm-ico" onClick={() => set('links')(swap(f.links, i, -1))} aria-label="Move up"><Icon n="up" /></button>
+                    <button type="button" className="cm-ico" onClick={() => set('links')(swap(f.links, i, 1))} aria-label="Move down"><Icon n="down" /></button>
+                    <button type="button" className="cm-ico" onClick={() => set('links')(f.links.filter((_, k) => k !== i))} aria-label="Remove link"><Icon n="x" /></button>
                   </div>}
                 </div>
               ))}
-              {can && <button type="button" className="ad-btn" onClick={() => set('links')([...f.links, { label: '', href: '' }])}><Icon n="plus" /> Add link</button>}
+              {can && <button type="button" className="cm-btn" onClick={() => set('links')([...f.links, { label: '', href: '' }])}><Icon n="plus" /> Add link</button>}
             </div>
-            <p className="ad-muted">More link columns can be made under <a href="#/menu/new">Menu → Add New Menu</a> (location: Footer).</p></section>
-          <section className="ad-box"><h2>Mailing list</h2>
+            <p className="cm-muted">More link columns can be made under <a href="#/menu/new">Menu → Add New Menu</a> (location: Footer).</p></section>
+          <section className="cm-box"><h2>Mailing list</h2>
             <Field label="Heading"><Input v={f.mailingTitle} set={set('mailingTitle')} disabled={ro} /></Field>
             <Field label="Text"><Text v={f.mailing} set={set('mailing')} rows={3} disabled={ro} /></Field></section>
-          <section className="ad-box"><h2>Legal line</h2>
+          <section className="cm-box"><h2>Legal line</h2>
             <Field label="Copyright"><Input v={f.copyright} set={set('copyright')} disabled={ro} /></Field>
             <Field label="Disclaimer"><Text v={f.disclaimer} set={set('disclaimer')} rows={4} disabled={ro} /></Field></section>
         </div>
-        <aside className="ad-side">
-          {can && <section className="ad-box"><button className="ad-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save footer' : 'Saved'}</button>
-            <button type="button" className="ad-btn ghost" onClick={reset}>Reset to default</button></section>}
-          <section className="ad-box"><h2>Featured image</h2>
-            <p className="ad-muted">Shown in the last footer column (for example a news or announcement graphic). When empty, the contact person card below is shown instead.</p>
+        <aside className="cm-side">
+          {can && <section className="cm-box"><button className="cm-btn primary" disabled={busy || !dirty}>{busy ? 'Saving…' : dirty ? 'Save footer' : 'Saved'}</button>
+            <button type="button" className="cm-btn ghost" onClick={reset}>Reset to default</button></section>}
+          <section className="cm-box"><h2>Featured image</h2>
+            <p className="cm-muted">Shown in the last footer column (for example a news or announcement graphic). When empty, the contact person card below is shown instead.</p>
             <Field label="Image"><MediaField v={f.promoImage} set={set('promoImage')} toast={toast} /></Field>
             <Field label="Link" hint="Opens in a new tab when the image is clicked."><Input v={f.promoLink} set={set('promoLink')} placeholder="https://…" disabled={ro} /></Field>
             <Field label="Description (alt text)" hint="Read out by screen readers; say what the image shows."><Input v={f.promoAlt} set={set('promoAlt')} disabled={ro} /></Field></section>
-          <section className="ad-box"><h2>Contact person card</h2>
+          <section className="cm-box"><h2>Contact person card</h2>
             <Field label="Name"><Input v={f.personName} set={set('personName')} disabled={ro} /></Field>
             <Field label="Role"><Input v={f.personRole} set={set('personRole')} disabled={ro} /></Field>
             <Field label="Photo"><MediaField v={f.personPhoto} set={set('personPhoto')} toast={toast} /></Field></section>
-          <section className="ad-box"><h2>Social links</h2>
+          <section className="cm-box"><h2>Social links</h2>
             <Field label="LinkedIn" hint="Full address. Leave both empty to hide “Follow us”."><Input v={f.linkedin} set={set('linkedin')} placeholder="https://www.linkedin.com/company/…" disabled={ro} /></Field>
             <Field label="Instagram"><Input v={f.instagram} set={set('instagram')} placeholder="https://www.instagram.com/…" disabled={ro} /></Field></section>
         </aside>
