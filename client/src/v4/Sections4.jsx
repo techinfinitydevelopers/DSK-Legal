@@ -7,8 +7,10 @@ import { CATS, PRACTICE } from '../v2/practiceMeta.js';
 import { Mark, ScrollMark } from '../v2/Mark.jsx';
 import { PRACTICE_PAGES } from '../v2/practiceData.js';
 
+/** Photos for the first practice areas in the home list (1200px wide, ~1.1:1 like the panel); the others use the slider photos. */
+const PRACTICE_IMG = ['/img/practice-1.jpg', '/img/practice-2.jpg', '/img/practice-3.jpg'];
 export const SLIDES = [
-  '/img/banner1.jpg', '/img/banner2.jpg', '/img/banner3.webp', '/img/banner4.webp', '/img/banner5.jpg',
+  '/img/hero-1.jpg', '/img/hero-2.jpg', '/img/hero-3.jpg', '/img/banner4.webp', '/img/banner5.jpg', // first three: client photos (HERO BANNER 03, 02, 01), 2560px wide
   '/img/banner6.webp', '/img/banner7.jpg', '/img/banner8.jpg', '/img/banner9.jpg', '/img/banner10.jpg',
 ];
 const DWELL = 6500;
@@ -122,7 +124,7 @@ export function Profile2({ data }) {
     <section className="x-sec x-profile">
       <div className="container x-profile-in">
         <Reveal className="x-pimg">
-          <img src="/img/about.png" alt="Scales of justice" loading="lazy" />
+          <img src="/img/profile-team.jpg" alt="Two DSK Legal colleagues working on laptops at a table in a meeting room" width="1200" height="1200" loading="lazy" />
           <span className="x-badge"><b>2001</b> Est.</span>
         </Reveal>
         <Reveal delay={150}>
@@ -210,7 +212,7 @@ export function Practice2({ data }) {
           </ul>
 
           <Spotlight as="aside" className="x-papanel">
-            <div key={`bg-${cur.name}`} className="x-pabg" style={{ backgroundImage: `url(${SLIDES[cur.i % SLIDES.length]})` }} />
+            <div key={`bg-${cur.name}`} className="x-pabg" style={{ backgroundImage: `url(${PRACTICE_IMG[cur.i] || SLIDES[cur.i % SLIDES.length]})` }} />
             <div className="x-pashade" />
             <span key={`n-${cur.name}`} className="x-pabig">{String(cur.i + 1).padStart(2, '0')}</span>
             <div key={cur.name} className="x-pabody">
