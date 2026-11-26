@@ -13,6 +13,8 @@ import { savedMenu, footerMenus } from './menu.js';
 import { clientTexts, SECTOR_SLUGS } from './texts.js';
 import { savedForms, readSubmission } from './forms.js';
 import { publicFaqs } from './faqs.js';
+import { altMap } from './media.js';
+import { reply as chatReply, publicConfig as chatConfig } from './chat/chat.js';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const t = (v, n) => String(v ?? '').slice(0, n).trim();
@@ -36,9 +38,21 @@ export async function mountCms(app, dist) {
       articles: live.map((p) => ({ slug: p.slug, title: p.title, pdf: p.pdf, blocks: p.blocks })),
       custom: custom.filter((c) => c.published !== false).map((c) => ({ slug: c.slug, title: c.title, lede: c.lede, blocks: c.blocks })),
       jobs: jobs.filter((j) => j.published !== false && !(j.closingDate && j.closingDate < new Date().toISOString().slice(0, 10))).map(({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate }) => ({ slug, title, jobId, department, office, type, experience, summary, responsibilities, requirements, postedOn, closingDate })),
-      menu: savedMenu(), footerMenus: footerMenus(), texts: clientTexts(), forms: savedForms(), faqs: publicFaqs(),
+      menu: savedMenu(), footerMenus: footerMenus(), texts: clientTexts(), forms: savedForms(), faqs: publicFaqs(), mediaAlt: altMap(),
       site: { contactEmail: st.contactEmail, phone: st.phone, siteName: st.siteName }, seo: page,
     });
+  });
+
+  // Chatbot (local retrieval over the site's own content; nothing leaves this server)
+  const chatHits = new Map();
+  const chatLimited = (ip) => { const now = Date.now(); const a = (chatHits.get(ip) || []).filter((x) => now - x < 600e3); a.push(now); chatHits.set(ip, a); return a.length > 40; };
+  app.get('/api/chat/config', (_req, res) => res.set('Cache-Control', 'no-cache').json(chatConfig()));
+  app.post('/api/chat', express.json({ limit: '4kb' }), async (req, res) => {
+    if (!chatConfig().enabled) return res.status(404).json({ error: 'Chat is turned off.' });
+    if (chatLimited(req.ip)) return res.status(429).json({ error: 'You are sending messages very quickly. Please wait a moment.' });
+    const message = String(req.body?.message ?? '').trim();
+    if (!message) return res.status(400).json({ error: 'Type a question first.' });
+    try { res.json(await chatReply(message)); } catch (e) { console.warn('[chat]', e.message); res.status(500).json({ error: 'The assistant could not answer just now.' }); }
   });
 
   app.post('/api/subscribe', (req, res) => {

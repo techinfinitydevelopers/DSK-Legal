@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import { seoFor } from './pages.js';
 import { getSettings } from './settings.js';
+import { metaOf } from './media.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 let cache = { file: '', mtime: 0, html: '' };
@@ -10,12 +11,13 @@ const read = (file) => { const m = fs.statSync(file).mtimeMs; if (cache.file !==
 export async function renderIndex(file, pathname) {
   const st = getSettings(); const seo = await seoFor(pathname);
   if (pathname.startsWith('/admin')) seo.noindex = true;
+  const ogAlt = seo.ogImage && seo.ogImage.startsWith('/uploads/') ? metaOf(decodeURIComponent(seo.ogImage.slice(9))).alt || '' : '';
   const abs = (u) => (u && st.siteUrl && u.startsWith('/') ? st.siteUrl + u : u);
   const canonical = st.siteUrl ? st.siteUrl + (pathname.replace(/\/$/, '') || '/') : '';
   const tags = [
     `<meta property="og:site_name" content="${esc(st.siteName)}" />`, `<meta property="og:type" content="website" />`,
     `<meta property="og:title" content="${esc(seo.title)}" />`, `<meta property="og:description" content="${esc(seo.description)}" />`,
-    seo.ogImage ? `<meta property="og:image" content="${esc(abs(seo.ogImage))}" />` : '', canonical ? `<meta property="og:url" content="${esc(canonical)}" /><link rel="canonical" href="${esc(canonical)}" />` : '',
+    seo.ogImage ? `<meta property="og:image" content="${esc(abs(seo.ogImage))}" />` : '', ogAlt ? `<meta property="og:image:alt" content="${esc(ogAlt)}" /><meta name="twitter:image:alt" content="${esc(ogAlt)}" />` : '', canonical ? `<meta property="og:url" content="${esc(canonical)}" /><link rel="canonical" href="${esc(canonical)}" />` : '',
     `<meta name="twitter:card" content="${seo.ogImage ? 'summary_large_image' : 'summary'}" />`, seo.noindex ? '<meta name="robots" content="noindex,nofollow" />' : '',
   ].filter(Boolean).join('\n    ');
   let html = read(file);

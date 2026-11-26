@@ -72,13 +72,27 @@ export function logActivity(who, action, what = '') {
     fs.appendFileSync(AUDIT, JSON.stringify({ at: new Date().toISOString(), user, action, what: String(what).slice(0, 300), ip }) + '\n');
   } catch (e) { console.warn('[cms] audit write failed', e.message); }
 }
-export function readAudit({ limit = 100, offset = 0, q = '', user = '' } = {}) {
+function allAudit() {
   let lines = [];
   for (const f of [AUDIT, AUDIT + '.1']) { try { lines = lines.concat(fs.readFileSync(f, 'utf8').split('\n').filter(Boolean)); } catch { /* none yet */ } }
-  let rows = lines.map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean).reverse();
+  return lines.map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean).reverse(); // newest first
+}
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+/** Filters: user and action match exactly; from/to are YYYY-MM-DD (inclusive, server time zone offset ignored — compared on the stored UTC date); q searches everything. */
+export function readAudit({ limit = 100, offset = 0, q = '', user = '', action = '', from = '', to = '' } = {}) {
+  let rows = allAudit();
   if (user) rows = rows.filter((r) => r.user === user);
+  if (action) rows = rows.filter((r) => r.action === action);
+  if (DAY.test(from)) rows = rows.filter((r) => String(r.at).slice(0, 10) >= from);
+  if (DAY.test(to)) rows = rows.filter((r) => String(r.at).slice(0, 10) <= to);
   if (q) { const n = q.toLowerCase(); rows = rows.filter((r) => `${r.user} ${r.action} ${r.what} ${r.ip}`.toLowerCase().includes(n)); }
   return { total: rows.length, rows: rows.slice(offset, offset + limit) };
+}
+/** Values for the filter drop-downs. */
+export function auditFacets() {
+  const rows = allAudit();
+  const uniq = (k) => [...new Set(rows.map((r) => r[k]).filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b)));
+  return { users: uniq('user'), actions: uniq('action') };
 }
 export const submissions = () => readJson('submissions', []);
 export const saveSubmissions = (s) => writeJson('submissions', s);

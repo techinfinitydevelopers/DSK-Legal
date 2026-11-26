@@ -4,6 +4,7 @@ import { api, Icon, Field, Input, Select, Toasts, when } from './ui.jsx';
 import { PersonEditor, PostEditor, PracticeEditor, CustomEditor, JobEditor } from './Editors.jsx';
 import { FormsList, FormEditor } from './FormsAdmin.jsx';
 import { FaqAdmin } from './FaqAdmin.jsx';
+import { ChatbotAdmin } from './ChatbotAdmin.jsx';
 import { PagesList, PagesAdmin, SettingsAdmin, AuditLog, BackupAdmin, MediaAdmin, MenuAdmin, MenusList, MenuForm, FooterAdmin } from './Sections.jsx';
 
 // Sidebar, grouped by purpose. `g` = group heading (none = top item). Items hide per role (`cap`), empty groups hide with them.
@@ -19,6 +20,7 @@ const NAV = [
   { g: 'Website Configuration', k: 'menu', l: 'Navigation', ic: 'page', cap: 'menu', sub: [['All Menus', '#/menu'], ['Add New Menu', '#/menu/new']] },
   { g: 'Website Configuration', k: 'footer', l: 'Footer Settings', ic: 'page', cap: 'menu', href: '#/footer' },
   { g: 'Website Configuration', k: 'forms', l: 'Forms', ic: 'page', cap: 'content', href: '#/forms' },
+  { g: 'Communication', k: 'chatbot', l: 'Chatbot', ic: 'mail', cap: 'content', href: '#/chatbot' },
   { g: 'Communication', k: 'inbox', l: 'Inbox', ic: 'mail', cap: 'inbox', href: '#/inbox' },
   { g: 'System Settings', k: 'settings', l: 'Site Settings', ic: 'gear', cap: 'seo', sub: [['General', '#/settings/general'], ['Email (Microsoft 365)', '#/settings/email', 'admin']] },
   { g: 'System Settings', k: 'audit', l: 'Audit Log', ic: 'log', cap: 'admin', href: '#/audit' },
@@ -40,6 +42,11 @@ export default function Admin() {
   const [hash, setHash] = useState(window.location.hash || '#/dashboard');
   const [unread, setUnread] = useState({ inbox: 0, apps: 0 });
   const [openGrp, setOpenGrp] = useState({});
+  const [navOff, setNavOff] = useState(() => { try { return localStorage.getItem('cm_nav_off') === '1'; } catch { return false; } });
+  const [full, setFull] = useState(() => !!document.fullscreenElement);
+  const toggleNav = () => setNavOff((v) => { const n = !v; try { localStorage.setItem('cm_nav_off', n ? '1' : '0'); } catch { /* private mode */ } return n; });
+  const toggleFull = () => { try { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.(); } catch { /* not allowed here */ } };
+  useEffect(() => { const h = () => setFull(!!document.fullscreenElement); document.addEventListener('fullscreenchange', h); return () => document.removeEventListener('fullscreenchange', h); }, []);
   const toast = useCallback((text, kind = 'ok') => { const id = Math.random(); setToasts((t) => [...t, { id, text, kind }]); setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3500); }, []);
   const lost = useCallback(() => setUser(null), []);
 
@@ -59,7 +66,7 @@ export default function Admin() {
   const A = (m, u, b) => api(m, u, b, lost);
   const has = (c) => !!user.caps?.includes(c);
   const ctx = { toast, nav: go, user, api: A, has };
-  const NEED = { posts: 'content', people: 'content', practice: 'content', jobs: 'jobs', menu: 'menu', footer: 'menu', forms: 'content', faqs: 'content', texts: 'pages', media: 'media', inbox: 'inbox', pages: 'seo', settings: 'seo', audit: 'admin', backup: 'admin', users: 'admin' };
+  const NEED = { posts: 'content', people: 'content', practice: 'content', jobs: 'jobs', menu: 'menu', footer: 'menu', forms: 'content', faqs: 'content', chatbot: 'content', texts: 'pages', media: 'media', inbox: 'inbox', pages: 'seo', settings: 'seo', audit: 'admin', backup: 'admin', users: 'admin' };
   const logout = async () => { await api('POST', '/logout').catch(() => {}); setUser(null); };
   const body = (() => {
     if (NEED[section] && !has(NEED[section])) return <p className="cm-err">Your role ({user.role}) cannot open this section.</p>;
@@ -72,6 +79,7 @@ export default function Admin() {
       case 'pages': return !slug ? <PagesList {...ctx} /> : slug === 'new' ? <CustomEditor key="new" slug="new" {...ctx} /> : slug === 'custom' ? <CustomEditor key={slug2} slug={slug2} {...ctx} /> : <PagesAdmin id={slug} {...ctx} />;
       case 'menu': return !slug ? <MenusList {...ctx} /> : slug === 'header' ? <MenuAdmin {...ctx} /> : <MenuForm key={slug} id={slug} {...ctx} />;
       case 'footer': return <FooterAdmin {...ctx} />;
+      case 'chatbot': return <ChatbotAdmin {...ctx} />;
       case 'faqs': return <FaqAdmin {...ctx} />;
       case 'forms': return slug ? <FormEditor key={slug} id={slug} {...ctx} /> : <FormsList {...ctx} />;
       case 'texts': return <PagesAdmin id="home" {...ctx} />;
@@ -87,7 +95,7 @@ export default function Admin() {
   })();
 
   return (
-    <div className="cm">
+    <div className={`cm${navOff ? ' cm-nav-off' : ''}`}>
       <aside className="cm-nav">
         <a className="cm-brand" href="#/dashboard"><img src="/logo.png" alt="" /><span>DSK Legal<small>Site manager</small></span></a>
         <nav>{NAV.filter((n) => !n.cap || has(n.cap)).map((x) => ({ ...x, sub: x.sub && x.sub.filter((c) => !c[2] || has(c[2])) })).map((n, idx, all) => {
@@ -107,7 +115,7 @@ export default function Admin() {
         })}</nav>
       </aside>
       <div className="cm-wrap">
-        <header className="cm-top"><span>Signed in as <b>{user.name || user.username}</b> <em>{user.role}</em></span><button className="cm-btn ghost" onClick={logout}><Icon n="out" /> Log out</button></header>
+        <header className="cm-top"><div className="cm-top-l"><button type="button" className="cm-iconbtn" onClick={toggleNav} aria-label={navOff ? 'Show the sidebar' : 'Hide the sidebar'} aria-expanded={!navOff} title={navOff ? 'Show the sidebar' : 'Hide the sidebar'}><Icon n="menu" /></button><button type="button" className="cm-iconbtn" onClick={toggleFull} aria-label={full ? 'Exit full screen' : 'Full screen'} aria-pressed={full} title={full ? 'Exit full screen' : 'Full screen'}><Icon n={full ? 'compress' : 'expand'} /></button></div><span>Signed in as <b>{user.name || user.username}</b> <em>{user.role}</em></span><button className="cm-btn ghost" onClick={logout}><Icon n="out" /> Log out</button></header>
         <main className="cm-content">{body}</main>
       </div>
       <Toasts items={toasts} />

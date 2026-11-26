@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { mediaAlt } from '../seo.js';
 
 /** Social icon: a link when the address is set in the dashboard (Footer). With no footer settings saved yet both icons show as plain icons; once saved, only the ones with an address show. */
 const Social = ({ label, href, configured, children }) => (configured && !href ? null : href
@@ -63,8 +64,8 @@ export default function Footer({ data, awardsHref = '/awards', teamHref = '/peop
         {data.promo?.image ? (
           <div className="foot-promo">
             {data.promo.href
-              ? <a href={data.promo.href} target="_blank" rel="noopener noreferrer"><img src={data.promo.image} alt={data.promo.alt || ''} loading="lazy" width="500" height="500" /></a>
-              : <img src={data.promo.image} alt={data.promo.alt || ''} loading="lazy" width="500" height="500" />}
+              ? <a href={data.promo.href} target="_blank" rel="noopener noreferrer"><img src={data.promo.image} alt={data.promo.alt || mediaAlt(data.promo.image)} loading="lazy" width="500" height="500" /></a>
+              : <img src={data.promo.image} alt={data.promo.alt || mediaAlt(data.promo.image)} loading="lazy" width="500" height="500" />}
           </div>
         ) : (
         <div className="person">

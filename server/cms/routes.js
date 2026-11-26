@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'node:fs';
 import path from 'node:path';
-import { collection, saveCollection, restoreCollection, COLLECTIONS, KEYS, UPLOAD_DIR, PRIVATE_DIR, logActivity, readAudit, submissions, saveSubmissions, readJson, uid } from './store.js';
+import { auditFacets, collection, saveCollection, restoreCollection, COLLECTIONS, KEYS, UPLOAD_DIR, PRIVATE_DIR, logActivity, readAudit, submissions, saveSubmissions, readJson, uid } from './store.js';
 import { getSettings, saveSettings } from './settings.js';
 import { listPages, savePage, savedPages } from './pages.js';
 import { listTexts, saveTexts } from './texts.js';
@@ -13,6 +13,7 @@ import { buildZip, createBackup, listBackups, backupPath, restoreZip } from './b
 import { requireAuth, capsOf, ROLES, login, logout, listUsers, addUser, removeUser, setPassword, updateUser, verifyPassword, users } from './auth.js';
 import { FORMS, FORM_IDS, TYPE_LABEL, getForm, isCustom, defaultForm, saveForm, resetForm } from './forms.js';
 import { getFaqs, saveFaqs } from './faqs.js';
+import { getConfig as chatGet, saveConfig as chatSave, defaultConfig as chatDefault, getEntries as kbGet, saveEntries as kbSave, kbStats, debug as chatDebug, unanswered as chatUnanswered, clearUnanswered, summary as chatSummary, invalidate as kbInvalidate } from './chat/chat.js';
 
 // ---- sanitising: article HTML is rendered with dangerouslySetInnerHTML, so only a small tag whitelist survives ----
 const ALLOWED = new Set(['a', 'b', 'strong', 'i', 'em', 'u', 'sup', 'sub', 'br']);
@@ -267,6 +268,14 @@ export default function cmsRouter(peopleLookup) {
   });
   r.get('/texts', requireAuth('pages'), (_req, res) => res.json(listTexts()));
   r.put('/texts', requireAuth('pages'), (req, res) => { const n = saveTexts(req.body?.values || {}); logActivity(req, 'updated page text', `${Object.keys(req.body?.values || {}).length} fields`); res.json(listTexts()); });
+  // Chatbot: settings, hand-written knowledge entries, tester, unanswered questions
+  r.get('/chatbot', auth, async (_req, res) => res.json({ config: chatGet(), defaults: chatDefault(), stats: await kbStats(), summary: chatSummary() }));
+  r.put('/chatbot', requireAuth('content'), (req, res) => { try { const c = chatSave(req.body); logActivity(req, 'updated chatbot settings', c.enabled ? 'on' : 'off'); res.json(c); } catch (e) { res.status(400).json({ error: e.message }); } });
+  r.get('/chatbot/kb', auth, (_req, res) => res.json({ items: kbGet() }));
+  r.put('/chatbot/kb', requireAuth('content'), (req, res) => { try { const k = kbSave(req.body); logActivity(req, 'updated chatbot knowledge', `${k.items.length} entries`); res.json(k); } catch (e) { res.status(400).json({ error: e.message }); } });
+  r.post('/chatbot/test', requireAuth('content'), async (req, res) => { kbInvalidate(); const { answer: a } = await import('./chat/engine.js'); const m = String(req.body?.q || '').slice(0, 300); res.json({ answer: await a(m, chatGet()), hits: await chatDebug(m) }); });
+  r.get('/chatbot/unanswered', auth, (_req, res) => res.json({ items: chatUnanswered() }));
+  r.delete('/chatbot/unanswered', requireAuth('content'), (req, res) => { clearUnanswered(); logActivity(req, 'cleared chatbot unanswered questions'); res.json({ ok: true }); });
   // FAQs shown on /faq
   r.get('/faqs', auth, (_req, res) => res.json(getFaqs()));
   r.put('/faqs', requireAuth('content'), (req, res) => {
@@ -319,11 +328,13 @@ export default function cmsRouter(peopleLookup) {
   });
 
   // ---- audit log (admins) ----
-  r.get('/audit', requireAuth('admin'), (req, res) => res.json(readAudit({ limit: Math.min(Number(req.query.limit) || 100, 500), offset: Number(req.query.offset) || 0, q: String(req.query.q || '').slice(0, 80), user: String(req.query.user || '').slice(0, 40) })));
+  const auditQuery = (req) => ({ q: String(req.query.q || '').slice(0, 80), user: String(req.query.user || '').slice(0, 40), action: String(req.query.action || '').slice(0, 80), from: String(req.query.from || '').slice(0, 10), to: String(req.query.to || '').slice(0, 10) });
+  r.get('/audit', requireAuth('admin'), (req, res) => res.json(readAudit({ limit: Math.min(Number(req.query.limit) || 100, 500), offset: Number(req.query.offset) || 0, ...auditQuery(req) })));
+  r.get('/audit/filters', requireAuth('admin'), (_req, res) => res.json(auditFacets()));
   r.get('/audit.csv', requireAuth('admin'), (req, res) => {
     const cell = (v) => `"${String(v ?? '').replace(/^[=+\-@]/, "'$&").replace(/"/g, '""')}"`;
     res.setHeader('Content-Type', 'text/csv'); res.setHeader('Content-Disposition', 'attachment; filename="audit-log.csv"');
-    res.send('time,user,action,detail,ip\n' + readAudit({ limit: 100000 }).rows.map((x) => [x.at, x.user, x.action, x.what, x.ip].map(cell).join(',')).join('\n'));
+    res.send('time,user,action,detail,ip\n' + readAudit({ limit: 100000, ...auditQuery(req) }).rows.map((x) => [x.at, x.user, x.action, x.what, x.ip].map(cell).join(',')).join('\n'));
   });
 
   // ---- backup / restore (admins) ----

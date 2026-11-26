@@ -28,4 +28,6 @@ export function headingParts(h) {
 }
 
 /** Editable page text: a value saved in the admin (Page Text) wins, otherwise the built-in copy. */
+/** Alt text saved for an uploaded file in the admin Media Library; `fallback` when there is none. */
+export const mediaAlt = (src, fallback = '') => (typeof window !== 'undefined' && src && window.__MEDIA_ALT?.[src]) || fallback;
 export const tx = (key, fallback) => (typeof window !== 'undefined' && window.__TEXT?.[key]) || fallback;

@@ -201,3 +201,55 @@ body:has(.cm), body:has(.cm-login), body:has(.cm-boot) { background: var(--ad-bg
 .cm-faq-q i { font-weight: 400; color: #787c82; }
 .cm-faq-body { border: 0; border-top: 1px solid var(--ad-line); padding: 12px 14px 14px; margin: 0; display: grid; gap: 12px; min-width: 0; }
 .cm-faq-pub { align-self: end; padding-bottom: 6px; }
+
+.cm-catbox .cm-f { margin-bottom: 8px; }
+.cm-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+.cm .cm-cats .cm-cat { border: 1px solid #8c939a; background: #fff; border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 12px; font-weight: 400; line-height: 1.4; cursor: pointer; color: #1d2327; }
+.cm .cm-cats .cm-cat:hover { border-color: var(--ad-red); color: var(--ad-red); }
+.cm .cm-cats .cm-cat.on { background: var(--ad-red); border-color: var(--ad-red); color: #fff; }
+
+.cm-catin { position: relative; display: block; }
+.cm-catin input { padding-right: 44px !important; }
+.cm-catin-ok { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border: 0; border-radius: 50%; background: #e6f3ea; color: #1a7f37; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.cm-catin-ok:hover { background: #1a7f37; color: #fff; }
+.cm .cm-f > .cm-catin { font-weight: 400; font-size: 14px; }
+
+.cm-catwrap { position: relative; display: inline-flex; }
+.cm .cm-cats .cm-catwrap .cm-cat { padding-right: 28px; }
+.cm .cm-cats .cm-cat-x { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; border: 0; border-radius: 50%; background: transparent; color: #787c82; font: inherit; font-size: 15px; line-height: 1; padding: 0; cursor: pointer; display: grid; place-items: center; }
+.cm .cm-cats .cm-cat-x:hover { background: rgba(0,0,0,.1); color: #1d2327; }
+.cm .cm-cats .cm-cat.on + .cm-cat-x { color: #fff; }
+.cm .cm-cats .cm-cat.on + .cm-cat-x:hover { background: rgba(255,255,255,.25); }
+
+/* top bar: sidebar and full-screen toggles */
+.cm-top-l { display: flex; gap: 4px; margin-right: auto; }
+.cm-iconbtn { width: 36px; height: 36px; border: 0; border-radius: 4px; background: transparent; color: #1d2327; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.cm-iconbtn:hover { background: #f0f0f1; }
+.cm-iconbtn svg { width: 20px; height: 20px; }
+/* sidebar slides shut / open (desktop); on small screens it is simply hidden */
+@media (min-width: 961px) {
+  .cm .cm-nav { width: 250px; min-width: 250px; max-width: 250px; overflow: hidden; transition: width .28s ease, min-width .28s ease, max-width .28s ease, padding .28s ease, opacity .22s ease; }
+  .cm .cm-nav > * { min-width: 250px; }
+  .cm.cm-nav-off .cm-nav { width: 0; min-width: 0; max-width: 0; padding-left: 0; padding-right: 0; opacity: 0; pointer-events: none; }
+}
+@media (max-width: 960px) { .cm.cm-nav-off { grid-template-columns: minmax(0, 1fr); } .cm.cm-nav-off .cm-nav { display: none; } }
+@media (prefers-reduced-motion: reduce) { .cm .cm-nav { transition: none; } }
+
+/* pagination */
+.cm-pager { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin: 14px 0 6px; font-size: 13px; }
+.cm-pager-info { color: var(--ad-mut); }
+.cm-pager-nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.cm-pager-nav button { min-width: 32px; height: 32px; padding: 0 10px; border: 1px solid #c3c4c7; border-radius: 4px; background: #fff; color: #1d2327; font: inherit; cursor: pointer; }
+.cm-pager-nav button:hover:not(:disabled):not(.on) { border-color: var(--ad-red); color: var(--ad-red); }
+.cm-pager-nav button.on { background: var(--ad-red); border-color: var(--ad-red); color: #fff; font-weight: 600; }
+.cm-pager-nav button:disabled { opacity: .4; cursor: default; }
+.cm-pager-gap { padding: 0 4px; color: var(--ad-mut); }
+.cm-pager-size { display: flex; align-items: center; gap: 8px; color: var(--ad-mut); }
+.cm-pager-size select { width: auto !important; padding: 4px 8px !important; }
+
+/* audit log filters */
+.cm-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; background: #fff; border: 1px solid var(--ad-line); border-radius: 4px; padding: 12px 14px; margin: 0 0 14px; }
+.cm-filters label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: #50575e; }
+.cm-filters label:first-child { flex: 1 1 220px; }
+.cm-filters select, .cm-filters input { min-width: 140px; }
+.cm-filters label:first-child input { width: 100%; }

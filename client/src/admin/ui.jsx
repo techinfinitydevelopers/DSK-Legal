@@ -27,7 +27,7 @@ export const Icon = ({ n }) => {
     page: 'M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5', gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
     log: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01', box: 'M21 8v13H3V8M1 3h22v5H1zM10 12h4',
     ext: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6',
-    plus: 'M12 5v14M5 12h14', up: 'M6 15l6-6 6 6', down: 'M6 9l6 6 6-6', x: 'M6 6l12 12M18 6L6 18', dl: 'M12 4v11M7 11l5 5 5-5M4 20h16',
+    plus: 'M12 5v14M5 12h14', check: 'M5 13l4 4L19 7', menu: 'M4 6h16M4 12h16M4 18h16', expand: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5', compress: 'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5', up: 'M6 15l6-6 6 6', down: 'M6 9l6 6 6-6', x: 'M6 6l12 12M18 6L6 18', dl: 'M12 4v11M7 11l5 5 5-5M4 20h16',
   };
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={P[n]} /></svg>;
 };
@@ -121,3 +121,27 @@ export function MediaPicker({ kind, onPick, onClose, toast }) {
 
 export const when = (iso) => { try { return new Date(iso).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch { return iso; } };
 export const bytes = (n) => (n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
+
+/** Page numbers with the current page highlighted: 1 … 4 5 [6] 7 8 … 20 */
+const pageList = (cur, last) => {
+  const set = new Set([1, last, cur - 1, cur, cur + 1, 2, last - 1].filter((x) => x >= 1 && x <= last));
+  const out = []; let prev = 0;
+  for (const n of [...set].sort((a, b) => a - b)) { if (n - prev > 1) out.push('…' + n); out.push(n); prev = n; }
+  return out;
+};
+export function Pager({ page, perPage, total, onPage, onPerPage, sizes = [25, 50, 100] }) {
+  const last = Math.max(1, Math.ceil(total / perPage));
+  const from = total ? (page - 1) * perPage + 1 : 0; const to = Math.min(total, page * perPage);
+  return (
+    <nav className="cm-pager" aria-label="Pagination">
+      <span className="cm-pager-info">{total ? `Showing ${from}–${to} of ${total}` : 'No entries'}</span>
+      <div className="cm-pager-nav">
+        <button type="button" onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Previous page">‹ Prev</button>
+        {pageList(page, last).map((n) => (typeof n === 'string' ? <span key={n} className="cm-pager-gap" aria-hidden="true">…</span>
+          : <button type="button" key={n} className={n === page ? 'on' : ''} aria-current={n === page ? 'page' : undefined} onClick={() => onPage(n)}>{n}</button>))}
+        <button type="button" onClick={() => onPage(page + 1)} disabled={page >= last} aria-label="Next page">Next ›</button>
+      </div>
+      <label className="cm-pager-size">Rows per page <select value={perPage} onChange={(e) => onPerPage(Number(e.target.value))}>{sizes.map((n) => <option key={n} value={n}>{n}</option>)}</select></label>
+    </nav>
+  );
+}

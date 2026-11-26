@@ -6,6 +6,7 @@ import { Spotlight, Magnetic } from './fx.jsx';
 import { Typewriter } from './Typewriter.jsx';
 import { PRACTICE_PAGES } from './practiceData.js';
 import { svcId } from './practiceLinks.js';
+import { mediaAlt } from '../seo.js';
 
 /**
  * /practice → all 14 practice areas; /practice/:slug → one area: overview, services (accordion, deep-linkable by #anchor),
@@ -184,7 +185,7 @@ function Detail({ p, i }) {
             {p.contacts.map((c) => (
               <li key={c.name}>
                 <a href={c.slug ? `/people/${c.slug}` : '/people'}>
-                  <span className="x-pp-av"><img src={`/img/team/${c.slug}.jpg`} alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} /></span>
+                  <span className="x-pp-av" aria-hidden="true"><img src={`/img/team/${c.slug}.jpg`} alt={mediaAlt(`/img/team/${c.slug}.jpg`, c.name)} loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} /></span>
                   <span><b>{c.name}</b><small>{c.level} · {c.office}</small></span>
                 </a>
               </li>

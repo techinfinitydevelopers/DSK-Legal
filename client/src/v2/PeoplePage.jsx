@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { seoTitle } from '../seo.js';
+import { seoTitle, mediaAlt } from '../seo.js';
 import Header4 from '../v4/Header4.jsx';
 import Footer from '../components/Footer.jsx';
 import { Loader } from './Mark.jsx';
@@ -29,7 +29,7 @@ function Avatar({ p, className = '' }) {
   const [ok, setOk] = useState(true);
   return (
     <span className={`x-pp-av ${className}`} aria-hidden="true">
-      {ok ? <img src={p.photo} alt="" loading="lazy" onError={() => setOk(false)} /> : initials(p)}
+      {ok ? <img src={p.photo} alt={mediaAlt(p.photo, [p.name, p.level].filter(Boolean).join(', '))} loading="lazy" onError={() => setOk(false)} /> : initials(p)}
     </span>
   );
 }

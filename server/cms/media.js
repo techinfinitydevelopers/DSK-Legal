@@ -38,6 +38,8 @@ export function recordUpload(name, buf, user, original) {
 }
 export const dropMeta = (name) => { const m = all(); if (m[name]) { delete m[name]; writeJson('media', m); } };
 export const metaOf = (name) => all()[name] || {};
+/** Public site: alt text per uploaded file, { '/uploads/<file>': alt }. */
+export const altMap = () => Object.fromEntries(Object.entries(all()).filter(([, m]) => m && m.alt).map(([f, m]) => [`/uploads/${f}`, m.alt]));
 
 async function usedIn(url) {
   const out = []; const has = (o) => JSON.stringify(o).includes(url);

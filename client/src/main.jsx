@@ -6,6 +6,7 @@ import { applyMeta } from './seo.js';
 import CookieBanner from './components/CookieBanner.jsx';
 import DisclaimerGate from './components/DisclaimerGate.jsx';
 import BackToTop from './components/BackToTop.jsx';
+import ChatWidget from './components/ChatWidget.jsx';
 import './v2/v2.css'; // scoped to .v2 / x- / xh- classes, so safe to ship with v1
 import './v4/v4.css'; // Deloitte-style header (v4 only, scoped to .dl classes)
 
@@ -29,7 +30,7 @@ const applyCms = () => (cmsReady ||= (async () => {
     const c = await r.json();
     const swap = (arr, next) => Array.isArray(next) && next.length && arr.splice(0, arr.length, ...next);
     const [pe, pr, kn, ar] = await Promise.all([import('./v2/peopleData.js'), import('./v2/practiceData.js'), import('./v2/knowledgeData.js'), import('./v2/articleData.js')]);
-    window.__CUSTOM = c.custom || []; window.__JOBS = c.jobs || []; window.__MENU = c.menu || null; window.__FOOTER_MENUS = c.footerMenus || []; window.__SITE = c.site; window.__SEO = c.seo; window.__TEXT = c.texts || {}; window.__FORMS = c.forms || {}; window.__FAQS = c.faqs || []; applyMeta(c.seo);
+    window.__CUSTOM = c.custom || []; window.__JOBS = c.jobs || []; window.__MENU = c.menu || null; window.__FOOTER_MENUS = c.footerMenus || []; window.__SITE = c.site; window.__SEO = c.seo; window.__TEXT = c.texts || {}; window.__FORMS = c.forms || {}; window.__FAQS = c.faqs || []; window.__MEDIA_ALT = c.mediaAlt || {}; applyMeta(c.seo);
     swap(pe.PEOPLE, c.people); swap(pr.PRACTICE_PAGES, c.practice); swap(kn.KNOWLEDGE, c.knowledge); swap(ar.ARTICLES, c.articles);
   } catch { /* keep built-in content */ }
 })());
@@ -61,6 +62,7 @@ createRoot(document.getElementById('root')).render(
       <App />
     </React.Suspense>
     {path !== '/admin' && <BackToTop />}
+    {path !== '/admin' && <ChatWidget />}
     {path !== '/admin' && <CookieBanner />}
     {(stripped === '' || stripped === '/') && <DisclaimerGate />}
   </>

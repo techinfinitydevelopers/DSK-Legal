@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { api, Field, Input, Text, Lines, Select, MediaField, Icon, Modal, when, bytes, readFile } from './ui.jsx';
+import { api, Field, Input, Text, Lines, Select, MediaField, Icon, Modal, Pager, when, bytes, readFile } from './ui.jsx';
 import { PageContent } from './PageContent.jsx';
 
 const Counter = ({ v = '', max }) => <small className={(v.length > max ? 'cm-over' : '')}>{v.length}/{max} characters{v.length > max ? ' — search engines may cut this off' : ''}</small>;
@@ -193,19 +193,37 @@ function EmailSettings({ api, toast }) {
 
 /* ---------------- Audit log ---------------- */
 export function AuditLog({ api, toast }) {
-  const [q, setQ] = useState(''); const [data, setData] = useState({ total: 0, rows: [] }); const [n, setN] = useState(100);
-  useEffect(() => { const t = setTimeout(() => api('GET', `/audit?limit=${n}&q=${encodeURIComponent(q)}`).then(setData).catch((e) => toast(e.message, 'err')), 200); return () => clearTimeout(t); }, [q, n]); // eslint-disable-line
+  const [f, setF] = useState({ q: '', user: '', action: '', from: '', to: '' });
+  const [facets, setFacets] = useState({ users: [], actions: [] });
+  const [data, setData] = useState({ total: 0, rows: [] }); const [page, setPage] = useState(1); const [per, setPer] = useState(50);
+  const qs = (extra = {}) => { const p = new URLSearchParams(); for (const [k, v] of Object.entries({ ...f, ...extra })) if (v !== '' && v != null) p.set(k, v); return p.toString(); };
+  useEffect(() => { api('GET', '/audit/filters').then(setFacets).catch(() => {}); }, []); // eslint-disable-line
+  useEffect(() => { const t = setTimeout(() => api('GET', `/audit?${qs({ limit: per, offset: (page - 1) * per })}`).then(setData).catch((e) => toast(e.message, 'err')), 200); return () => clearTimeout(t); }, [f, page, per]); // eslint-disable-line
+  // a filter or a longer page size can leave the current page past the end
+  useEffect(() => { const last = Math.max(1, Math.ceil(data.total / per)); if (page > last) setPage(last); }, [data.total, per]); // eslint-disable-line
+  const go = (n) => { setPage(n); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const set = (k) => (v) => { setF((x) => ({ ...x, [k]: v })); setPage(1); };
+  const active = Object.values(f).some(Boolean);
+  const bad = f.from && f.to && f.from > f.to;
   return (
     <>
-      <div className="cm-head"><h1>Audit Log</h1><a className="cm-btn" href="/api/admin/audit.csv"><Icon n="dl" /> Export CSV</a>
-        <input className="cm-search" type="search" placeholder="Search user, action, detail, IP…" value={q} onChange={(e) => { setQ(e.target.value); setN(100); }} /></div>
+      <div className="cm-head"><h1>Audit Log</h1><a className="cm-btn" href={`/api/admin/audit.csv?${qs()}`}><Icon n="dl" /> Export CSV{active ? ' (filtered)' : ''}</a></div>
       <p className="cm-muted">Every sign-in (including failed attempts), content edit, upload, settings change, backup and restore is recorded with the user and IP address. Entries cannot be edited from here.</p>
+      <div className="cm-filters">
+        <label>Search<input type="search" placeholder="User, action, detail, IP…" value={f.q} onChange={(e) => set('q')(e.target.value)} /></label>
+        <label>User<select value={f.user} onChange={(e) => set('user')(e.target.value)}><option value="">All users</option>{facets.users.map((u) => <option key={u} value={u}>{u}</option>)}</select></label>
+        <label>Action<select value={f.action} onChange={(e) => set('action')(e.target.value)}><option value="">All actions</option>{facets.actions.map((a) => <option key={a} value={a}>{a}</option>)}</select></label>
+        <label>From<input type="date" value={f.from} max={f.to || undefined} onChange={(e) => set('from')(e.target.value)} /></label>
+        <label>To<input type="date" value={f.to} min={f.from || undefined} onChange={(e) => set('to')(e.target.value)} /></label>
+        <button type="button" className="cm-btn ghost" onClick={() => { setF({ q: '', user: '', action: '', from: '', to: '' }); setPage(1); }} disabled={!active}>Clear filters</button>
+      </div>
+      {bad && <p className="cm-err" role="alert">“From” is after “To”, so nothing can match.</p>}
       <div className="cm-tablewrap"><table className="cm-table"><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Detail</th><th>IP</th></tr></thead>
         <tbody>{data.rows.map((r, i) => (
           <tr key={i} className={/failed|blocked/.test(r.action) ? 'warn' : ''}><td className="nw">{when(r.at)}</td><td>{r.user}</td><td>{r.action}</td><td className="wrap">{r.what}</td><td className="nw">{r.ip}</td></tr>
         ))}</tbody></table>
-        {!data.rows.length && <p className="cm-muted pad">No entries.</p>}</div>
-      <p className="cm-muted">Showing {data.rows.length} of {data.total}. {data.rows.length < data.total && <button className="cm-link" onClick={() => setN(n + 200)}>Show more</button>}</p>
+        {!data.rows.length && <p className="cm-muted pad">{active ? 'No entries match these filters.' : 'No entries.'}</p>}</div>
+      <Pager page={page} perPage={per} total={data.total} onPage={go} onPerPage={(n) => { setPer(n); setPage(1); }} />
     </>
   );
 }
@@ -345,7 +363,7 @@ function MediaDetails({ name, api, toast, onClose, onChanged }) {
             {d.usedIn.length ? <ul className="cm-uses">{d.usedIn.map((u, i) => <li key={i}><a href={u.href} onClick={onClose}>{u.label}</a><small>{u.kind}</small></li>)}</ul> : <p className="cm-muted">Not used anywhere yet.</p>}
           </section>
           <section className="cm-msec"><h4>Details</h4>
-            <Field label="Alternative text" hint={isPdf ? 'Not used for PDFs.' : 'Describe the image for screen readers. Leave empty if it is purely decorative.'}><textarea rows={2} value={f.alt} onChange={(e) => setF({ ...f, alt: e.target.value })} disabled={isPdf} /></Field>
+            <Field label="Alternative text" hint={isPdf ? 'Not used for PDFs.' : 'Describe what the image shows. It is used as the alt text wherever this image appears on the site (team photos, footer image) and in social-share previews. Good alt text also helps search engines.'}><textarea rows={2} value={f.alt} onChange={(e) => setF({ ...f, alt: e.target.value })} disabled={isPdf} /></Field>
             <Field label="Title"><input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></Field>
             <Field label="Caption"><textarea rows={2} value={f.caption} onChange={(e) => setF({ ...f, caption: e.target.value })} /></Field>
             <Field label="Description"><textarea rows={3} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></Field>
