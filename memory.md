@@ -415,3 +415,7 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 - 2026-11-27: Repo cloned to /Users/apple/Downloads/dsk-legal/DSK-Legal (HEAD b876a99). Deps not installed yet.
 - 2026-11-27: Installed Node v22.23.5 (~/.local/node, sha256 verified); `npm run install:all` OK (npm audit: 1–2 high/moderate vulns, not fixed). Dev running: client :5173, API :5001; home page + /api/home verified.
 - 2026-11-27: Home is v4 (styles for hero/practice live in client/src/v2/v2.css). Brightened images per user: hero `.x-slide.on` opacity .6→.92, saturate 1, `.x-hero-shade` gradients lightened; Practice panel `.x-pabg` + `pbg` keyframe .55→.92, `.x-pashade` gradient now starts at 30%. Verified at 1440px.
+- 2026-11-27: Committed + pushed brightness change to main (b5649d9).
+- 2026-11-27: Practice panel (v4/Sections4.jsx): removed category tag (.x-patag) and description <p> from image overlay; kept heading + Explore button. Verified. Not committed.
+- 2026-11-27: Centering of practice panel tried then reverted per user (v2.css back to b5649d9).
+- 2026-11-27: Pushed practice panel tag/paragraph removal to main.

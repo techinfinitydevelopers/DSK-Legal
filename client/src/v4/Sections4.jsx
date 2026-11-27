@@ -216,9 +216,7 @@ export function Practice2({ data }) {
             <div className="x-pashade" />
             <span key={`n-${cur.name}`} className="x-pabig">{String(cur.i + 1).padStart(2, '0')}</span>
             <div key={cur.name} className="x-pabody">
-              <span className="x-patag">{cur.cat}</span>
               <h3>{cur.name}</h3>
-              <p>{cur.desc}</p>
               <Magnetic><a className="x-btn x-btn-red" href={`/practice/${PRACTICE_PAGES[cur.i]?.slug || ''}`}>Explore Practice <b>→</b></a></Magnetic>
             </div>
           </Spotlight>
