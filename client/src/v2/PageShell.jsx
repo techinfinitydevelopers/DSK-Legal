@@ -28,12 +28,12 @@ export default function PageShell({ title, children }) {
 }
 
 /** Dark page hero: breadcrumb trail, h1 made of [{text, as?}] parts, optional lede and extra content. */
-export function PageHero({ crumbs = [], parts, lede, children, className = '' }) {
+export function PageHero({ crumbs = [], parts, lede, children, className = '', bg }) {
   const intro = typeof window !== 'undefined' ? window.__SEO?.intro : null; // heading/lede edited in the admin dashboard (exact-page only)
   if (intro?.heading) parts = headingParts(intro.heading);
   if (intro?.lede) lede = intro.lede;
   return (
-    <section className={`x-ap-hero ${className}`}>
+    <section className={`x-ap-hero ${bg ? 'x-ap-hero-img' : ''} ${className}`} style={bg ? { backgroundImage: `linear-gradient(90deg, rgba(13,13,13,.75) 0%, rgba(13,13,13,.35) 55%, rgba(13,13,13,.1) 100%), url(${bg})` } : undefined}>
       <div className="container">
         <nav className="x-crumbs" aria-label="Breadcrumb">
           <a href="/">Home</a>

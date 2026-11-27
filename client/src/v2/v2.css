@@ -456,6 +456,8 @@
 .x-ap-hero { position: relative; overflow: hidden; background: #0d0d0d; color: #fff; padding: 190px 0 90px; background-image: radial-gradient(700px circle at 85% 30%, rgba(225,30,37,.3), transparent 65%); }
 .x-ap-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px); background-size: 90px 90px; -webkit-mask-image: radial-gradient(circle at 25% 50%, #000, transparent 75%); mask-image: radial-gradient(circle at 25% 50%, #000, transparent 75%); }
 .x-ap-hero .container { position: relative; }
+.x-ap-hero.x-ap-hero-img { background-size: cover; background-position: center; }
+.x-ap-hero.x-ap-hero-img::before { display: none; }
 .x-ap-hero h1 { color: #fff; font-size: clamp(44px, 7vw, 92px); line-height: 1; margin: 18px 0 20px; }
 .x-ap-hero h1 em { color: var(--red); font-style: italic; }
 .x-ap-hero p { color: #ccc; max-width: 560px; font-size: 17px; font-weight: 300; }

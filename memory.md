@@ -419,3 +419,4 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 - 2026-11-27: Practice panel (v4/Sections4.jsx): removed category tag (.x-patag) and description <p> from image overlay; kept heading + Explore button. Verified. Not committed.
 - 2026-11-27: Centering of practice panel tried then reverted per user (v2.css back to b5649d9).
 - 2026-11-27: Pushed practice panel tag/paragraph removal to main.
+- 2026-11-27: Practice detail page hero banners: PageHero got optional `bg` prop (v2/PageShell.jsx, CSS .x-ap-hero-img); BANNER array in v2/PracticePage.jsx maps index 0–2 (Banking, Competition, Corporate) → public/img/practice-banner-1..3.jpg (2000×729 office photos from user). Others keep plain hero. Pushed to main.

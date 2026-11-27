@@ -114,6 +114,9 @@ function Body({ items }) {
   return out;
 }
 
+/** Banner photos for the first practice areas (Banking, Competition, Corporate); the rest keep the plain dark hero. */
+const BANNER = ['/img/practice-banner-1.jpg', '/img/practice-banner-2.jpg', '/img/practice-banner-3.jpg'];
+
 function Detail({ p, i }) {
   const prev = PRACTICE_PAGES[(i + PRACTICE_PAGES.length - 1) % PRACTICE_PAGES.length];
   const next = PRACTICE_PAGES[(i + 1) % PRACTICE_PAGES.length];
@@ -139,6 +142,7 @@ function Detail({ p, i }) {
       <PageHero
         crumbs={[['Practice areas', '/practice'], [p.name]]}
         parts={[{ text: p.name }]}
+        bg={BANNER[i]}
       >
         <p className="x-pg-facts"><b>{p.services.length}</b> services <i /> <b>{p.contacts.length}</b> key contacts</p>
       </PageHero>
