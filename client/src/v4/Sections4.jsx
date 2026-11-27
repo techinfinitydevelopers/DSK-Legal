@@ -309,7 +309,9 @@ export function Offices2({ data }) {
               onFocus={() => setOn(n)}
               onClick={() => setOn(n)}
             >
-              <img src={`/img/${c.img}`} alt={`${c.city} office`} loading="lazy" />
+              <img className="x-oimg-f" src={`/img/${c.img}`} alt={`${c.city} office`} loading="lazy" />
+              {/* closed strip: a narrow crop with the "DSK" lettering at the same size and height in every photo */}
+              <img className="x-oimg-s" src={`/img/${c.img.replace(/\.jpg$/, '-s.jpg')}`} alt="" aria-hidden="true" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
               <span className="x-olabel"><b>{c.city}</b><i>{c.note}</i></span>
             </button>
           ))}
@@ -319,7 +321,7 @@ export function Offices2({ data }) {
   );
 }
 
-const KNOW_IMG = ['/img/banner4.webp', '/img/banner7.jpg'];
+const KNOW_IMG = ['/img/knowledge-1.jpg', '/img/knowledge-2.jpg'];
 const KNOW_PILLS = ['Monthly digest', 'Practice-wise briefings', 'Free to subscribe'];
 
 export function Knowledge2({ data }) {

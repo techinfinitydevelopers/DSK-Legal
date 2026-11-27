@@ -111,3 +111,11 @@
 
 /* seven header items: tighter spacing on mid-size desktops */
 @media (min-width: 1200px) and (max-width: 1440px) { .dl-bar { padding: 0 32px; gap: 28px; } .dl-nav { gap: 20px; } .dl-tools { gap: 16px; } }
+
+/* offices: while a city is closed (desktop) its strip shows the narrow "DSK" crop; the full photo fades in when it opens */
+.x-off .x-oimg-s { opacity: 0; transform: none; transition: opacity .5s, filter .6s; }
+.x-off .x-oimg-f { transition: opacity .5s, filter .6s, transform 1s var(--e); }
+@media (min-width: 701px) {
+  .x-off:not(.on) .x-oimg-f { opacity: 0; }
+  .x-off:not(.on) .x-oimg-s { opacity: 1; }
+}

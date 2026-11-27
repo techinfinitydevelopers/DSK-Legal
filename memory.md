@@ -402,3 +402,10 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 - Build log 2026-11-26: Home profile section image replaced with client photo (DSK WEB IMAGES_SOLUTION ORIENTED.jpg, 2204px square) -> client/public/img/profile-team.jpg (1200px, 240 KB); Sections4.jsx Profile2. Other client images in ~/Downloads/DSK Legal (HERO BANNER 01-03, PRACTICE AREAS 01-03) not used yet.
 - Build log 2026-11-26: Home practice list panel: first 3 practice areas (Banking & Finance, Competition & Antitrust, Corporate & Securities) now use client photos PRACTICE AREAS 01-03 (client/public/img/practice-1..3.jpg, 1200px) via PRACTICE_IMG in Sections4.jsx; others still use slider photos.
 - Build log 2026-11-26: Home hero slider: first 3 slides = client HERO BANNER 03, 02, 01 (client/public/img/hero-1..3.jpg, 2560px wide, 320-510 KB); slides 4-10 unchanged (banner4-10). Sections4.jsx SLIDES. v2/Sections2 (not live) untouched.
+- Build log 2026-11-27: Home offices section: 7 client LOGO CENTRIC photos mapped in order to Mumbai, New Delhi, Bengaluru, Pune, Chennai, Dubai, Abu Dhabi (client/public/img/office-1..7.jpg, 1200px, ~200 KB); server/data/home.js offices.cities[].img. Old city photos no longer referenced.
+- Build log 2026-11-27: Offices closed strips show a narrow crop with the DSK lettering aligned/same size in every city (client/public/img/office-N-s.jpg, 240x1093, made with PIL from the logo coordinates; image 5 bottom mirrored). Sections4.jsx renders full + strip imgs, v4.css crossfades them (>=701px); mobile keeps the full photo.
+
+## Build log — 2026-11-27: Knowledge Centre card images
+- Added client/public/img/knowledge-1.jpg, knowledge-2.jpg (from DSK_KNOWLEDGE CENTER 01/02, resized 1800w).
+- Sections4.jsx KNOW_IMG now points to these (card 01 Monthly, card 02 Practice Area; shown as hover background).
+- Client rebuilt; images serve 200 on localhost:5001. Not committed.
