@@ -7,6 +7,7 @@
 - Original nav: About Us, Practice Areas, Sectors & Industries, Our Team, Knowledge Centre, Careers, Contact Us.
 - Assets: `Firm Logo.jpeg` (cropped to `client/public/logo.jpg`).
 - Port 5000 is taken by macOS AirPlay → server uses 5001.
+- Node: no system Node/brew on this Mac; Node 22 installed at ~/.local/node (prepend ~/.local/node/bin to PATH). Preview tool sets PORT=5173 → must run `PORT=5001 npm run dev` or server collides with Vite. Launch config: ../.claude/launch.json (name dsk-legal-dev).
 
 ## Stack / layout
 - `client/` Vite + React 18 (components in `src/components`, styles in `src/styles.css`).
@@ -409,3 +410,8 @@ admin.css: `.ad-nav { width: max-content; min-width: 230px; max-width: 320px }`,
 - Added client/public/img/knowledge-1.jpg, knowledge-2.jpg (from DSK_KNOWLEDGE CENTER 01/02, resized 1800w).
 - Sections4.jsx KNOW_IMG now points to these (card 01 Monthly, card 02 Practice Area; shown as hover background).
 - Client rebuilt; images serve 200 on localhost:5001. Not committed.
+
+## Build log
+- 2026-11-27: Repo cloned to /Users/apple/Downloads/dsk-legal/DSK-Legal (HEAD b876a99). Deps not installed yet.
+- 2026-11-27: Installed Node v22.23.5 (~/.local/node, sha256 verified); `npm run install:all` OK (npm audit: 1–2 high/moderate vulns, not fixed). Dev running: client :5173, API :5001; home page + /api/home verified.
+- 2026-11-27: Home is v4 (styles for hero/practice live in client/src/v2/v2.css). Brightened images per user: hero `.x-slide.on` opacity .6→.92, saturate 1, `.x-hero-shade` gradients lightened; Practice panel `.x-pabg` + `pbg` keyframe .55→.92, `.x-pashade` gradient now starts at 30%. Verified at 1440px.
